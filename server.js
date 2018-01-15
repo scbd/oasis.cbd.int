@@ -8,7 +8,7 @@ var router = express.Router();
 var app = express();
 var proxy = httpProxy.createProxyServer({});
 
-app.use(require('morgan')('dev'));
+// app.use(require('morgan')('dev'));
 
 app.use(router);
 // Configure routes
