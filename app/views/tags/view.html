@@ -1,0 +1,62 @@
+﻿<div>
+    <!-- <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css" /> -->
+    <link rel="stylesheet" href="/app/dist/ckeditor5/style.css"/>
+<style>
+  
+</style>
+    <style>
+        .ck-editor__editable{
+            border:none
+        }
+        .tags{
+            margin-bottom: 20px;
+        }
+        .tags .label-default {
+            margin-right: 5px;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 400;
+        }
+        .article-content{
+            font-size: 14px;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+        .article-title{
+            text-align:center;    
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #000;
+        }
+    </style>
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                
+                <div class="box" style="border-top:none;margin-left: 15%;margin-right: 15%;width: 70%;">
+                    
+                    <div class="box-body">
+
+                        <img class="card-image img-responsive" ng-if="article.coverImage" 
+                            ng-src="{{::getSizedImage(article.coverImage,'800x300')}}"
+                            alt="image not avialable" style="width:100%;max-height:500px;">
+                        <br/><br/><br/>
+                        <h2 class="article-title">
+                            {{article.title|lstring}}
+                        </h2>
+                        <br/><br/>
+                        <div id="editor" class="article-content1">
+                            <div ng-bind-html="article.content.en|unsafe"></div>
+                        </div>
+                        <hr>
+                        <div class="tags">
+                            <span class="label label-default" ng-if="article.tags" ng-repeat="tag in article.tags"> {{tag|tagTerm:'article-tags'}}</span>
+                            <span class="label label-default"ng-if="article.customTags" ng-repeat="tag in article.customTags">{{tag|tagTerm:'article-custom-tags'}}</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>

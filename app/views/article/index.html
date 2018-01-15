@@ -1,0 +1,211 @@
+﻿<div>
+    <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css" />
+
+    <!-- /app/libs/bulma/css/bulma.css -->
+    <section class="content">
+        <div class="row">
+            <style>
+                /* .tile-content img {
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+
+                .card-image {
+                    display: block;
+                    margin: auto;
+                }
+
+                .square_board {
+                    width: 100%;
+                    max-height: 100%;
+                    max-width: 100%;
+                    height: 100%;
+                    margin: 0px;
+                }
+
+                .md-grid {
+                    background: #eee;
+                }
+
+                .dynamicTile .col-sm-2.col-xs-4 {
+                    padding: 5px;
+                }
+
+                .dynamicTile .col-sm-4.col-xs-8 {
+                    padding: 5px;
+                } */
+
+                .tilecaption {
+                    position: relative;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    -webkit-transform: translateY(-50%);
+                    -ms-transform: translateY(-50%);
+                    margin: 0!important;
+                    text-align: center;
+                    color: white;
+                    font-family: Segoe UI;
+                    font-weight: lighter;
+                }
+                /* .card {
+                    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+                    transition: 0.3s;
+                    border: 3px solid #fff;
+                }
+
+                .card:hover {
+                    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+                }
+
+                .container {
+                    padding: 2px 16px;
+                } */
+
+                #pinBoot {
+                    position: relative;
+                    max-width: 100%;
+                    width: 100%;
+                }
+
+                img {
+                    width: 100%;
+                    max-width: 100%;
+                    height: auto;
+                }
+
+                .white-panel {
+                    position: absolute;
+                    background: white;
+                    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
+                    padding: 10px;
+                }
+                /*
+                    stylize any heading tags withing white-panel below
+                */
+
+                .white-panel h1 {
+                    font-size: 1em;
+                }
+
+                .white-panel h1 a {
+                    color: #A92733;
+                }
+
+                .white-panel:hover {
+                    box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
+                    margin-top: -5px;
+                    -webkit-transition: all 0.3s ease-in-out;
+                    -moz-transition: all 0.3s ease-in-out;
+                    -o-transition: all 0.3s ease-in-out;
+                    transition: all 0.3s ease-in-out;
+                }
+            </style>
+            <div class="col-md-12">
+                <div class="container" style="width:100%">
+                    <div class="row">
+
+                        <div class="col-md-12">
+
+                            <section id="pinBoot">
+
+                                <article class="white-panel" ng-repeat="article in articles">
+                                    <div ng-click="showArticle(article)">
+                                        <img  class="card-image" ng-if="article.coverImage" ng-src="{{::getSizedImage(article.coverImage, '200x200')}}"
+                                            alt="image not avialable">
+                                        <h4>
+                                            {{article.title|lstring}}
+                                        </h4>
+                                        <p ng-bind-html="article.content |lstring | limitTo:100|unsafe ">
+                                        </p>
+                                    </div>
+                                    <hr/>
+                                    <div class="btn-group pull-right">
+                                        <a class="btn" href="#" ng-click="delete(article)">
+                                            <i class="fa fa-remove" />
+                                        </a>  
+                                        <a class="btn" href="/articles/{{article._id}}/edit">
+                                            <i class="fa fa-edit" />
+                                        </a>
+                                    </div>
+                                </article>
+
+                            </section>
+
+
+                            <hr>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- <div class="container dynamicTile" style="width:100%">
+                    <div class="row ">
+                        <div style="margin-bottom:10px;min-height:300px;max-height:400px;" class="col-sm-4 col-xs-6" ng-repeat="tile in articles">
+                            <div class="tile">
+                                <div class="card">
+                                    <div style="min-height:200px;">
+                                        <img ng-click="showArticle(tile)" class="card-image" style="margin:auto;max-width:100%;max-height:200px;width:100%;" ng-if="tile.coverImage"
+                                            ng-src="{{::getSizedImage(tile.coverImage, '200x200')}}" alt="image not avialable">
+                                    </div>
+                                    <div class="container" style="width:100%;background:#fff">
+                                        <h4 ng-click="showArticle(tile)" style="min-height:60px;max-height:60px;overflow:hidden">
+                                            <b>
+                                                <span class="card-title">{{tile.title|lstring}}</span>
+                                            </b>
+                                        </h4>
+                                        <p></p>
+                                        <hr/>
+                                        <a class="pull-right" href="/articles/{{tile._id}}/edit">
+                                            <i class="fa fa-edit" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clear-fix"></div>
+                        </div>
+                    </div>
+                </div> -->
+
+                <!-- <div class="col-md-12">
+                    <a class="btn btn-primary" href="/articles/new">New</a>
+                </div> -->
+
+                <div ng-if="1==2">
+                    <md-content layout-padding="">
+                        <md-grid-list md-cols-gt-md="12" md-cols="3" md-cols-md="8" md-row-height-gt-md="1:1" md-row-height="4:4" md-gutter-gt-md="32px"
+                            md-gutter-md="16px" md-gutter="8px" class="md-grid">
+                            <md-grid-tile ng-repeat="tile in articles" ng-style="{'background': tile.color}" style="cursor:pointer;margin:2%" md-colspan-gt-sm="{{tile.colspan}}"
+                                md-rowspan-gt-sm="{{tile.rowspan}}" ng-click="showArticle(tile)">
+                                <!-- <md-grid-tile-header>
+                                    <h3>{{tile.title.en}}</h3>
+                                </md-grid-tile-header> -->
+                                <md-card class="square_board">
+                                    <img style="max-height:200px" ng-if="tile.coverImage" ng-src="{{::getSizedImage(tile.coverImage, '200x200')}}" alt="image not avialable">
+                                    <md-card-title>
+                                        <md-card-title-text>
+                                            <span class="md-headline">{{tile.title|lstring}}</span>
+                                        </md-card-title-text>
+                                    </md-card-title>
+                                    <!-- <md-card-content>
+                                        <p class="tile-content1" ng-bind-html="tile.content |lstring | limitTo:100|unsafe " style="padding:10%"></p>
+                                    </md-card-content> -->
+                                    <md-card-actions layout="row" layout-align="end right">
+                                        <md-button class="md-icon-button" aria-label="Edit" ng-href="/articles/{{tile._id}}/edit">
+                                            <i class="fa fa-edit" />
+                                        </md-button>
+                                    </md-card-actions>
+                                </md-card>
+                                <!-- <md-grid-tile-footer>
+                                    <a style="margin-left:10px" class="btn btn-xs btn-primary" href="/articles/{{tile._id}}/edit">Edit</a>
+                                </md-grid-tile-footer> -->
+                            </md-grid-tile>
+                        </md-grid-list>
+                    </md-content>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
