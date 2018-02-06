@@ -29,7 +29,7 @@ require.config({
         'socket.io'                 : 'libs/socket.io-1.4.5/index',
         'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
         'ck-editor'                 : 'https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/inline/ckeditor',
-        'select2'                   : 'libs/select2/select2',
+        'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
         'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all'
