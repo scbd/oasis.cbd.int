@@ -1,6 +1,6 @@
 {
-  "name": "absch.cbd.int",
-  "description": "Access and Benefit Sharing Clearing-House",
+  "name": "oasis.cbd.int",
+  "description": "Oasis",
   "dependencies": {
     "bower": "1.8.2",
     "ejs": "^2.5.2",

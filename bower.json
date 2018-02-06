@@ -1,5 +1,5 @@
 {
-  "name": "absch-cbd-int",
+  "name": "oasis-cbd-int",
   "dependencies": {
     "angular": "1.4",
     "angular-animate": "1.4",
