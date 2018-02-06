@@ -2,27 +2,14 @@
   "name": "absch.cbd.int",
   "description": "Access and Benefit Sharing Clearing-House",
   "dependencies": {
-    "adm-zip": "^0.4.7",
-    "axios": "^0.17.0",
-    "body-parser": "^1.18.2",
     "bower": "1.8.2",
-    "co": "^4.6.0",
-    "co-fs": "^1.2.0",
     "ejs": "^2.5.2",
     "express": "4.13.4",
-    "http-proxy": "1.13.2",
-    "lodash": "^4.17.4",
-    "nodegit": "^0.17.0",
-    "request": "^2.83.0",
-    "sharp": "^0.18.4",
-    "simple-git": "^1.66.0",
-    "thunkify": "^2.1.2",
-    "when": "^3.7.7"
+    "http-proxy": "1.13.2"
   },
   "engine": "node >= 4.2",
   "private": true,
   "scripts": {
-    "postinstall": "./node_modules/.bin/bower install --allow-root -q",
-    "start": "node server"
+    "postinstall": "./node_modules/.bin/bower install --allow-root -q"
   }
 }

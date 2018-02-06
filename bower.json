@@ -6,7 +6,7 @@
     "angular-aria": "1.4",
     "angular-block-ui": "0.2.2",
     "angular-cookies": "1.4",
-    "angular-flex": "https://github.com/scbd/angular-flex.git",
+    "angular-flex": "https://github.com/scbd/angular-flex.git#666854e543af4bc68f00a537f17c665ae9e90028",
     "angular-material": "0.9.8",
     "angular-route": "1.4",
     "angular-sanitize": "1.4",
