@@ -13,7 +13,7 @@ RUN echo 'running on branch ' $VERSION
 
 WORKDIR /usr/src/app
 
-COPY package.json bower.json .bowerrc ./
+COPY package.json bower.json .bowerrc .npmrc ./
 
 RUN npm install -q
 
