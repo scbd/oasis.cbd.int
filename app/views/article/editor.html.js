@@ -182,8 +182,10 @@ define(['app', 'ck-editor', 'text!./editor-directive.html', 'lodash', 'angular-u
                                 }
                             }).then(function (resp) {
                                 $timeout(function() {
-                                    $scope.document.coverImage = undefined;
-                                    $scope.document.coverImage = resp.data.default;
+                                    if(!$scope.document.coverImage)
+                                        $scope.document.coverImage = {};
+                                    $scope.document.coverImage.url = undefined;
+                                    $scope.document.coverImage.url = resp.data.default;
                                     $scope.coverImageProgress = undefined;
                                 });
                             }, null, function (evt) {

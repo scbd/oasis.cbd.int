@@ -128,7 +128,7 @@ define(['app', 'lodash'], function (app, _) { 'use strict';
 		var scbdSchemas			= [ "meeting", "notification", "pressRelease", "statement", "news", "new" ];
 
         var realmConfig 		= _.find(realmConfigurations,{host:$location.$$host});
-        var currentRealm 		= realmConfig.realm;
+        var currentRealm 		= undefined;//realmConfig.realm;
 
         function setCurrentRealm(newRealm){
 			if(_.find(realmConfigurations,{realm : newRealm})){
