@@ -8,7 +8,7 @@
             $q.all([authentication.getUser(), genericService.query('v2017', 'articles')])
                 .then(function (results) {
                     var user = results[0];
-                    if(user.roles.indexOf('Adminstrator') || user.roles.indexOf('oasis-article-editor'))
+                    if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
                         $scope.isAuthorizedForActions = true;
                         
                     $scope.articles = results[1]

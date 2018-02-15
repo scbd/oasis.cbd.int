@@ -10,7 +10,13 @@ define(['app',  'js/filters', 'scbd-angularjs-services/authentication'], functio
             $scope.user = data;
           })
 
-       
+          $scope.signOut = function(){
+            $q.when(authentication.signOut())
+            .then(function(data){
+              $scope.user = undefined;
+              window.location = "/"
+            })  
+          }
 
 
         }
