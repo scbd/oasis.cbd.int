@@ -3,7 +3,7 @@ define(['app'], function(app, _) {
         return {
             restrict: 'EAC',
             replace: true,
-            templateUrl: '/app/views/mailbox/message-directive.html',
+            templateUrl: 'app/views/mailbox/message-directive.html',
             scope: {
                 mail: '=',
                 onReply: '&',

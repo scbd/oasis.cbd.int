@@ -1,8 +1,6 @@
 'use strict';
-define(['app', 'lodash', 'js/extended-route-provider', 'scbd-angularjs-services', 'scbd-angularjs-filters',], function (app, _) {
-      
-    app.value("realm", {value:"ABS"});
-
+define(['app', 'lodash', 'js/extended-route-provider', 'services/app-config-service', 'scbd-angularjs-filters'], function (app, _) {
+         
     app.provider("realm", {
 
         $get : ["$location", 'appConfigService', function($location, appConfigService) {
@@ -15,20 +13,20 @@ define(['app', 'lodash', 'js/extended-route-provider', 'scbd-angularjs-services'
         $locationProvider.hashPrefix('!');
         
         $routeProvider.
-               when('/',                { templateUrl: '/app/views/home/index.html', label:'ABSCH', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/',                { templateUrl: 'views/home/index.html', label:'ABSCH', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                
-               when('/projects',         { templateUrl: '/app/views/projects/index.html', label:'Projects', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/projects',         { templateUrl: 'views/projects/index.html', label:'Projects', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                
-               when('/articles',         { templateUrl: '/app/views/article/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
-               when('/articles/new',      { templateUrl: '/app/views/article/editor.html', label:'Article Editor', isNew:true, resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
-               when('/articles/:id/:title?/edit', { templateUrl: '/app/views/article/editor.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
-               when('/articles/:id/:title?',     { templateUrl: '/app/views/article/view.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/articles',         { templateUrl: 'views/article/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/articles/new',      { templateUrl: 'views/article/editor.html', label:'Article Editor', isNew:true, resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/articles/:id/:title?/edit', { templateUrl: 'views/article/editor.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/articles/:id/:title?',     { templateUrl: 'views/article/view.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
               
-               when('/manage/:schema',          { templateUrl: '/app/views/tags/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
-               when('/signin',          { templateUrl: '/app/views/shared/login.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
+               when('/manage/:schema',          { templateUrl: 'views/tags/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
+               when('/signin',          { templateUrl: 'views/shared/login.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
                
                
-               otherwise({templateUrl: '/app/views/shared/404.html', label:'404 Error'});
+               otherwise({templateUrl: 'views/shared/404.html', label:'404 Error'});
 
     }]);
 
