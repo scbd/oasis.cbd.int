@@ -3,7 +3,7 @@ define(['app','lodash'], function(app,_) {
         return {
             restrict: 'EAC',
             replace: true,
-            templateUrl: '/app/views/mailbox/compose-directive.html',
+            templateUrl: 'app/views/mailbox/compose-directive.html',
             scope : {
                 onMailComposed : '&'
             },

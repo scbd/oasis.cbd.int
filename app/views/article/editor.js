@@ -1,5 +1,5 @@
 ﻿
-define(['app', 'ck-editor', 'text!./editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
+define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 'scbd-angularjs-filters', 'ng-file-upload'], 
  function (app, classicEditor, template, _) {
     
