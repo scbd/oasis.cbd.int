@@ -11,7 +11,7 @@ var proxy   = require('http-proxy').createProxyServer({});
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
 
-app.use(require('morgan')('dev'));
+// app.use(require('morgan')('dev'));
 
 // LOAD CONFIGURATION
 
