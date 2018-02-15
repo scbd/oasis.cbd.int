@@ -1,5 +1,5 @@
 ﻿<div>
-    <!-- <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css" /> -->
+    <!-- <link rel="stylesheet" href="/app/libs/angular-material/angular-material.css" /> -->
     <link rel="stylesheet" href="/app/dist/ckeditor5/style.css" />
     <style>
     </style>
@@ -31,6 +31,35 @@
             font-size: 20px;
             color: #000;
         }
+
+        .image-credit-wrapper img {
+            width: 100% !important;
+        }
+
+        .image-credit-wrapper {
+            overflow: hidden;
+            position: relative;
+            max-height: 375px;
+        }
+
+        .image-credit-wrapper .image-credit {
+            position: absolute;
+            right: 0px;
+            bottom: 4px;
+        }
+
+        .image-credit {
+            background: rgba(0, 0, 0, .7);
+            color: #ccc;
+            display: inline-block;
+            font-size: 11px;
+            font-family: helvetica;
+            font-weight: 300;
+            padding: 5px 8px;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
     </style>
     <section class="content">
         <div class="row">
@@ -40,8 +69,10 @@
 
                     <div class="box-body">
 
-                        <img class="card-image img-responsive" ng-if="article.coverImage" ng-src="{{::getSizedImage(article.coverImage.url,'800x300')}}"
-                            alt="image not avialable" style="width:100%;max-height:500px;">
+                        <div class="image-credit-wrapper">
+                            <span class="image-credit" ng-if="article.coverImage.credits">{{article.coverImage.credits}}</span>
+                            <img class="img-responsive" ng-src="{{::getSizedImage(article.coverImage.url,'800x300')}}">
+                        </div>
                         <br/>
                         <br/>
                         <br/>
@@ -64,12 +95,4 @@
             </div>
         </div>
     </section>
-
-    <figure class="image ck-widget" contenteditable="false">
-        <img src="https://attachments.cbd.int/08a1c73551984bffc824091d4c068923-2/78462241.jpg" srcset="https://attachments.cbd.int/50x50/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/120x120/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/240x240/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/360x360/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/480x480/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/600x600/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/960x960/08a1c73551984bffc824091d4c068923-2/78462241.jpg, https://attachments.cbd.int/1080x1080/08a1c73551984bffc824091d4c068923-2/78462241.jpg"
-            sizes="100vw">
-        <figcaption class="ck-placeholder ck-editable ck-hidden" data-placeholder="Enter image caption" contenteditable="true">
-            <br data-cke-filler="true">
-        </figcaption>
-    </figure>
 </div>

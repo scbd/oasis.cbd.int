@@ -1,48 +1,52 @@
 ﻿<div>
     <link rel="stylesheet" href="/app/libs/select2/select2.css" />
-    <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css" />
+    <link rel="stylesheet" href="/app/libs/angular-material/angular-material.css" />
     <link rel="stylesheet" href="/app/libs/angular-ui-select/dist/select.css" />
     <style type="text/css">
         .button {
-        -moz-appearance: button;
-        -webkit-appearance: button;
-        padding: 10px;
-        margin: 10px;
-        width: 70px;
-    }
-    .drop-box {
-        background: #F8F8F8;
-        border: 5px dashed #DDD;
-        width: 100%;
-        height: 135px;
-        text-align: center;
-        padding-top: 25px;
-        margin-left:-15px
-    }
-    .dragover {
-        border: 5px dashed blue;
-    }
-    .percents-bg {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 0%;
-    display: block;
-    background-color: rgba(206,209,224,.2);
-    z-index: 0;
-    transition: width .2s ease-in;
-}
-.preview {
-    /* height: 75px; */
-    display: block;
-    width: 100%;
-    margin-bottom: 15px;
-    overflow: hidden;
-    z-index: 1;
-    position: relative;
-}
-      </style>
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
+            -moz-appearance: button;
+            -webkit-appearance: button;
+            padding: 10px;
+            margin: 10px;
+            width: 70px;
+        }
+
+        .drop-box {
+            background: #F8F8F8;
+            border: 5px dashed #DDD;
+            width: 100%;
+            height: 135px;
+            text-align: center;
+            padding-top: 25px;
+            margin-left: -15px
+        }
+
+        .dragover {
+            border: 5px dashed blue;
+        }
+
+        .percents-bg {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            display: block;
+            background-color: rgba(206, 209, 224, .2);
+            z-index: 0;
+            transition: width .2s ease-in;
+        }
+
+        .preview {
+            /* height: 75px; */
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+            overflow: hidden;
+            z-index: 1;
+            position: relative;
+        }
+    </style>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
     <section class="content">
         <div class="row">
 
@@ -65,13 +69,12 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label> Tags</label>
-                                    <ui-select multiple ng-model="article.tags" theme="bootstrap" ng-disabled="disabled" >
+                                    <ui-select multiple ng-model="article.tags" theme="bootstrap" ng-disabled="disabled">
                                         <ui-select-match placeholder="tags...">
-                                          <span ng-if="$item.title">{{($item.title)|lstring}}</span> 
-                                          <span ng-if="!$item.title && $item._id">{{$item|tagTerm:'article-tags'}}</span>
+                                            <span ng-if="$item.title">{{($item.title)|lstring}}</span>
+                                            <span ng-if="!$item.title && $item._id">{{$item|tagTerm:'article-tags'}}</span>
                                         </ui-select-match>
-                                        <ui-select-choices refresh="funcAsync('article-tags', $select.search)" refresh-delay="500" 
-                                        repeat="tag in articletags track by $index">
+                                        <ui-select-choices refresh="funcAsync('article-tags', $select.search)" refresh-delay="500" repeat="tag in articletags track by $index">
                                             <!-- <div ng-bind-html="tag.title|lstring |unsafe | highlight: $select.search"></div> -->
                                             {{tag.title|lstring}}
                                         </ui-select-choices>
@@ -80,16 +83,15 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label>Custom Tags</label>                                    
-                                    <ui-select multiple tagging="tagTransform" tagging-label="(Create new tag)" ng-model="article.customTags" 
-                                    theme="bootstrap" ng-disabled="disabled">
-                                        <ui-select-match placeholder="custom tags...">                                            
+                                    <label>Custom Tags</label>
+                                    <ui-select multiple tagging="tagTransform" tagging-label="(Create new tag)" ng-model="article.customTags" theme="bootstrap"
+                                        ng-disabled="disabled">
+                                        <ui-select-match placeholder="custom tags...">
                                             <span>{{getTerm($item)}}</span>
                                         </ui-select-match>
-                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" 
-                                        repeat="tag in articlecustomtags track by $index">
-                                        <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
-                                        <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div> 
+                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
+                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
+                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
                                         </ui-select-choices>
                                     </ui-select>
                                 </div>
@@ -97,35 +99,52 @@
                         </div>
                         <div class="row">
                             <div class="col-md-12">
+
+                                <!-- <div class="box box-info">
+                                    <div class="box-header">
+                                        <h3 class="box-title">Cover Image</h3>
+                                    </div>
+                                    <div class="box-body"> -->
                                 <div class="form-group">
-                                    <label>Cover Image</label>
+                                    <label>Cover image</label>
                                     </br>
                                     <div class="col-md-9">
-                                        <div ngf-drop ngf-select ng-model="coverImage" class="drop-box" 
-                                            ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-allow-dir="true"
+                                        <div ngf-drop ngf-select ng-model="coverImage" class="drop-box" ngf-drag-over-class="'dragover'" ngf-multiple="false" ngf-allow-dir="true"
                                             accept="image/*" ngf-pattern="'image/*'">
-                                            <div class="percents-bg" ng-style="{width: coverImageProgress.value + '%'}" style=""></div> 
-                                            <div class="preview"> 
-                                                <span class="fa fa-plus" style="border: 5px solid #eee;padding: 10px" ng-hide="coverImageProgress"></span> 
-                                                <span class="percents ng-binding ng-hide" ng-show="coverImageProgress">{{coverImageProgress.value}}%</span> 
-                                            </div> 
-                                                <span>Drop file here or click to upload</span> 
-                                        </div>   
+                                            <div class="percents-bg" ng-style="{width: coverImageProgress.value + '%'}" style=""></div>
+                                            <div class="preview">
+                                                <span class="fa fa-plus" style="border: 5px solid #eee;padding: 10px" ng-hide="coverImageProgress"></span>
+                                                <span class="percents ng-binding ng-hide" ng-show="coverImageProgress">{{coverImageProgress.value}}%</span>
+                                            </div>
+                                            <span>Drop file here or click to upload</span>
+                                        </div>
                                         <div ngf-no-file-drop>File Drag/Drop is not supported for this browser</div>
                                         <!-- <div class="progress progress-xxs" ng-if="coverImageProgress">
-                                            <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="{{coverImageProgress.value}}"
-                                             aria-valuemin="0" aria-valuemax="100" style="width: {{coverImageProgress.value}}%">
-                                                <span class="sr-only">{{coverImageProgress.value}}% Complete </span>
-                                            </div>
-                                        </div> -->
+                                                        <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="{{coverImageProgress.value}}"
+                                                         aria-valuemin="0" aria-valuemax="100" style="width: {{coverImageProgress.value}}%">
+                                                            <span class="sr-only">{{coverImageProgress.value}}% Complete </span>
+                                                        </div>
+                                                    </div> -->
                                     </div>
                                     <div class="col-md-3">
-                                        <img ng-if="document.coverImage.url" style="max-height:200px;max-width:200px" ng-src="{{getSizedImage(document.coverImage.url, '200x200')}}" />
+                                        <img ng-if="document.coverImage.url" style="max-height:200px;max-width:200px" ng-src="{{getSizedImage(document.coverImage.url, '200x200')}}"
+                                        />
                                     </div>
+                                </div>
+                                <!-- </div>
+                                </div> -->
+
+
+                            </div>
+                            
+                            <div class="col-md-12"><br/>
+                                <div class="form-group">
+                                    <label>Image credits</label>
+                                    <input type="text" class="form-control" ng-model="document.coverImage.credits">
                                 </div>
                             </div>
                         </div>
-                            <br/>
+                        <br/>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -136,21 +155,21 @@
                             </div>
                         </div>
                         <div class="row" ng-if="tags">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label>Tags</label>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Tags</label>
                                     </hr>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <span ng-repeat="tag in tags" ng-if="tag.name" style="margin:5px;">
-                                                <span class="label label-success" >
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <span ng-repeat="tag in tags" ng-if="tag.name" style="margin:5px;">
+                                                <span class="label label-success">
                                                     {{tag.name}}</span>
-                                                </span>
-                                            </div>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         <!-- /.row -->
                     </div>
                     <div class="box-footer">

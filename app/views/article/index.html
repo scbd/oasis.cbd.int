@@ -1,5 +1,5 @@
 ﻿<div>
-    <link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css" />
+    <link rel="stylesheet" href="/app/libs/angular-material/angular-material.css" />
 
     <!-- /app/libs/bulma/css/bulma.css -->
     <section class="content">
@@ -108,24 +108,26 @@
 
                             <section id="pinBoot">
 
-                                <article class="white-panel" ng-repeat="article in articles">
-                                    <div ng-click="showArticle(article)">
+                                <article class="white-panel" ng-repeat="article in articles | orderBy:'-meta.modifiedOn'">
+                                    <div ng-click="showArticle(article)" style="cursor:pointer">
                                         <img  class="card-image" ng-if="article.coverImage" ng-src="{{::getSizedImage(article.coverImage.url, '200x200')}}"
-                                            alt="image not avialable">
+                                            alt="image not available">
                                         <h4>
                                             {{article.title|lstring}}
                                         </h4>
                                         <p ng-bind-html="article.content |lstring | limitTo:100|unsafe ">
                                         </p>
                                     </div>
-                                    <hr/>
-                                    <div class="btn-group pull-right">
-                                        <a class="btn" href="#" ng-click="delete(article)">
-                                            <i class="fa fa-remove" />
-                                        </a>  
-                                        <a class="btn" href="/articles/{{article._id}}/edit">
-                                            <i class="fa fa-edit" />
-                                        </a>
+                                    <div ng-if="isAuthorizedForActions">
+                                        <hr />
+                                        <div class="btn-group pull-right">
+                                            <a class="btn" href="#" ng-click="delete(article)">
+                                                <i class="fa fa-remove" />
+                                            </a>  
+                                            <a class="btn" href="/articles/{{article._id}}/edit">
+                                                <i class="fa fa-edit" />
+                                            </a>
+                                        </div>
                                     </div>
                                 </article>
 

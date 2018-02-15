@@ -17,7 +17,8 @@ define(['app', 'ck-editor', 'text!./editor-directive.html', 'lodash', 'angular-u
                         toolbar: [ 'headings', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ],
                         cloudServices: {
                             uploadUrl : '/api/v2015/temporary-files',
-                            token: 'Ticket '+token.token
+                            token: 'Ticket '+token.token,
+                            tokenUrl1: 'Ticket '+token.token
                         },
                         image: {
                             toolbar: ['imageTextAlternative', '|', 'imageStyleAlignLeft', 'imageStyleFull', 'imageStyleAlignRight'],
@@ -198,7 +199,7 @@ define(['app', 'ck-editor', 'text!./editor-directive.html', 'lodash', 'angular-u
             }
 
             $scope.getSizedImage = function(url, size){
-                return url.replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
+                return url && url.replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
             }
     }]
 });
