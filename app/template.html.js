@@ -1,4 +1,4 @@
-define(['app',  '/app/js/filters.js', 'scbd-angularjs-services/authentication'], function(app, _) {
+define(['app',  'js/filters', 'scbd-angularjs-services/authentication'], function(app, _) {
     'use strict';
 
     app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q',
