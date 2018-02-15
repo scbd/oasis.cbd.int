@@ -161,10 +161,16 @@
                     {{user.name}}
                   </p>
                 </li>
-
+                <li class="user-footer">
+                    <div class="pull-left">
+                      <a href="https://accounts.cbd.int/profile" class="btn btn-default btn-flat">Profile</a>
+                    </div>
+                    <div class="pull-right">
+                      <a href="#" class="btn btn-default btn-flat" ng-click="signOut()">Sign out</a>
+                    </div>
+                  </li>
               </ul>
             </li>
-
           </ul>
         </div>
       </nav>
@@ -199,31 +205,31 @@
         <ul class="sidebar-menu">
           <li class="header">MAIN NAVIGATION</li>
           <li class="active">
-            <a href="/">
+            <a href="<%=baseUrl%>">
               <i class="fa fa-dashboard"></i>
               <span>Dashboard</span>
             </a>
           </li>
           <li>
-            <a href="/projects">
+            <a href="<%=baseUrl%>projects">
               <i class="fa fa-th"></i>
               <span>Projects - repos</span>
             </a>
           </li>
           <li>
-            <a href="/translation">
+            <a href="<%=baseUrl%>translation">
               <i class="fa fa-th"></i>
               <span>Traslation</span>
             </a>
           </li>
           <li>
-            <a href="/articles">
+            <a href="<%=baseUrl%>articles">
               <i class="fa fa-th"></i>
               <span>Articles</span>
             </a>
           </li>
           <li>
-            <a href="/documentation">
+            <a href="<%=baseUrl%>documentation">
               <i class="fa fa-book"></i>
               <span>Documentation</span>
             </a>
