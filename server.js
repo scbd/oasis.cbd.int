@@ -1,62 +1,66 @@
+
 'use strict';
 
-var express = require('express');
-var httpProxy = require('http-proxy');
-var router = express.Router();
+process.on('SIGTERM', ()=>process.exit());
 
-
+// CREATE HTTP SERVER AND PROXY
+var express     = require('express');
 var app = express();
-var proxy = httpProxy.createProxyServer({});
+var proxy   = require('http-proxy').createProxyServer({});
 
-// app.use(require('morgan')('dev'));
+app.set('views', __dirname + '/app');
+app.set('view engine', 'ejs');
 
-app.use(router);
-// Configure routes
+app.use(require('morgan')('dev'));
 
-app.use('/favicon.ico', express.static(__dirname + '/favicon.ico'));
-app.use('/app', express.static(__dirname + '/app'));
+// LOAD CONFIGURATION
 
-app.all('/app/*', (req, res) => res.status(404).send());
+app.set('port', process.env.PORT || 2012);
+
+// CONFIGURE /APP/* ROUTES
+if(!process.env.API_URL) {
+    console.warn('warning: evironment API_URL not set. USING default (https://api.cbd.int:443)');
+}
+
+var apiUrl = process.env.API_URL || 'https://api.cbd.int:443';
+var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
+
+console.info(`info: www.cbd.int/management`);
+console.info(`info: Git version: ${gitVersion}`);
+console.info(`info: API address: ${apiUrl}`);
 
 
-// router.post('/api/v2017/articles/tags', async(req, res) => {
-//     let data = await getCalaisTagging(req, res);
+app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
+app.all('/api/*', (req, res) => proxy.web(req, res, { target: apiUrl, changeOrigin: true, secure:false }));
 
-//     return res.status(200).send(data.data);
-// });
+app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
-// app.all('/api/v2015/temporary-files', (req, res) => proxy.web(req, res, {target: 'http://localhost:8000', changeOrigin: true, secure:false }));
+// CONFIGURE TEMPLATE
+app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',gitVersion: gitVersion }); });
 
-// app.all('/api/v2017/*', (req, res) => {
-//     console.log(req.url)
-//     proxy.web(req, res, {
-//         target: 'http://localhost:8000',
-//         changeOrigin: true, secure:false 
-//     })
-// });
 
-app.all('/api/*', (req, res) => proxy.web(req, res, {
-    target: 'https://api.cbddev.xyz',
-    changeOrigin: true, secure:false 
-}));
-// Configure template
 
-app.get('/*', function (req, res) {
-    res.cookie('VERSION', process.env.COMMIT || '');
-    res.sendFile(__dirname + '/app/template.html');
-});
+// START SERVER
 
-// Start HTTP server
-
-app.listen(process.env.PORT || 2012, '0.0.0.0', function () {
-    console.log('Server listening on %j', this.address());
+app.listen(app.get('port'), function () {
+	console.log('Server listening on %j', this.address());
 });
 
 // Handle proxy errors ignore
 
-proxy.on('error', function (error, req, res) {
-    console.error('proxy error:', error);
+proxy.on('error', function (e,req, res) {
+    console.error('proxy error:', e);
     res.status(502).send();
 });
+process.on('SIGTERM', ()=>process.exit());
+//============================================================
+//
+//
+//============================================================
+function setCustomCacheControl(res, path) {
 
-process.on('SIGTERM', () => process.exit());
+	if(res.req.query && res.req.query.v && res.req.query.v==gitVersion && gitVersion!='UNKNOWN')
+        return res.setHeader('Cache-Control', 'public, max-age=86400000'); // one day
+
+    res.setHeader('Cache-Control', 'public, max-age=0');
+}
