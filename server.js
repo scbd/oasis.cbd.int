@@ -18,11 +18,6 @@ app.set('view engine', 'ejs');
 
 app.set('port', process.env.PORT || 2012);
 
-// CONFIGURE /APP/* ROUTES
-if(!process.env.API_URL) {
-    console.warn('warning: evironment API_URL not set. USING default (https://api.cbd.int:443)');
-}
-
 var apiUrl = process.env.API_URL || 'https://api.cbddev.xyz:443';
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
 
