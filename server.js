@@ -31,6 +31,16 @@ console.info(`info: API address: ${apiUrl}`);
 
 
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
+// app.all('/api/v2017/*', (req, res) =>{
+//     console.log(req.url);
+//      proxy.web(req, res, { target: 'http://localhost:8000', changeOrigin: true, secure:false })
+//     });
+
+var gitQuery =  require('./app/api/git-query.js')();
+app.all('/api/git/:repository',async (req, res) => {
+    await gitQuery(req, res)
+});
+
 app.all('/api/*', (req, res) => proxy.web(req, res, { target: apiUrl, changeOrigin: true, secure:false }));
 
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
