@@ -25,5 +25,5 @@ app/views/mockups
 .vscode
 i18n
 TestCases
-app/api
+app/api/repositories
 
