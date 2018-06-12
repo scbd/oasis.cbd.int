@@ -32,7 +32,8 @@ require.config({
         'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
-        'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all'
+        'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
+        'angulargrid'               : 'libs/angulargrid/angulargrid'
     },
     'shim': {
         'angular'                       : { 'deps': ['jquery'], 'exports': 'angular' },
@@ -52,6 +53,7 @@ require.config({
         'ngDialog'                      : { 'deps': ['angular', 'css!libs/ng-dialog/css/ngDialog.min', 'css!libs/ng-dialog/css/ngDialog-theme-default.css'] },
         'select2'                       : { 'deps': ['angular', 'jquery'] },
         'angular-ui-select2'            : { 'deps': ['angular', 'select2']} ,
+        'angulargrid'                   : { 'deps': ['angular']}
     },
     packages: [
         { name: 'scbd-branding'          , location : 'components/scbd-branding' },

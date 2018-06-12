@@ -4,7 +4,8 @@ define(['angular', 'angular-sanitize',  'angular-ui-select2','ngMaterial', 'ng-f
 
         var dependencies = ['ngRoute', 'ngCookies', 'angulartics', 'ngSanitize',
             'angulartics.google.analytics', 'ckeditor', 
-            'ngMaterial', 'ngMessages', 'material.svgAssetsCache', 'ui.select', 'ngFileUpload'
+            'ngMaterial', 'ngMessages', 'material.svgAssetsCache', 'ui.select',
+             'ngFileUpload', 'angularGrid'
         ];
         
         angular.defineModules(dependencies);

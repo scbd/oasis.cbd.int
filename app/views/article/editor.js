@@ -110,7 +110,6 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                                                 else if(t.isTag) return t.title;
                                             }));
 
-                console.log($scope.document);
                 // return;
                 var operation;
                 if($scope.document && $scope.document._id){
@@ -199,7 +198,9 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
             }
 
             $scope.getSizedImage = function(url, size){
-                return url && url.replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
+                return url && url
+                .replace(/attachments.cbd.int\//, '$&'+size+'/')
+                .replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
             }
     }]
 });

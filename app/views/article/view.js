@@ -47,7 +47,9 @@
             $scope.getSizedImage = function(url, size){
                 // return url;
 
-                return url && url.replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
+                return url && url
+                .replace(/attachments.cbd.int\//, '$&'+size+'/')
+                .replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
             }
         }
     ]

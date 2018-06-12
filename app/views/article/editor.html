@@ -126,8 +126,10 @@
                                                     </div> -->
                                     </div>
                                     <div class="col-md-3">
-                                        <img ng-if="document.coverImage.url" style="max-height:200px;max-width:200px" ng-src="{{getSizedImage(document.coverImage.url, '200x200')}}"
-                                        />
+                                        <img ng-if="document.coverImage.url" style="max-height:200px;max-width:200px" ng-src="{{getSizedImage(document.coverImage.url, '200x200')}}"/>
+                                        <div style="padding:5px;margin-left:20%" ng-if="document.coverImage.url">
+                                            <button class="btn btn-primary btn-xs" ng-click="document.coverImage.url=undefined"><i class="fa fa-remove" /></button>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- </div>
