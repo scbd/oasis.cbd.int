@@ -53,7 +53,7 @@ define(['app'], function(app) {
         //===========================
         //
         //===========================
-        function query(version, schema, query, pageNumber, pageLength, sort, count) {
+        function query(version, schema, query, pageNumber, pageLength, sort, count, fields) {
             var q;
             if(query)
                 q = JSON.stringify(query);
@@ -64,7 +64,8 @@ define(['app'], function(app) {
                     sk: pageNumber,
                     l: pageLength,
                     c: count,
-                    s:sort
+                    s:sort,
+                    f:fields
                 },
                 cache: false,
                 ignoreLoadingBar: true
