@@ -12,7 +12,7 @@
                         <div class="row">
 
 
-                            <div class="col-md-4" ng-repeat="project in projects">
+                            <div class="col-md-12">
                                 <!-- Widget: user widget style 1 -->
                                 <div class="box box-widget widget-user">
                                     <!-- Add the bg color to the header using any of the bg-* classes -->
@@ -41,14 +41,12 @@
                                                 <!-- /.description-block -->
                                             </div>
                                             <!-- /.col -->
-                                            <div class="col-sm-4">
-                                                <a ng-href="/translation/{{project.name}}">
-                                                    <div class="description-block">
-                                                        <h5 class="description-header"></h5>
-                                                        <span class="description-text">Translation</span>
-                                                    </div>
-                                                </a>
-                                            </div>
+                                            <!-- <div class="col-sm-4">
+                                                <div class="description-block">
+                                                    <h5 class="description-header">35</h5>
+                                                    <span class="description-text">PRODUCTS</span>
+                                                </div>
+                                            </div> -->
                                             <!-- /.col -->
                                         </div>
                                         <!-- /.row -->
@@ -57,6 +55,49 @@
                                 <!-- /.widget-user -->
                             </div>
 
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Previous Releases</label>
+                                    <select class="form-control" ng-options="release.tag_name for release in releases" ng-model="previousRelease">
+                                    </select>
+                                  </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Current Releases</label>
+                                    <span class="form-control">{{latestRelease.tag_name}}</span>
+                                  </div>
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary" ng-click="showTranslationFiles()">Show Files</button>
+                                <a ng-if="previousRelease" target="_blank" type="submit" class="btn btn-primary" 
+                                    ng-click1="showTranslationFiles()"
+                                    ng-href="{{'/api/git/'+project.name +'?zip=true&branch=' + latestRelease.tag_name +'&date='+previousRelease.created_at;}}">Download Zip</a>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box">
+                                    <div class="box-body table-responsive no-padding">
+                                <table class="table table-hover table-stripped">
+                                    <tr>
+                                        <th>File</th>
+                                        <th>File Path</th>
+                                    </tr>
+                                    <tr ng-repeat="file in translationFiles">
+                                        <td ng-bind="file.name"></td>
+                                        <td ng-bind="file.path"></td>
+                                    </tr>
+                                </table>
+                                </div></div>
+                            </div>
                         </div>
                     </div>
                 </div>
