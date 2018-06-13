@@ -19,7 +19,7 @@
 
                 if($scope.previousRelease){
                     // var compareBranch = _.where($scope.releases, {tag_name:$scope.previousRelease});
-                    var url = '/api/git/'+ $scope.project.name +'?branch=' + $scope.latestRelease.tag_name +'&date='+$scope.previousRelease.created_at;
+                    var url = '/translation-api/git/'+ $scope.project.name +'?branch=' + $scope.latestRelease.tag_name +'&date='+$scope.previousRelease.created_at;
                     $q.when($http.get(url))
                     .then(function(result){
                         $scope.translationFiles          = result.data;

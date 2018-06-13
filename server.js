@@ -7,6 +7,7 @@ process.on('SIGTERM', ()=>process.exit());
 var express     = require('express');
 var app = express();
 var proxy   = require('http-proxy').createProxyServer({});
+var gitQuery =  require('./app/api/git-query.js')();
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -22,7 +23,7 @@ if(!process.env.API_URL) {
     console.warn('warning: evironment API_URL not set. USING default (https://api.cbd.int:443)');
 }
 
-var apiUrl = process.env.API_URL || 'https://api.cbd.int:443';
+var apiUrl = process.env.API_URL || 'https://api.cbddev.xyz:443';
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
 
 console.info(`info: www.cbd.int/management`);
@@ -36,8 +37,7 @@ app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCu
 //      proxy.web(req, res, { target: 'http://localhost:8000', changeOrigin: true, secure:false })
 //     });
 
-var gitQuery =  require('./app/api/git-query.js')();
-app.all('/api/git/:repository',async (req, res) => {
+app.all('/translation-api/git/:repository',async (req, res) => {
     await gitQuery(req, res)
 });
 
