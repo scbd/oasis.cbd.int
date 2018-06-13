@@ -106,8 +106,9 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 },
                 $scope.document.tags = _.pluck($scope.article.tags, "_id");
                 $scope.document.customTags = _.compact(_.map($scope.article.customTags, function(t){
-                                                if(t._id || typeof t == 'string')return t._id;
-                                                else if(t.isTag) return t.title;
+                                                if(t._id)                       return t._id;
+                                                else if(typeof t == 'string')   return t;
+                                                else if(t.isTag)                return t.title;
                                             }));
 
                 // return;
