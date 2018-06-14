@@ -236,8 +236,8 @@
                                         <h3>{{::shot.title|lstring}}</h3>
                                         <div class="description" ng-bind-html="::article.content |lstring | limitTo:100|unsafe"></div>
                                     </div>
-                                    <div ng-if="isAuthorizedForActions">
-                                        <hr />
+                                    <div ng-if="isAuthorizedForActions" style="border-top: 1px solid #eee">
+                                        <div>&nbsp; updated on {{article.meta.modifiedOn|formatDate}}</div>
                                         <div class="btn-group pull-right">
                                             <a class="btn" href="#" ng-click="delete(article)">
                                                 <i class="fa fa-remove" />

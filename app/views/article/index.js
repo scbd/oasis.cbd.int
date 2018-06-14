@@ -49,8 +49,14 @@
                 }
                 // if($scope.customTags.length>0)
                 //     return;
-                var queryParam = {"title.en" : query };
-                genericService.query('v2017', schema+'/search', queryParam, 0, 100, {"title.en":1})
+                var queryOptions = {
+                        query       : { "title.en" : query }, 
+                        pageNumber  : 0,
+                        pageLength  : 100,
+                        sort        : {"title.en":1},
+                        field       : {"_id":1, "title":1}
+                    };
+                genericService.query('v2017', schema+'/search', queryOptions )
                 .then(function (response) {
                     $scope[tableName].length = 0;
                 
@@ -99,40 +105,33 @@
             $scope.searchArticles = function(search){
                 // console.log(search);
 
-                var query = {
-                    $lookup : [],
-                    $match  : { $and : []}
-                };
+                var query =  { $and : []};
                 if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0)
                     query=undefined;
-                //     return;
-
-
-                // if(search.tags || search.customTags){
-                //     query.$lookup = [];
-                // }
 
                 if(search.titleContent && search.titleContent!=''){
-                    query.$match.$and.push({"$or" : [{"title.en": search.titleContent}, {"content.en": search.titleContent}]});
+                    query.$and.push({"$or" : [{"title.en": search.titleContent}, {"content.en": search.titleContent}]});
                 }
 
                 if(search.tags && search.tags.length>0){
-                    //query.$lookup.push({"from": "article-tags","localField": "tags","foreignField": "_id","as": "tags"});
-                    query.$match.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
+                   query.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
                 }
                 if(search.customTags && search.customTags.length>0){
-                    //query.$lookup.push({"from": "article-custom-tags","localField": "customTags","foreignField": "_id","as": "customTags"});
-                    query.$match.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
+                    query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
                 }
-                if(query && query.$lookup.length == 0 )
-                    query.$lookup = undefined;
+                
                 
                 currentQuery = query;
                 currentPage = 0;
                 $scope.articles=[];
                 // angularGridInstance.gallery.refresh();
 
-                $q.when(genericService.query('v2017', 'articles'+ (query ? '/search':''), query, undefined, undefined, undefined, 1))
+                var queryOptions = { ag : [  { $count    : 'count' }  ]};
+
+                if(query && Object.keys(query).length>0)
+                    queryOptions.ag.push({ $match    : query});
+
+                $q.when(genericService.query('v2017', 'articles'+ (query ? '/search':''), queryOptions ))
                .then(function(result){
                     $scope.articlesCount = articlesCount = result.count;
                     
@@ -156,11 +155,27 @@
             $scope.updateScrollPage = function(query){
                 if($scope.isLoading || articlesCount<currentPage)
                     return;
+
                 $scope.isLoading = true;
+
+                var queryOptions = {query : (query||currentQuery),
+                    pageNumber:currentPage,
+                    pageLength:pageSize,
+                    sort:{"meta.modifiedOn":-1},
+                    fields:{"_id":1,"title.en":1, "content.en":1, coverImage:1, 'meta.modifiedOn':1}
+                };
                 
-                return genericService.query('v2017', 'articles' + ((query||currentQuery)? '/search':''), query||currentQuery, currentPage, pageSize, 
-                            {"meta.modifiedOn":-1}, 0,
-                            {"_id":1,"title.en":1, "content.en":1, coverImage:1})
+                if(queryOptions.query && Object.keys(queryOptions.query).length>0){
+                    var ag = [{ $sort   : queryOptions.sort},
+                            { $match    : queryOptions.query},
+                            { $skip     : currentPage },
+                            { $limit    : pageSize },
+                            { $project  : queryOptions.fields }];
+
+                    queryOptions = { ag : ag };
+                }
+
+                return genericService.query('v2017', 'articles' + ((query||currentQuery) ? '/search':''), queryOptions)
                         .then(function(data){
                             if(!$scope.articles)
                                 $scope.articles=[];
@@ -172,7 +187,7 @@
             }
 
 
-            $q.all([authentication.getUser(), genericService.query('v2017', 'articles', undefined, undefined, undefined, undefined, 1)])
+            $q.all([authentication.getUser(), genericService.query('v2017', 'articles', {count:1})])
                 .then(function (results) {
                     var user = results[0];
                     if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
