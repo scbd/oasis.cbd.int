@@ -78,7 +78,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 // if($scope.customTags.length>0)
                 //     return;
                 var queryParam = {"title.en" : query };
-                genericService.query('v2017', schema+'/search', queryParam, 0, 100, {"title.en":1})
+                genericService.query('v2017', schema+'/search', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
                 .then(function (response) {
                     $scope[tableName].length = 0;
                 

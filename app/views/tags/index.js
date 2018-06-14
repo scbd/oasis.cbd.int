@@ -5,7 +5,7 @@
     return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', '$route',
         function ($scope, $http, genericService, $q, $location, $timeout, $route) {
         
-            $q.when(genericService.query('v2017', $route.current.params.schema, {}, 0, 100, {"title.en":1}))
+            $q.when(genericService.query('v2017', $route.current.params.schema, {pageNumber:0, pageLength:100, fields:{"title.en":1}}))
                 .then(function (data) {
                     $scope.tags = data;                   
                 });;            

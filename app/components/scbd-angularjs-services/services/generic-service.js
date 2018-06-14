@@ -53,19 +53,22 @@ define(['app'], function(app) {
         //===========================
         //
         //===========================
-        function query(version, schema, query, pageNumber, pageLength, sort, count, fields) {
-            var q;
-            if(query)
-                q = JSON.stringify(query);
+        function query(version, schema, options) {
+            
+            if(options.query)
+                options.query = JSON.stringify(options.query);
+            if(options.ag)
+                options.ag = JSON.stringify(options.ag);
 
             return $http.get("/api/"+version+"/"+schema, {
                 params: {
-                    q: q,
-                    sk: pageNumber,
-                    l: pageLength,
-                    c: count,
-                    s:sort,
-                    f:fields
+                    q   :   options.query,
+                    sk  :   options.pageNumber,
+                    l   :   options.pageLength,
+                    c   :   options.count,
+                    s   :   options.sort,
+                    f   :   options.fields,
+                    ag  :   options.ag
                 },
                 cache: false,
                 ignoreLoadingBar: true
