@@ -233,7 +233,7 @@
                                 ng-click="showArticle(article)" style="cursor:pointer">
                                     <div ng-if="article.coverImage.url" class="img" style="background-image: url({{::getSizedImage(article.coverImage.url, '200x200')}});"></div>
                                     <div class="inside">                                        
-                                        <h3>{{::shot.title|lstring}}</h3>
+                                        <h3>{{::article.title|lstring}}</h3>
                                         <div class="description" ng-bind-html="::article.content |lstring | limitTo:100|unsafe"></div>
                                     </div>
                                     <div ng-if="isAuthorizedForActions" style="border-top: 1px solid #eee">
