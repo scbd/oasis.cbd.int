@@ -1,7 +1,7 @@
 define(['require', 'app', 'angular'], function (require, app, angular) {
     'use strict';
 
-    var baseUrl = require.toUrl('');
+    var baseUrl = require.toUrl('').replace(/\?v=.*$/,'');
 
     app.provider('extendedRoute', ["$routeProvider", function ($routeProvider) {
 
