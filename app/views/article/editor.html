@@ -67,6 +67,12 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>Summary</label>
+                                    <input type="text" class="form-control my-colorpicker1 colorpicker-element" ng-model="document.summary.en">
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
                                     <label> Tags</label>
                                     <ui-select multiple ng-model="article.tags" theme="bootstrap" ng-disabled="disabled">
                                         <ui-select-match placeholder="tags...">
@@ -89,6 +95,21 @@
                                             <span>{{getTerm($item)}}</span>
                                         </ui-select-match>
                                         <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
+                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
+                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Admin Tags</label>
+                                    <ui-select multiple tagging="tagTransform" tagging-label="(Create new tag)" ng-model="article.adminTags" theme="bootstrap"
+                                        ng-disabled="disabled">
+                                        <ui-select-match placeholder="admin tags...">
+                                            <span>{{getTerm($item)}}</span>
+                                        </ui-select-match>
+                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search, 'articleadmintags')" refresh-delay="500" repeat="tag in articleadmintags track by $index">
                                             <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
                                             <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
                                         </ui-select-choices>
