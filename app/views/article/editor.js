@@ -1,44 +1,60 @@
 ﻿
 define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
- 'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 'scbd-angularjs-filters', 'ng-file-upload'], 
+ 'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
+ 'scbd-angularjs-services/storage', 'scbd-angularjs-filters', 'ng-file-upload'], 
  function (app, classicEditor, template, _) {
     
-    app.directive('editor', ['$q', 'apiToken', function($q, apiToken){
+
+    app.directive('editor', ['$q', 'apiToken', '$http', 'IStorage', function($q, apiToken, $http, storage){
+        
+        class UploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+            upload() {                 
+                    var data = new FormData();
+                    data.append('file', this.loader.file);
+
+                    return $http.post('/api/v2015/temporary-files', data, {
+                        headers: {'Content-Type': undefined}
+                    })
+                    .then(function(success) {
+                            return success.data;
+                    })
+                    .catch(function(error) {  
+                        console.log(error);                         
+                        throw error;
+                    });
+            }
+            abort() {
+            }
+        }
+        
         return{
             restrict: 'EA',
             template : template,
-            link: function ($scope, $element, $attrs) {
-                var editor;
-                $q.when(apiToken.get())
-                .then(function(token){
-                    //available toolbar : code, 'emoji'
-                    var editorOptions = {
-                        plugins1: [],
-                        toolbar: [ 'headings', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'undo', 'redo' ],
-                        cloudServices: {
-                            uploadUrl : '/api/v2015/temporary-files',
-                            token: 'Ticket '+token.token,
-                            tokenUrl1: 'Ticket '+token.token
-                        },
-                        image: {
-                            toolbar: ['imageTextAlternative', '|', 'imageStyleAlignLeft', 'imageStyleFull', 'imageStyleAlignRight'],
-                            styles: [
-                                'imageStyleFull',
-                                'imageStyleAlignLeft',
-                                'imageStyleAlignRight'
-                            ]
-                        }
+            link: function ($scope, $element, $attrs) {                
+                //available toolbar : code, 'emoji'
+                var editorOptions = {
+                    plugins1: [],
+                    toolbar: [ 'heading', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo' ],
+                    image: {
+                        toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
+                        styles  : ['full', 'alignLeft', 'alignRight']
                     }
-                    classicEditor.create($element.find('#inline-editor')[0], editorOptions)
-                    .then(ed => {
-                        console.log(ed);
-                        $scope.editor = ed;
-                        $scope.loadArticle();
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
+                }
+                classicEditor.create($element.find('#inline-editor')[0], editorOptions)
+                .then(ed => {
+                    // console.log(Array.from( ed.ui.componentFactory.names()))
+                    ed.plugins.get('FileRepository').createUploadAdapter = (loader)=>{
+                        return new UploadAdapter(loader);
+                    };
+                    $scope.editor = ed;
+                    $scope.loadArticle();
                 })
+                .catch(error => {
+                    console.error(error);
+                });
 
             }
         }
