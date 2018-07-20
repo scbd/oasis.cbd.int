@@ -23,12 +23,8 @@ require.config({
         'angular-animate'           : 'libs/angular-animate/angular-animate.min',
         'angular-flex'              : 'libs/angular-flex/angular-flex',
         'ngAria'                    : 'libs/angular-aria/angular-aria.min',
-        'ngMaterial'                : 'libs/angular-material/angular-material.min',
-        'toastr'                    : 'libs/angular-toastr/dist/angular-toastr.tpls.min',
-        'ngDialog'                  : 'libs/ng-dialog/js/ngDialog.min',
-        'socket.io'                 : 'libs/socket.io-1.4.5/index',
         'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
-        'ck-editor'                 : 'https://cdn.ckeditor.com/ckeditor5/1.0.0-alpha.1/inline/ckeditor',
+        'ck-editor'                 : 'libs/ckeditor5/index',
         'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
@@ -48,9 +44,6 @@ require.config({
         'scbd-angularjs-filters'        : { 'deps': ['angular']},
         'scbd-angularjs-controls'       : { 'deps': ['angular', 'angular-sanitize', 'angular-localizer']},
         'ngAria'                        : { 'deps': ['angular'] },
-        'ngMaterial'                    : { 'deps': ['angular', 'angular-animate', 'ngAria'] },
-        'toastr'                        : { 'deps': ['angular', 'angular-animate', 'ngAria'] },
-        'ngDialog'                      : { 'deps': ['angular', 'css!libs/ng-dialog/css/ngDialog.min', 'css!libs/ng-dialog/css/ngDialog-theme-default.css'] },
         'select2'                       : { 'deps': ['angular', 'jquery'] },
         'angular-ui-select2'            : { 'deps': ['angular', 'select2']} ,
         'angulargrid'                   : { 'deps': ['angular']}
@@ -59,10 +52,8 @@ require.config({
         { name: 'scbd-branding'          , location : 'components/scbd-branding' },
         { name: 'scbd-angularjs-controls', location : 'components/scbd-angularjs-controls/form-control-directives', main : 'all-controls.js' },
         { name: 'scbd-angularjs-services', location : 'components/scbd-angularjs-services/services' },
-        { name: 'scbd-angularjs-filters',  location : 'components/scbd-angularjs-services/filters' },
-        { name: 'ammap', main: 'ammap',    location : 'libs/ammap3/ammap' }
-    ],
-    urlArgs: 'v=' + window.appVersion
+        { name: 'scbd-angularjs-filters',  location : 'components/scbd-angularjs-services/filters' }
+    ]
 });
 
 define("_slaask", window._slaask);
