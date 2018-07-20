@@ -48,11 +48,12 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
         function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout) {
             $scope.articletags = [];
             $scope.articlecustomtags = [];
+            $scope.articleadmintags = [];
 
             $scope.article = {
-                tags : [],
-                customTags : [],
-                mCustomTags : []
+                tags        : [],
+                customTags  : [],
+                adminTags   : []
             }
             $scope.loadArticle = function(){
                 if($route.current.$$route && $route.current.$$route.isNew)
@@ -62,23 +63,23 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                     .then(function (data) {
                         $scope.document = data;
                         $scope.editor.setData(data.content.en)
-                        $scope.article.tags = _.map(data.tags, function(t){ return {_id:t}});
-                        $scope.article.customTags = _.map(data.customTags, function(t){ return t});
-                        $scope.article.mCustomTags = _.map(data.customTags, function(t){ return t});
+                        $scope.article.tags         = _.map(data.tags,      function(t){ return {_id:t}});
+                        $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
+                        $scope.article.adminTags    = _.map(data.adminTags, function(t){ return t});
                     });
                 }
             }
 
-            $scope.funcAsync = function (schema, query) {
-                var tableName = schema.replace(/-/g, '')
+            $scope.funcAsync = function (schema, query, table) {
+                var tableName = table || schema.replace(/-/g, '')
                 if(!query || query == ''){
                     // $scope[tableName].length = 0;
                     return;
                 }
                 // if($scope.customTags.length>0)
                 //     return;
-                var queryParam = {"title.en" : query };
-                genericService.query('v2017', schema+'/search', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
+                var queryParam = {"title.en" : { "$$startsWith" : query }};
+                genericService.query('v2017', schema, {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
                 .then(function (response) {
                     $scope[tableName].length = 0;
                 
@@ -87,6 +88,8 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                         var recordsToVerify = [];
                         if(tableName == 'articlecustomtags')
                             recordsToVerify = $scope.article.customTags;
+                        if(tableName == 'admintags')
+                            recordsToVerify = $scope.article.adminTags;
                         else
                             recordsToVerify = $scope.article.tags;
                         if(!_.some(recordsToVerify, function(eTag){return eTag == tag._id})){
@@ -101,15 +104,20 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
             }
 
             $scope.submit = function () {
+
+                function pluckTags(tags){
+                    return _.compact(_.map(tags, function(t){
+                        if(t._id)                       return t._id;
+                        else if(typeof t == 'string')   return t;
+                        else if(t.isTag)                return t.title;
+                    }));
+                }
                 $scope.document.content = {
                     en: $scope.editor.getData()
                 },
-                $scope.document.tags = _.pluck($scope.article.tags, "_id");
-                $scope.document.customTags = _.compact(_.map($scope.article.customTags, function(t){
-                                                if(t._id)                       return t._id;
-                                                else if(typeof t == 'string')   return t;
-                                                else if(t.isTag)                return t.title;
-                                            }));
+                $scope.document.tags        = _.pluck($scope.article.tags, "_id");
+                $scope.document.customTags  = pluckTags($scope.article.customTags);
+                $scope.document.adminTags   = pluckTags($scope.article.adminTags);
 
                 // return;
                 var operation;
@@ -126,6 +134,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 // 
             }
 
+            ////tags from third party
             $scope.getTags = function () {
                 $scope.tags = [];
                 $q.when($http.post('api/v2017/articles/tags',{ data: editor.getData()}))
