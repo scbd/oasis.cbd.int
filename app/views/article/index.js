@@ -56,7 +56,7 @@
                         sort        : {"title.en":1},
                         field       : {"_id":1, "title":1}
                     };
-                genericService.query('v2017', schema+'/search', queryOptions )
+                genericService.query('v2017', schema, queryOptions )
                 .then(function (response) {
                     $scope[tableName].length = 0;
                 
@@ -110,7 +110,8 @@
                     query=undefined;
 
                 if(search.titleContent && search.titleContent!=''){
-                    query.$and.push({"$or" : [{"title.en": search.titleContent}, {"content.en": search.titleContent}]});
+                    query.$and.push({"$or" : [{"title.en": { "$$contains" : search.titleContent}}, 
+                                              {"content.en": { "$$contains" : search.titleContent}}]});
                 }
 
                 if(search.tags && search.tags.length>0){
@@ -126,12 +127,15 @@
                 $scope.articles=[];
                 // angularGridInstance.gallery.refresh();
 
-                var queryOptions = { ag : [  { $count    : 'count' }  ]};
+                var queryOptions = { ag : [ ]};
 
                 if(query && Object.keys(query).length>0)
                     queryOptions.ag.push({ $match    : query});
+                
+                queryOptions.ag.push({ $count    : 'count' });
+                    
 
-                $q.when(genericService.query('v2017', 'articles'+ (query ? '/search':''), queryOptions ))
+                $q.when(genericService.query('v2017', 'articles', queryOptions ))
                .then(function(result){
                     $scope.articlesCount = articlesCount = result.count;
                     
@@ -175,7 +179,7 @@
                     queryOptions = { ag : ag };
                 }
 
-                return genericService.query('v2017', 'articles' + ((query||currentQuery) ? '/search':''), queryOptions)
+                return genericService.query('v2017', 'articles', queryOptions)
                         .then(function(data){
                             if(!$scope.articles)
                                 $scope.articles=[];
