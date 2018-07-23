@@ -50,7 +50,7 @@
                 // if($scope.customTags.length>0)
                 //     return;
                 var queryOptions = {
-                        query       : { "title.en" : query }, 
+                        query       : { "title.en" : {"$$startsWith":query }}, 
                         pageNumber  : 0,
                         pageLength  : 100,
                         sort        : {"title.en":1},
@@ -137,7 +137,8 @@
 
                 $q.when(genericService.query('v2017', 'articles', queryOptions ))
                .then(function(result){
-                    $scope.articlesCount = articlesCount = result.count;
+                   
+                    $scope.articlesCount = articlesCount = (result[0]||{}).count||0;
                     
                     $.when($scope.updateScrollPage(query))
                     .then(function(){
