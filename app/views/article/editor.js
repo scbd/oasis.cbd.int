@@ -104,7 +104,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                         var recordsToVerify = [];
                         if(tableName == 'articlecustomtags')
                             recordsToVerify = $scope.article.customTags;
-                        if(tableName == 'admintags')
+                        if(tableName == 'articleadmintags')
                             recordsToVerify = $scope.article.adminTags;
                         else
                             recordsToVerify = $scope.article.tags;
