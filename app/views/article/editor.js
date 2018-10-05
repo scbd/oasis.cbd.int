@@ -5,7 +5,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
  function (app, classicEditor, template, _) {
     
 
-    app.directive('editor', ['$q', 'apiToken', '$http', 'IStorage', function($q, apiToken, $http, storage){
+    app.directive('editor', ['$q', 'apiToken', '$http', 'IStorage',  function($q, apiToken, $http, storage){
         
         class UploadAdapter {
             constructor(loader) {
@@ -60,8 +60,8 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
         }
     }])
 
-    return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout',
-        function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout) {
+    return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
+        function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
             $scope.articletags = [];
             $scope.articlecustomtags = [];
             $scope.articleadmintags = [];
@@ -145,7 +145,11 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 }
                 $q.when(operation)
                 .then(function(result){
-                    $location.path('/articles')
+                    var search = $location.search()
+                    if(search.returnUrl)
+                        $window.location = search.returnUrl;
+                    else    
+                        $location.path('/articles')
                 })
                 // 
             }
