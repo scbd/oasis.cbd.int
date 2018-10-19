@@ -37,7 +37,28 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 //available toolbar : code, 'emoji'
                 var editorOptions = {
                     plugins1: [],
-                    toolbar: [ 'heading', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload', 'undo', 'redo' ],
+                    alignment: {
+                        options: [ 'left', 'right' ]
+                    },
+                    highlight: {
+                        options: [
+                            {
+                                model: 'greenMarker',
+                                class: 'marker-green',
+                                title: 'Green marker',
+                                color: 'var(--ck-highlight-marker-green)',
+                                type: 'marker'
+                            },
+                            {
+                                model: 'redPen',
+                                class: 'pen-red',
+                                title: 'Red pen',
+                                color: 'var(--ck-highlight-pen-red)',
+                                type: 'pen'
+                            }
+                        ]
+                    },
+                    toolbar: [ 'heading', 'fontFamily', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'alignment', 'highlight', 'insertTable', '|', 'imageUpload', 'mediaEmbed', '|', 'undo', 'redo' ],
                     image: {
                         toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
                         styles  : ['full', 'alignLeft', 'alignRight']
