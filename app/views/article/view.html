@@ -1,4 +1,4 @@
-﻿<div>
+﻿<div class="ck-editor__editable" style="border:none">
     <link rel="stylesheet" href="app/dist/ckeditor5/style.css" />
     <style>
     </style>
@@ -78,7 +78,10 @@
                 <div class="box" style="border-top:none;margin-left: 15%;margin-right: 15%;width: 70%;">
 
                     <div class="box-body">
-
+                        <div ng-if="canEdit">
+                            <a class="btn btn-default btn-xs" ng-href="/articles/{{article._id}}/edit">Edit</a>
+                            <br><br>
+                        </div>  
                         <div class="image-credit-wrapper">
                             <span class="image-credit" ng-if="article.coverImage.credits">{{article.coverImage.credits}}</span>
                             <img class="img-responsive" ng-src="{{::getSizedImage(article.coverImage.url,'1200x800')}}">
