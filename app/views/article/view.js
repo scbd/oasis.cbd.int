@@ -3,6 +3,7 @@
    
     return ['$scope', '$http', 'IGenericService', '$q', '$route', '$rootScope', '$location',
         function ($scope, $http, genericService, $q, $route, $rootScope, $location) {
+            $scope.baseUrl = window.baseUrl||'/';
             
             user = $rootScope.user;
             $scope.canEdit = ~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor');
