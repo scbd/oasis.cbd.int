@@ -8,6 +8,7 @@ var express     = require('express');
 var app = express();
 var proxy   = require('http-proxy').createProxyServer({});
 var gitQuery =  require('./app/api/git-query.js')();
+var databaseTable =  require('./app/api/database-table.js')();
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -37,12 +38,10 @@ app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCu
 //      proxy.web(req, res, { target: 'http://localhost:8000', changeOrigin: true, secure:false })
 //     });
 
-app.all('/translation-api/git/:repository',async (req, res) => {
-    await gitQuery(req, res)
-});
+app.get('/translation-api/git/:repository',         gitQuery);
+app.get('/translation-api/database-table/:table',   databaseTable);
 
 app.all('/api/*', (req, res) => proxy.web(req, res, { target: apiUrl, changeOrigin: true, secure:false }));
-
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
 // CONFIGURE TEMPLATE

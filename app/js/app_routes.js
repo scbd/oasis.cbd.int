@@ -16,7 +16,10 @@ define(['app', 'lodash', 'js/extended-route-provider', 'services/app-config-serv
                when('/',                { templateUrl: 'views/home/index.html', label:'OASIS', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                
                when('/projects',                    { templateUrl: 'views/projects/index.html', label:'Projects', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
-               when('/translation/:repository',     { templateUrl: 'views/translation/index.html', label:'Translation', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/translation',                         { templateUrl: 'views/translation/index.html', label:'Translation', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+               when('/translation/project/:repository',     { templateUrl: 'views/translation/project.html', label:'Projects', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+               when('/translation/database-tables',         { templateUrl: 'views/translation/database-tables.html', label:'Translation', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+               when('/translation/database-tables/:table',  { templateUrl: 'views/translation/table.html', label:'Translation', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
                
                when('/articles',                    { templateUrl: 'views/article/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                when('/articles/new',                { templateUrl: 'views/article/editor.html', label:'Article Editor', isNew:true, resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).

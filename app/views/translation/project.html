@@ -1,0 +1,144 @@
+﻿<div>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box1">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">SCBD Projects</h3>
+                    </div>
+                    <div class="box-body1" id="editor">
+
+                        <div class="row">
+
+
+                            <div class="col-md-12">
+                                <!-- Widget: user widget style 1 -->
+                                <div class="box box-widget widget-user">
+                                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                                    <div class="widget-user-header bg-aqua-active">
+                                        <h3 class="widget-user-username">{{project.name}}</h3>
+                                        <!-- <h5 class="widget-user-desc">Founder &amp; CEO</h5> -->
+                                    </div>
+                                    <div class="widget-user-image">
+                                        <img class="img-circle" src="{{project.owner.avatar_url}}" alt="Repo Avatar">
+                                    </div>
+                                    <div class="box-footer">
+                                        <div class="row">
+                                            <div class="col-sm-4 border-right">
+                                                <div class="description-block">
+                                                    <h5 class="description-header">{{project.stargazers_count}}</h5>
+                                                    <span class="description-text">Star Count</span>
+                                                </div>
+                                                <!-- /.description-block -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <div class="col-sm-4 border-right">
+                                                <div class="description-block">
+                                                    <h5 class="description-header">{{project.forks_count}}</h5>
+                                                    <span class="description-text">Forks</span>
+                                                </div>
+                                                <!-- /.description-block -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <!-- <div class="col-sm-4">
+                                                <div class="description-block">
+                                                    <h5 class="description-header">35</h5>
+                                                    <span class="description-text">PRODUCTS</span>
+                                                </div>
+                                            </div> -->
+                                            <!-- /.col -->
+                                        </div>
+                                        <!-- /.row -->
+                                    </div>
+                                </div>
+                                <!-- /.widget-user -->
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Previous Releases</label>
+                                    <select class="form-control" ng-options="release.tag_name for release in releases"
+                                        ng-model="translation.previousRelease">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Current Releases</label>
+                                    <span class="form-control">{{latestRelease.tag_name}}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Ignore files</label>
+                                    <input type="text" class="form-control my-colorpicker1 colorpicker-element" ng-model="translation.ignoreFiles">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Allowed file extenstions</label>
+                                    <input type="text" class="form-control my-colorpicker1 colorpicker-element" ng-model="translation.allowedExtenstions">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="checkbox" class="" ng-model="translation.allFiles"> <label>All Files</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                               
+                            </div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary" ng-click="showTranslationFiles()">Show
+                                    Files</button>
+                                <a ng-if="translation.files.length && !fetchingFiles" target="_blank" type="submit" class="btn btn-primary"
+                                    ng-click1="showTranslationFiles()" ng-href="{{'/translation-api/git/'+project.name +'?zip=true&branch=' + latestRelease.tag_name +'&date='+(translation.allFiles ? udefined : previousRelease.created_at)}}">Download
+                                    Zip</a>
+                            </div>
+                           
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="box">
+                                    <div class="box-body table-responsive no-padding">
+                                        <table class="table table-hover table-stripped">
+                                            <tr>
+                                                <th>File</th>
+                                                <th>File Path</th>
+                                                <td></td>
+                                            </tr>
+                                            <tr ng-if="fetchingFiles">
+                                                <td colspan="3" style="padding-left:45%">
+                                                    <i class="fa fa-spinner fa-spin"></i> Loading...
+                                                </td>
+                                            </tr>
+                                            <tr ng-repeat="file in translation.files | orderBy:'file.path'" ng-if="!fetchingFiles">
+                                                <td ng-bind="file.name"></td>
+                                                <td ng-bind="file.path"></td>
+                                                <td>
+                                                    <a target="_blank" ng-href="https://github.com/scbd/{{project.name}}/blob/{{latestRelease.tag_name}}/{{file.path}}">
+                                                        <i class="fa fa-search btn btn-default"></i></a>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>
