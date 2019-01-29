@@ -1,42 +1,43 @@
 ﻿
-var git = require('simple-git/promise');
-var path = require('path');
-var _ = require('lodash');
-var fs = require('fs');
-var zip = require('express-zip');
+let git = require('simple-git/promise');
+let path = require('path');
+let _ = require('lodash');
+let fs = require('fs');
+let EasyZip = require('easy-zip').EasyZip;
 const util = require('util');
 
 const stat = util.promisify(fs.stat);
 const mkdir = util.promisify(fs.mkdir);
 
-var basePath = __dirname + '/repositories/';
+let basePath = __dirname + '/repositories/';
 
 
 module.exports = function gitQuery(options){
 
     return async function get(req, res, next){
 
-        var q = req.query;
+        let q = req.query;
         
-        var repositoryName = req.params.repository;
-        var files = await getUpdatesFiles(repositoryName, q.branch, q.date);
+        let repositoryName = req.params.repository;
+        let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtenstions);
 
         if(q.zip){
-            let compressedFile = await zipFile(repositoryName, files)
-
-            res.zip(compressedFile, `${q.branch}.zip`);
-            return;
+            let compressedFiles = await zipFile(repositoryName, files, q.branch);
+            let zip4 = new EasyZip();
+            return zip4.batchAdd(compressedFiles, function(){
+                return zip4.writeToResponse(res,`${q.branch}`);
+            });
         }
         res.status(200).send(files);
     }
 
 
-    async function getUpdatesFiles(repositoryName, baseBranch, date) {
+    async function getUpdatesFiles(repositoryName, baseBranch, date, ignoreFiles, allowedExtenstions) {
 
         try{
             
-            var  dateFrom;
-            var gitUrl = 'https://github.com/scbd/';
+            let  dateFrom;
+            let gitUrl = 'https://github.com/scbd/';
             
             let baseDir;
             try {
@@ -64,48 +65,48 @@ module.exports = function gitQuery(options){
             } else {
                 gitObject = git(basePath + repositoryName);
                 await gitObject.checkout('master')
-                var r = await(gitObject.pull('origin'));
-                console.log(r);
+                let r = await(gitObject.pull('origin'));
             }
 
-            // gitObject.log({'--after':"2017-02-13T16:36:00-02:00"}, function(a, b){
-            //     console.log(a,b);
-            // });
 
             await gitObject.checkout('tags/'+baseBranch)
 
-            var modifieldfiles;
-            modifieldfiles = await gitObject.log(['--after='+new Date(date).toUTCString(), "--name-only"]);
-            // , function (a, b) {
-            //     modifieldfiles = b;
-            // });
-            //     var repoExists = await (gitObject.listRemote(['--after'])); '--name-only':" | sed '/^\s*$/d' | sort | uniq -u"
-            // console.log(r);
-            var modifiedFileInBranch = [];
-
-            var allowedExtenstion = [".html", ".json"];
-            var ignoreFiles = ["bower.json", "packages.json"];
-
-            _.each(modifieldfiles.all, function(file){
-                if(file.hash){
-                    // if(/(\.html|\.json)/.test(file.hash)){
-                    //         modifiedFileInBranch.push(_.filter(file.hash.split('\n'), function(ext){
-                    //             return /(\.html|\.json)$/.test(ext)
-                    //         }));
-                    // }
-        
-                    var r = file.hash.replace(/\'/g, '')
-                        .replace(/\n/g, ';')
-                        .split(';');
-                    modifiedFileInBranch.push( _.uniq(r).filter(function (name) {
-                        var ext = path.extname(name);
-                        return _.indexOf(allowedExtenstion, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
-                    }));
-                }
-            })
+            let modifieldfiles;
             
-            console.log(_.uniq(_.flatten(modifiedFileInBranch)));
-            // console.log(modifieldfiles);
+            if(date ==undefined || _.isEmpty(date))
+                modifieldfiles = await gitObject.raw(['ls-files']);
+            else 
+                modifieldfiles = await gitObject.log(['--after='+new Date(date).toUTCString(), "--name-only"]);
+
+            let modifiedFileInBranch = [];
+
+            allowedExtenstions   = (allowedExtenstions||".html,.json").replace(/\s/g, '').split(',');
+            ignoreFiles         = (ignoreFiles || "bower.json, package.json,.bower.json,.awsbox.json").replace(/\s/g, '').split(',');
+
+            if(modifieldfiles.all){
+                _.each(modifieldfiles.all, function(file){
+                    if(file.hash){
+                                
+                        let r = file.hash.replace(/\'/g, '')
+                            .replace(/\n/g, ';')
+                            .split(';');
+                        modifiedFileInBranch.push( _.uniq(r).filter(function (name) {
+                            let ext = path.extname(name);
+                            return _.indexOf(allowedExtenstions, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
+                        }));
+                    }
+                })
+            }
+            else if(_.isString(modifieldfiles)){
+                let r = modifieldfiles.replace(/\'/g, '')
+                    .replace(/\n/g, ';')
+                    .split(';');
+                modifiedFileInBranch.push( _.uniq(r).filter(function (name) {
+                    let ext = path.extname(name);
+                    return _.indexOf(allowedExtenstions, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
+                }));
+            }
+            
 
             return _.map(_.uniq(_.flatten(modifiedFileInBranch)), function(file){
                 return {name : path.basename(file), path: file}
@@ -120,17 +121,18 @@ module.exports = function gitQuery(options){
 
     }
 
-    async function zipFile(repositoryName, translationFiles){
+    async function zipFile(repositoryName, translationFiles, branch){
 
-        var files = []
-        for (var i = 0; i < translationFiles.length; i++) {
-            var file = translationFiles[i];
+        let files = []
+        for (let i = 0; i < translationFiles.length; i++) {
+            let file = translationFiles[i];
             let fileExists
+            let filePath = repositoryName + "/" + file.path
             try {
-                fileExists = await stat(basePath + repositoryName + "/" + file.path);
+                fileExists = await stat(basePath + filePath);
             } catch (e) {}
             if (fileExists && fileExists.isFile()) {
-                files.push({path:basePath + repositoryName + "/" + file.path, name : file.name});
+                files.push({source:basePath + filePath, target : branch+'/'+filePath});
             } else {
                 console.log(file);
             }

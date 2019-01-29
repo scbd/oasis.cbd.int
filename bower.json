@@ -11,7 +11,7 @@
     "bootstrap": "3.1.1",
     "font-awesome": "4.2",
     "jquery": "2.2.4",
-    "lodash": "3.9.3",
+    "lodash": "4.17.11",
     "momentjs": "2.7.0",
     "ngLocalizer": "*",
     "require-css": "0.1.8",

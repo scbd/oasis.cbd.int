@@ -18,7 +18,7 @@ require.config({
         'domReady'                  : 'libs/requirejs-domready/domReady',
         'jquery'                    : 'libs/jquery/dist/jquery.min',
         'bootstrap'                 : 'libs/bootstrap/dist/js/bootstrap.min',
-        'lodash'                    : 'libs/lodash/lodash.min',
+        'lodash'                    : 'libs/lodash/dist/lodash.min',
         'moment'                    : 'libs/momentjs/min/moment-with-langs.min',
         'angular-animate'           : 'libs/angular-animate/angular-animate.min',
         'angular-flex'              : 'libs/angular-flex/angular-flex',

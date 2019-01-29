@@ -1,0 +1,8 @@
+﻿[
+    {
+        "name"      : "Articles",
+        "api"       : "/api/v2017/articles",
+        "fields"    : ["title", "content"],
+        "query"     : "ag.push({\"$match\": {'adminTags.title.en' : {$in : ['ABSCH-About']}}});"
+    }
+]
