@@ -99,9 +99,11 @@
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary" ng-click="showTranslationFiles()">Show
                                     Files</button>
-                                <a ng-if="translation.files.length && !fetchingFiles" target="_blank" type="submit" class="btn btn-primary"
-                                    ng-click1="showTranslationFiles()" ng-href="{{'/translation-api/git/'+project.name +'?zip=true&branch=' + latestRelease.tag_name +'&date='+(translation.allFiles ? udefined : previousRelease.created_at)}}">Download
-                                    Zip</a>
+                                <button ng-if="translation.files.length && !fetchingFiles" type="submit" class="btn btn-primary" 
+                                    ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
+                                    <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
+                                </button>   
+                                
                             </div>
                            
                         </div>

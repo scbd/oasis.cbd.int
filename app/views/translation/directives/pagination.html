@@ -1,0 +1,13 @@
+﻿<div>
+    <ul class="pagination ">
+        <li ng-hide="currentPage == 0">
+            <a translation-url href ng-click="actionSetPage(currentPage-1)">« Prev</a>
+        </li>
+        <li ng-repeat="n in range(pageCount)" ng-class="{active: n == currentPage}" ng-click="actionSetPage(n)">
+            <a translation-url href>{{n+1}}</a>
+        </li>
+        <li ng-hide="currentPage >= pageCount - 1">
+            <a  translation-url href ng-click="actionSetPage(currentPage+1)">Next »</a>
+        </li>
+    </ul>
+</div>
