@@ -11,6 +11,7 @@ function signedUrl (req, res) {
            
             if(!req.user || req.user.anonymous)
                 return res.status(401).send('You are not authorized to access this resource');
+                
             let data = req.query;
             data.expiry = new Date();
             data.expiry.setMinutes(data.expiry.getMinutes() + 5);
@@ -33,12 +34,12 @@ function signedUrl (req, res) {
     this.isValid = function(req, res, next) {
         try {
             if(!req.query || !req.query.hash)
-                return res.status(401).send('Url not signed');
+                return res.status(403).send('Url not signed');
                        
             var details = encryption.decrypt(req.query.hash)
             details = JSON.parse (details);
             if(!details.expiry || details.expiry < new Date())
-                return res.status(401).send('Invalid signed url hash');
+                return res.status(403).send('Invalid signed url hash');
             
             req.decryptedInfo = details;
             next();
