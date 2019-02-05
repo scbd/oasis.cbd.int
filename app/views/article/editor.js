@@ -152,7 +152,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 $scope.document.content = {
                     en: $scope.editor.getData()
                 },
-                $scope.document.tags        = _.pluck($scope.article.tags, "_id");
+                $scope.document.tags        = _.map($scope.article.tags, "_id");
                 $scope.document.customTags  = pluckTags($scope.article.customTags);
                 $scope.document.adminTags   = pluckTags($scope.article.adminTags);
 

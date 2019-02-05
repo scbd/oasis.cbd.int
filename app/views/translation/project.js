@@ -1,7 +1,7 @@
 ﻿define(['app', 'lodash'], function (app, _) {
     return ['$scope', '$http', '$q', '$routeParams',
     function ($scope, $http, $q, $routeParams) {
-            var baseUrl = window.baseUrl||'/';
+            var baseUrl = $scope.baseUrl = window.baseUrl||'/';
             var repository          = $routeParams.repository;
             var repositoryQuery     = $http.get('https://api.github.com/repos/scbd/' + repository);
             var releaseQuery        = $http.get('https://api.github.com/repos/scbd/' + repository +'/releases');
@@ -44,6 +44,31 @@
                         $scope.fetchingFiles = false;
                     });
 
+                }
+            }
+
+            $scope.dowloadFiles = function(){
+               
+                if($scope.translation.previousRelease){
+
+                    var url = baseUrl+'translation-api/git/'+ $scope.project.name;
+                    var params = {
+                        branch              : $scope.latestRelease.tag_name,
+                        date                : $scope.translation.previousRelease.created_at,
+                        ignoreFiles         : $scope.translation.ignoreFiles,
+                        allowedExtenstions  : $scope.translation.allowedExtenstions
+                    }
+                    if($scope.translation.allFiles)
+                        params.date = undefined;
+
+                    $scope.gettingSignedUrl = true;
+                    $http.get(url+'/signed-url', {params:params})
+                    .then(function(result){
+                        window.open(url+'/download?hash='+ result.data,'_new');
+                    })
+                    .finally(function(){
+                        $scope.gettingSignedUrl = false;
+                    })
                 }
             }
     }];

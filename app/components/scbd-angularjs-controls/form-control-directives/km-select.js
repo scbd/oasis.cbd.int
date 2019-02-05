@@ -321,7 +321,7 @@ function(app, angular, $, _, template) {
           });
 
           if ($scope.bindingType == "string" || $scope.bindingType == "string[]")
-            oBindings = _.pluck(oBindings, 'identifier');
+            oBindings = _.map(oBindings, 'identifier');
 
           if (!$scope.multiple)
             oBindings = _.first(oBindings);

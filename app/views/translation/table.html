@@ -31,7 +31,9 @@
                                
                             </div>
                             <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary" ng-click="dowloadFiles()">Download</button>                              
+                                <button ng-if="!fetchingFiles" type="submit" class="btn btn-primary" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
+                                    <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
+                                </button>                              
                             </div>
                            
                         </div>
@@ -40,6 +42,9 @@
                             <div class="col-md-12">
                                 <div class="box">
                                     <div class="box-body table-responsive no-padding ">
+                                            <div class="text-center" ng-if="translation.rowCount>0" pagination current-page="translation.currentPage" 
+                                                    page-count="translation.pageCount" on-page-change="onPageChange(page)"></div> 
+                                               
                                         <table class="table table-hover table-stripped table-bordered">
                                             <tr>
                                                 <th rowspan="2" >
