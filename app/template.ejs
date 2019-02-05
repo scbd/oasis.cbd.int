@@ -300,8 +300,8 @@ class="hold-transition skin-blue sidebar-mini">
 
   </div>
   <script>
-    window.baseUrl = '<%=baseUrl%>';
-     window.appVersion = '<%=gitVersion%>';
+    window.baseUrl = '<%=baseUrl.replace(/\/*$/, "") + "/" %>';
+    window.appVersion = '<%=gitVersion%>';
   </script>
   <script src="app/libs/requirejs/require.js?v=<%=gitVersion%>" data-main="app/js/boot.js?v=<%=gitVersion%>"></script>
 </body>

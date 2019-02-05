@@ -3,7 +3,7 @@
     return ['$scope', '$http', '$q', '$routeParams',
     function ($scope, $http, $q, $routeParams) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
-        $scope.baseUrl  = window.baseUrl||'/';
+        $scope.baseUrl  = window.baseUrl;
         
         $scope.translation = _.find(dbTables, {name:$routeParams.table})
         $scope.translation.languages = [];
@@ -60,14 +60,14 @@
 
             var translation = $scope.translation;
 
-            var url = baseUrl+'translation-api/database-table/'+translation.name ;
+            var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
             var filesForTranslation = _.map(_.filter($scope.translation.rows, {translate:true}), '_id');
 
             if(filesForTranslation.length > 0){
                 $scope.gettingSignedUrl = true;
                 $http.get(url+'/signed-url', {params:{ids:filesForTranslation}})
                 .then(function(result){
-                    window.open(url+'/download?hash='+ result.data,'_new');
+                    window.open(url+'/download?hash='+ encodeURIComponent(result.data),'_new');
                 })
                 .finally(function(){
                     $scope.gettingSignedUrl = false;

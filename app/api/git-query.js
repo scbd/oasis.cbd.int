@@ -1,20 +1,17 @@
-﻿
-const git = require('simple-git/promise');
-const path = require('path');
-const _ = require('lodash');
-const fs = require('fs');
-const EasyZip = require('easy-zip').EasyZip;
-const util = require('util');
-const stat = util.promisify(fs.stat);
-const mkdir = util.promisify(fs.mkdir);
-
-const authenticate      = require('./authentication.js');
-const express           = require('express');
-const config            = require('./config.js');
-const signedUrl         = require('./signed-url.js');
-
-const basePath = __dirname + '/repositories/';
-
+﻿const git          = require('simple-git/promise');
+const path         = require('path');
+const _            = require('lodash');
+const fs           = require('fs');
+const EasyZip      = require('easy-zip').EasyZip;
+const util         = require('util');
+const stat         = util.promisify(fs.stat);
+const mkdir        = util.promisify(fs.mkdir);
+const authenticate = require('./authentication.js');
+const express      = require('express');
+const config       = require('./config.js');
+const signedUrl    = require('./signed-url.js');
+const basePath     = __dirname + '/repositories/';
+const winston      = require('winston');
 
 function gitQuery(options){
     
@@ -31,11 +28,12 @@ function gitQuery(options){
             let q = req.query;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtenstions);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions);
 
             res.status(200).send(files);
         }
         catch(err) {
+            winston.error(err);
             res.status(500).send('Unknown error occurred');
         };
     }
@@ -46,7 +44,7 @@ function gitQuery(options){
             let q = req.decryptedInfo;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtenstions);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions);
 
             if(files && files.length > 0){
                 let compressedFiles = await zipFile(repositoryName, files, q.branch);
@@ -63,21 +61,22 @@ function gitQuery(options){
         };
     }
 
-    async function authorized(req, res, next){
+    function authorized(req, res, next){
         try{
 
             if(!req.user || !authenticate.isInRole(req.user, ['Administrator', 'oasisArticleEditor'])){
-                return res.status(401).send('You are not authorized to access this resource');
+                return res.status(403).send('You are not authorized to access this resource');
             }
             
             next();
         }
         catch(err) {
+            winston.error(err);
             res.status(500).send('Unknown error occurred');
         };
     }
 
-    async function getUpdatesFiles(repositoryName, baseBranch, date, ignoreFiles, allowedExtenstions) {
+    async function getUpdatesFiles(repositoryName, baseBranch, date, ignoreFiles, allowedExtensions) {
 
         try{
             
@@ -105,7 +104,7 @@ function gitQuery(options){
                 try {
                     await (gitObject.clone(gitUrl + repositoryName + '.git', basePath + repositoryName, []));
                 } catch (err) {
-                    console.log(err);
+                    winston.error(err);
                 }
             } else {
                 gitObject = git(basePath + repositoryName);
@@ -125,33 +124,19 @@ function gitQuery(options){
 
             let modifiedFileInBranch = [];
 
-            allowedExtenstions   = (allowedExtenstions||".html,.json").replace(/\s/g, '').split(',');
+            allowedExtensions   = (allowedExtensions||".html,.json").replace(/\s/g, '').split(',');
             ignoreFiles         = (ignoreFiles || "bower.json, package.json,.bower.json,.awsbox.json").replace(/\s/g, '').split(',');
 
             if(modifieldfiles.all){
                 _.each(modifieldfiles.all, function(file){
-                    if(file.hash){
-                                
-                        let r = file.hash.replace(/\'/g, '')
-                            .replace(/\n/g, ';')
-                            .split(';');
-                        modifiedFileInBranch.push( _.uniq(r).filter(function (name) {
-                            let ext = path.extname(name);
-                            return _.indexOf(allowedExtenstions, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
-                        }));
+                    if(file.hash){                                
+                        modifiedFileInBranch.push(getFilesFromString(file.hash, allowedExtensions, ignoreFiles));
                     }
                 })
             }
-            else if(_.isString(modifieldfiles)){
-                let r = modifieldfiles.replace(/\'/g, '')
-                    .replace(/\n/g, ';')
-                    .split(';');
-                modifiedFileInBranch.push( _.uniq(r).filter(function (name) {
-                    let ext = path.extname(name);
-                    return _.indexOf(allowedExtenstions, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
-                }));
-            }
-            
+            else if(_.isString(modifieldfiles)){                
+                modifiedFileInBranch.push(getFilesFromString(modifieldfiles, allowedExtensions, ignoreFiles));
+            }            
 
             return _.map(_.uniq(_.flatten(modifiedFileInBranch)), function(file){
                 return {name : path.basename(file), path: file}
@@ -159,7 +144,7 @@ function gitQuery(options){
 
         }
         catch(err) {
-            console.log(err);
+            winston.error(err);
         };
 
 
@@ -183,6 +168,16 @@ function gitQuery(options){
             }
         }
         return files;
+    }
+
+    function getFilesFromString(hash, allowedExtensions, ignoreFiles){
+        let r = hash.replace(/\'/g, '')
+            .replace(/\n/g, ';')
+            .split(';');
+        return _.uniq(r).filter(function (name) {
+            let ext = path.extname(name);
+            return _.indexOf(allowedExtensions, ext) >= 0 && _.indexOf(ignoreFiles, path.basename(name)) < 0;
+        });
     }
 }
 

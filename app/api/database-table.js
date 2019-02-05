@@ -1,18 +1,18 @@
-﻿const _ = require('lodash');
-const fs = require('fs');
-const EasyZip = require('easy-zip').EasyZip;
-const util = require('util');
-const path = require('path');
-const request = require('superagent');
+﻿const _              = require('lodash');
+const fs             = require('fs');
+const EasyZip        = require('easy-zip').EasyZip;
+const util           = require('util');
+const path           = require('path');
+const request        = require('superagent');
 const databaseTables = require('../views/translation/database-tables.json')
-const winston           = require('winston');
-const authenticate = require('./authentication.js');
-const crypto = require('crypto');
-const express            = require('express');
-const config            = require('./config.js');
-const signedUrl         = require('./signed-url.js');
-const stat = util.promisify(fs.stat);
-const basePath = __dirname + '/db-translation-files/';
+const winston        = require('winston');
+const authenticate   = require('./authentication.js');
+const crypto         = require('crypto');
+const express        = require('express');
+const config         = require('./config.js');
+const signedUrl      = require('./signed-url.js');
+const stat           = util.promisify(fs.stat);
+const basePath       = __dirname + '/db-translation-files/';
 
 function databaseTable(options){
 
@@ -35,6 +35,7 @@ function databaseTable(options){
             res.status(200).send(files);
         }
         catch(err) {
+            winston.error(err);
             res.status(500).send('Unknown error occurred');
         };
     }
@@ -61,23 +62,22 @@ function databaseTable(options){
         };
     }
 
-    async function authorized(req, res, next){
+    function authorized(req, res, next){
         try{
 
             if(!req.user || !authenticate.isInRole(req.user, ['Administrator', 'oasisArticleEditor'])){
-                return res.status(401).send('You are not authorized to access this resource');
+                return res.status(403).send('You are not authorized to access this resource');
             }
             
             next();
         }
         catch(err) {
+            winston.error(err);
             res.status(500).send('Unknown error occurred');
         };
     }
 
     async function getUpdatesFiles(databaseTable, q) {
-
-       
             
             let now = new Date().getTime();
             if(!fs.existsSync(`${basePath}`))
@@ -136,7 +136,5 @@ function databaseTable(options){
     }
 
 }
-
-
 
 module.exports = databaseTable

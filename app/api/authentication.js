@@ -1,7 +1,7 @@
 
-var requestq = require('superagent');
-var _ = require('lodash');
-var winston = require('winston');
+let requestq = require('superagent');
+let _ = require('lodash');
+let winston = require('winston');
 
 const config = require('./config.js')
 //============================================================
@@ -11,12 +11,12 @@ const config = require('./config.js')
 async function authenticate (req, res, next) {
 
     try {
-        var ANONYMOUS = { id: 1, anonymous: true, roles: [ 'Everyone' ], scopes: [] };
+        let ANONYMOUS = { id: 1, anonymous: true, roles: [ 'Everyone' ], scopes: [] };
 
         if(!req.headers.authorization)
             return ANONYMOUS;
     
-        var user = await getUser(req.headers.authorization);
+        let user = await getUser(req.headers.authorization);
 
         req.user =  { 
               id: user.userID, anonymous: user.anonymous, email: user.email, name: user.name, roles: user.roles,
@@ -26,12 +26,12 @@ async function authenticate (req, res, next) {
         next();
     }
     catch(error){
+        winston.error(error);
+
         if(error && error.statusCode)
             return res.status(error.statusCode).send(error);
 
-        res.status(500).send('UnKnown error occurred');
-
-        winston.error(error);
+        res.status(500).send('UnKnown error occurred');        
     }
 }
 
@@ -42,7 +42,7 @@ async function authenticate (req, res, next) {
 async function getUser(token) {
 
 
-    var response = await requestq.get(config.api.url+'/api/v2013/authentication/user')
+    let response = await requestq.get(config.api.url+'/api/v2013/authentication/user')
                                  .accept('application/json')
                                  .set('Authorization', token)
     return response.body;
@@ -55,7 +55,7 @@ async function getUser(token) {
 //============================================================
 function isInRole(user, roles) {
 
-    var userRoles = user.roles.concat(["U"+user.id]);
+    let userRoles = user.roles.concat(["U"+user.id]);
 
     return _.intersection(roles||[], userRoles).length>0;
 
