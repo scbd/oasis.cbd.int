@@ -11,9 +11,11 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
             constructor(loader) {
                 this.loader = loader;
             }
-            upload() {                 
+            upload() {
+                return this.loader.file.then(function(file){
+               
                     var data = new FormData();
-                    data.append('file', this.loader.file);
+                    data.append('file', file);
 
                     return $http.post('/api/v2015/temporary-files', data, {
                         headers: {'Content-Type': undefined}
@@ -25,6 +27,8 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                         console.log(error);                         
                         throw error;
                     });
+
+                })  
             }
             abort() {
             }
@@ -65,15 +69,15 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                     }
                 }
                 classicEditor.create($element.find('#inline-editor')[0], editorOptions)
-                .then(ed => {
-                    // console.log(Array.from( ed.ui.componentFactory.names()))
-                    ed.plugins.get('FileRepository').createUploadAdapter = (loader)=>{
+                .then(function(ed){
+                    console.log(Array.from( ed.ui.componentFactory.names()))
+                    ed.plugins.get('FileRepository').createUploadAdapter = function(loader){
                         return new UploadAdapter(loader);
                     };
                     $scope.editor = ed;
                     $scope.loadArticle();
                 })
-                .catch(error => {
+                .catch(function(error){
                     console.error(error);
                 });
 
