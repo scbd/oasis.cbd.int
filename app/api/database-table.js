@@ -14,6 +14,11 @@ const signedUrl      = require('./signed-url.js');
 const stat           = util.promisify(fs.stat);
 const basePath       = __dirname + '/db-translation-files/';
 
+
+const mkdir         = util.promisify(fs.mkdir);
+const fileExists    = util.promisify(fs.exists);
+const writeFile     = util.promisify(fs.writeFile);
+
 function databaseTable(options){
 
     let router = express.Router({mergeParams:true});
@@ -80,9 +85,10 @@ function databaseTable(options){
     async function getUpdatesFiles(databaseTable, q) {
             
             let now = new Date().getTime();
-            if(!fs.existsSync(`${basePath}`))
-                fs.mkdirSync(`${basePath}`);
-            fs.mkdirSync(`${basePath}${now}`);
+            if(!fileExists(`${basePath}`))
+                mkdir(`${basePath}`);
+
+            mkdir(`${basePath}${now}`);
             
             var ag = [];
             ag.push({"$match": {'_id' : {$in : q.ids.map(e=> { return { "$oid" : e }})}}});
@@ -106,7 +112,7 @@ function databaseTable(options){
                 let title = ((document.title||{}).en||'').replace(/\s|\//g, '_')
                 let filePath = `${now}/${title}#${document._id}.json`
                 
-                fs.writeFileSync(`${basePath}${filePath}`,  JSON.stringify(article));
+                writeFile(`${basePath}${filePath}`,  JSON.stringify(article));
                 translationFiles.push({name : path.basename(filePath), path: filePath});
 
             }
