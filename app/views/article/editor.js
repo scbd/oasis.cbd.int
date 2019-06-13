@@ -1,95 +1,20 @@
 ﻿
-define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
+define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
+ 'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
+ 'components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml',
  'scbd-angularjs-services/storage', 'scbd-angularjs-filters', 'ng-file-upload'], 
- function (app, classicEditor, template, _) {
+ function (app, template, _) {
     
-
-    app.directive('editor', ['$q', 'apiToken', '$http', 'IStorage',  function($q, apiToken, $http, storage){
-        
-        class UploadAdapter {
-            constructor(loader) {
-                this.loader = loader;
-            }
-            upload() {
-                return this.loader.file.then(function(file){
-               
-                    var data = new FormData();
-                    data.append('file', file);
-
-                    return $http.post('/api/v2015/temporary-files', data, {
-                        headers: {'Content-Type': undefined}
-                    })
-                    .then(function(success) {
-                            return success.data;
-                    })
-                    .catch(function(error) {  
-                        console.log(error);                         
-                        throw error;
-                    });
-
-                })  
-            }
-            abort() {
-            }
-        }
-        
-        return{
-            restrict: 'EA',
-            template : template,
-            link: function ($scope, $element, $attrs) {                
-                //available toolbar : code, 'emoji'
-                var editorOptions = {
-                    plugins1: [],
-                    alignment: {
-                        options: [ 'left', 'right' ]
-                    },
-                    highlight: {
-                        options: [
-                            {
-                                model: 'greenMarker',
-                                class: 'marker-green',
-                                title: 'Green marker',
-                                color: 'var(--ck-highlight-marker-green)',
-                                type: 'marker'
-                            },
-                            {
-                                model: 'redPen',
-                                class: 'pen-red',
-                                title: 'Red pen',
-                                color: 'var(--ck-highlight-pen-red)',
-                                type: 'pen'
-                            }
-                        ]
-                    },
-                    toolbar: [ 'heading', 'fontFamily', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'alignment', 'highlight', 'insertTable', '|', 'imageUpload', 'mediaEmbed', '|', 'undo', 'redo' ],
-                    image: {
-                        toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
-                        styles  : ['full', 'alignLeft', 'alignRight']
-                    }
-                }
-                classicEditor.create($element.find('#inline-editor')[0], editorOptions)
-                .then(function(ed){
-                    console.log(Array.from( ed.ui.componentFactory.names()))
-                    ed.plugins.get('FileRepository').createUploadAdapter = function(loader){
-                        return new UploadAdapter(loader);
-                    };
-                    $scope.editor = ed;
-                    $scope.loadArticle();
-                })
-                .catch(function(error){
-                    console.error(error);
-                });
-
-            }
-        }
-    }])
-
     return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
         function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
+            $scope.document = {};
+            $scope.locales = ['en','ar','es','fr','ru','zh'];
+
             $scope.articletags = [];
             $scope.articlecustomtags = [];
             $scope.articleadmintags = [];
+            $scope.self =$scope;
 
             $scope.article = {
                 tags        : [],
@@ -100,10 +25,9 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 if($route.current.$$route && $route.current.$$route.isNew)
                     $scope.document = {};
                 else{
-                    $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
+                    return $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
                     .then(function (data) {
                         $scope.document = data;
-                        $scope.editor.setData(data.content.en)
                         $scope.article.tags         = _.map(data.tags,      function(t){ return {_id:t}});
                         $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
                         $scope.article.adminTags    = _.map(data.adminTags, function(t){ return t});
@@ -153,9 +77,7 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                         else if(t.isTag)                return t.title;
                     }));
                 }
-                $scope.document.content = {
-                    en: $scope.editor.getData()
-                },
+
                 $scope.document.tags        = _.map($scope.article.tags, "_id");
                 $scope.document.customTags  = pluckTags($scope.article.customTags);
                 $scope.document.adminTags   = pluckTags($scope.article.adminTags);
@@ -184,16 +106,12 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
             ////tags from third party
             $scope.getTags = function () {
                 $scope.tags = [];
-                $q.when($http.post('api/v2017/articles/tags',{ data: editor.getData()}))
+                $q.when($http.post('api/v2017/articles/tags',{ data: $scope.document.content}))
                 .then(function(data){
                     $scope.tags = data.data;
                 });
                 
             }
-
-            $scope.$on('$destroy', function(){
-                $scope.editor.destroy();
-            });
             
             $scope.getTerm = function(term){
 
@@ -254,6 +172,12 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
                 }
             }
 
+            $scope.onEditorInitialized = function(){
+                return $q.when($scope.loadArticle()).then(function(){
+                    return ($scope.document||{}).content;
+                });
+            }
+
             $scope.getSizedImage = function(url, size){
                 return url && url
                 .replace(/attachments.cbd.int\//, '$&'+size+'/')
@@ -274,6 +198,5 @@ define(['app', 'ck-editor', 'text!views/article/editor-directive.html', 'lodash'
 
                 // }
             }
-
     }]
 });

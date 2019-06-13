@@ -1,0 +1,37 @@
+﻿<div class="km-rtl" style="border: 1px solid #eee;">
+	
+	<div class="nav-tabs-custom">
+
+		<ul class="nav nav-tabs">
+			<li  ng-repeat="locale in locales" class="input-group input-rich-text" 
+				ng-class="{ 'multiple-languages' : isShowLocale() && !last, 'active':$index==0 }">
+				<a href="#{{locale}}" data-toggle="tab" aria-expanded="false" ng-bind="locale|uppercase" ng-click="onTabChange(locale)"></a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div class="tab-pane" id="{{locale}}" ng-repeat="locale in locales"
+				ng-class="{'active':$index==0}">
+
+				<div id="snippet-inline-editor_{{locale}}">
+					<div class="blockRegion" ng-if="isUploadingFile[locale]">
+						<div class="inverted dimmer active">
+							<div class="center">
+								<div class="medium loader"><i class="fa fa-spin fa-cog" /> uploading...</div>					
+							</div>
+						</div>
+					</div>
+					<div style="width:100%;min-height:200px;border: 1px solid rgba(0, 0, 0, 0.15);margin-bottom:0px" 
+					id="km-inline-editor_{{locale}}" placeholder="Start typing here"></div>
+
+					<p style="border: 1px solid rgba(0, 0, 0, 0.15);border-top:none">
+						Attach files by dragging & dropping or pasting from clipboard
+					</p>
+
+				</div>
+			</div>
+
+		</div>
+
+	</div>		
+</div>
+	
