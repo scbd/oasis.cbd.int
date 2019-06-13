@@ -80,6 +80,10 @@
                     <div class="box-body">
                         <div ng-if="canEdit">
                             <a class="btn btn-default btn-xs" ng-href="{{baseUrl}}articles/{{article._id}}/edit">Edit</a>
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default" ng-class="{'btn-primary':activeLocale==locale}"
+                                ng-repeat="locale in locales" ng-bind="locale|uppercase" ng-click="changeLocale(locale)"></button>
+                            </div>
                             <br><br>
                         </div>  
                         <div class="image-credit-wrapper">
@@ -90,12 +94,12 @@
                         <br/>
                         <br/>
                         <h2 class="article-title">
-                            {{article.title|lstring}}
+                            {{article.title|lstring:activeLocale}}
                         </h2>
                         <br/>
                         <br/>
                         <div id="editor" class="article-content1">
-                            <div ng-bind-html="article.content.en|unsafe"></div>
+                            <div ng-bind-html="article.content|lstring:activeLocale|unsafe"></div>
                         </div>
                         <hr>
                         <div class="tags">

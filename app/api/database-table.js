@@ -85,10 +85,10 @@ function databaseTable(options){
     async function getUpdatesFiles(databaseTable, q) {
             
             let now = new Date().getTime();
-            if(!fileExists(`${basePath}`))
-                mkdir(`${basePath}`);
+            if(!(await fileExists(`${basePath}`)))
+                await mkdir(`${basePath}`);
 
-            mkdir(`${basePath}${now}`);
+            await mkdir(`${basePath}${now}`);
             
             var ag = [];
             ag.push({"$match": {'_id' : {$in : q.ids.map(e=> { return { "$oid" : e }})}}});
@@ -112,7 +112,7 @@ function databaseTable(options){
                 let title = ((document.title||{}).en||'').replace(/\s|\//g, '_')
                 let filePath = `${now}/${title}#${document._id}.json`
                 
-                writeFile(`${basePath}${filePath}`,  JSON.stringify(article));
+                await writeFile(`${basePath}${filePath}`,  JSON.stringify(article));
                 translationFiles.push({name : path.basename(filePath), path: filePath});
 
             }

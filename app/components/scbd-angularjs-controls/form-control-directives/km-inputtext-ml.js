@@ -22,14 +22,7 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
         $scope.text = {};
         $scope.$watch('locales', $scope.watchLocales);
         $scope.$watch('binding', $scope.watchBinding);
-        $scope.$watch('binding', function() {
-          try {
-            ngModelController.$setViewValue($scope.binding);
-          } catch (e) {}
-        });
-
-      },
-      controller: ["$scope", function($scope) {
+        
         //==============================
         //Remove value of not selected languages/empty languages
         //==============================
@@ -70,7 +63,8 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
           });
 
           $scope.binding = !$.isEmptyObject(oNewBinding) ? oNewBinding : undefined;
-          $scope.ngChange();
+          
+          ngModelController.$setViewValue($scope.binding);
         };
 
         //==============================
@@ -86,7 +80,7 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
         $scope.isShowLocale = function() {
           return $scope.locales && $scope.locales.length > 1;
         };
-      }]
+      }
     };
   });
 });

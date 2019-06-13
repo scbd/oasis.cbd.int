@@ -4,7 +4,9 @@
     return ['$scope', '$http', 'IGenericService', '$q', '$route', '$rootScope', '$location',
         function ($scope, $http, genericService, $q, $route, $rootScope, $location) {
             $scope.baseUrl = window.baseUrl;
-            
+            $scope.locales = ['en','ar','es','fr','ru','zh'];
+            $scope.activeLocale = 'en';
+
             user = $rootScope.user;
             $scope.canEdit = ~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor');
             var editor;
@@ -18,6 +20,9 @@
                     
             });            
 
+            $scope.changeLocale = function(locale){
+                $scope.activeLocale=locale
+            }
             $scope.getSizedImage = function(url, size){
                 // return url;
 
