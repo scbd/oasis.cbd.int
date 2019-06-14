@@ -14,7 +14,7 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
             $scope.articletags = [];
             $scope.articlecustomtags = [];
             $scope.articleadmintags = [];
-            $scope.self =$scope;
+            $scope.loading = true;
 
             $scope.article = {
                 tags        : [],
@@ -24,7 +24,7 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
             $scope.loadArticle = function(){
                 if($route.current.$$route && $route.current.$$route.isNew)
                     $scope.document = {};
-                else{
+                else{                    
                     return $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
                     .then(function (data) {
                         $scope.document = data;
@@ -173,9 +173,11 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
             }
 
             $scope.onEditorInitialized = function(){
-                return $q.when($scope.loadArticle()).then(function(){
+                return $q.when($scope.loadArticle())
+                .then(function(){
                     return ($scope.document||{}).content;
-                });
+                })
+                .finally(function(){$scope.loading =false});
             }
 
             $scope.getSizedImage = function(url, size){
