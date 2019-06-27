@@ -125,12 +125,8 @@
                 if(search.customTags && search.customTags.length>0){
                     query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
                 }
-               
-                if(search.adminTags){
-                    var tags = _.split(search.adminTags, ' ');
-                    for(var i=0; i < tags.length; i++){
-                        query.$and.push({"adminTags.title.en": {"$$contains"  : tags[i] }});
-                    }
+                if(search.adminTags && search.adminTags.length>0){
+                    query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title.en })}});
                 }
 
                 console.log(query)
