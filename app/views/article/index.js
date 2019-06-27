@@ -13,14 +13,16 @@
 
             $scope.articletags = [];
             $scope.articlecustomtags = [];
+            $scope.articleadmintags = [];
             $scope.search = {};
             $scope.layout = 'grid';
 
+            //-------------------------------------------------------------------------
              $scope.showArticle = function(tile){ 
                 var url = tile.title.en.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-')
                 $location.path('/articles/'+ tile._id+ '/' + url  )
             }
-
+            //-------------------------------------------------------------------------
             $scope.delete = function(article){
 
                 if(window.confirm("Are you sure you want to delete this record?")){
@@ -32,7 +34,7 @@
                 }
 
             }
-
+            //-------------------------------------------------------------------------
             $scope.getSizedImage = function(url, size){
 
                 return url && url
@@ -40,7 +42,7 @@
                 .replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
             }
             
-
+            //-------------------------------------------------------------------------
             $scope.funcAsync = function (schema, query) {
                 var tableName = schema.replace(/-/g, '')
                 if(!query || query == ''){
@@ -78,6 +80,7 @@
               );
             }
 
+            //-------------------------------------------------------------------------
             $scope.getTerm = function(term, table){
 
                 if(term.title)
@@ -94,6 +97,7 @@
                 return result;
             }
 
+            //-------------------------------------------------------------------------
             $scope.tagTransform = function (newTag) {
                 var item = {
                     title: { en : newTag}
@@ -102,11 +106,12 @@
                 return item;
             };
 
+            //-------------------------------------------------------------------------
             $scope.searchArticles = function(search){
                 // console.log(search);
 
                 var query =  { $and : []};
-                if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0)
+                if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0 && (search.adminTags||[]).length==0)
                     query=undefined;
 
                 if(search.titleContent && search.titleContent!=''){
@@ -120,8 +125,15 @@
                 if(search.customTags && search.customTags.length>0){
                     query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
                 }
-                
-                
+               
+                if(search.adminTags){
+                    var tags = _.split(search.adminTags, ' ');
+                    for(var i=0; i < tags.length; i++){
+                        query.$and.push({"adminTags.title.en": {"$$contains"  : tags[i] }});
+                    }
+                }
+
+                console.log(query)
                 currentQuery = query;
                 currentPage = 0;
                 $scope.articles=[];

@@ -164,7 +164,7 @@
                                                 <input type="text" class="form-control" ng-model="search.titleContent">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label> Tags</label>
                                                 <ui-select multiple tagging="tagTransform" tagging-label="(search tags)" ng-model="search.tags" theme="bootstrap" ng-disabled="disabled">
@@ -178,7 +178,7 @@
                                                 </ui-select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Custom Tags</label>
                                                 <ui-select multiple tagging="tagTransform" tagging-label="(search custom tags)" ng-model="search.customTags" theme="bootstrap"
@@ -191,6 +191,12 @@
                                                         <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
                                                     </ui-select-choices>
                                                 </ui-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Admin Tags</label>
+                                                <input type="text" class="form-control" ng-model="search.adminTags" style="height: 28px;">
                                             </div>
                                         </div>
 
