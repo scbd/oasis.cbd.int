@@ -129,7 +129,6 @@
                     query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title.en })}});
                 }
 
-                console.log(query)
                 currentQuery = query;
                 currentPage = 0;
                 $scope.articles=[];
