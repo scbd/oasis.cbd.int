@@ -15,18 +15,15 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
         binding: '=ngModel',
         locales: '=',
         rows: '=',
-        required: "@",
-        ngChange: "&"
+        required: "@"
       },
       link: function($scope, element, attrs, ngModelController) {
         $scope.text = {};
-        $scope.$watch('locales', $scope.watchLocales);
-        $scope.$watch('binding', $scope.watchBinding);
-        
+
         //==============================
         //Remove value of not selected languages/empty languages
         //==============================
-        $scope.watchLocales = function() {
+        $scope.$watch('locales', function() {
           var oLocales = $scope.locales || [];
           var oBinding = $scope.binding || {};
           var oText = $scope.text;
@@ -34,12 +31,13 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
           angular.forEach(oLocales, function(locale, i) {
             oText[locale] = oBinding[locale] || oText[locale];
           });
-        };
+        });
+
 
         //==============================
         //Remove value of not selected languages/empty languages
         //==============================
-        $scope.watchBinding = function() {
+        $scope.$watch('binding', function() {          
           var oLocales = $scope.locales || [];
           var oBinding = $scope.binding || {};
           var oText = $scope.text;
@@ -47,7 +45,7 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
           angular.forEach(oLocales, function(locale, i) {
             oText[locale] = oBinding[locale];
           });
-        };
+        });
 
         //==============================
         //Remove value of not selected languages/empty languages

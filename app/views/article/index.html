@@ -1,5 +1,4 @@
 ﻿<div id="article-content">
-    <link rel="stylesheet" href="app/libs/angular-material/angular-material.css" />
     <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
 
     <section class="content">
@@ -165,7 +164,7 @@
                                                 <input type="text" class="form-control" ng-model="search.titleContent">
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label> Tags</label>
                                                 <ui-select multiple tagging="tagTransform" tagging-label="(search tags)" ng-model="search.tags" theme="bootstrap" ng-disabled="disabled">
@@ -179,12 +178,27 @@
                                                 </ui-select>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>Custom Tags</label>
                                                 <ui-select multiple tagging="tagTransform" tagging-label="(search custom tags)" ng-model="search.customTags" theme="bootstrap"
                                                     ng-disabled="disabled">
                                                     <ui-select-match placeholder="custom tags...">
+                                                        <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                    </ui-select-match>
+                                                    <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
+                                                        <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
+                                                        <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                                    </ui-select-choices>
+                                                </ui-select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Admin Tags</label>
+                                                <ui-select multiple tagging="tagTransform" tagging-label="(search admin tags)" ng-model="search.adminTags" theme="bootstrap"
+                                                    ng-disabled="disabled">
+                                                    <ui-select-match placeholder="admin tags...">
                                                         <span>{{getTerm($item, 'article-custom-tags')}}</span>
                                                     </ui-select-match>
                                                     <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
