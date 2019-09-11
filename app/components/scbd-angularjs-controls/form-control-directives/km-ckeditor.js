@@ -58,9 +58,9 @@ function(app,classicEditor, template,lodash) {
 				}
 
 				function initializeEditor(lang){
-					//available toolbar : code, 'emoji'
+					//available toolbar : code, 'emoji',plugins1: [],
+						
 					var editorOptions = {
-						plugins: [],
 						alignment: {
 							options: [ 'left', 'right' ]
 						},
