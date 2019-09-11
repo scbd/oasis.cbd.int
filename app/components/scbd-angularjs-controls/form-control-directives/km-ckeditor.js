@@ -34,17 +34,17 @@ function(app,classicEditor, template,lodash) {
         return{
             restrict: 'EA',
 			template : template,
+			require: "?ngModel",
 			scope: {
 				placeholder : '@',
 				ngDisabledFn: '&ngDisabled',
 				binding     : '=ngModel',
 				locales     : '=',
 				onInit    	: "&",
-				ngChange    : "&",
 				onFileUpload: '&?',
 				onPaste     : '&?'
 			},
-            link: function ($scope, $element, $attrs) {                
+            link: function ($scope, $element, $attrs, ngModelController) {                
                 
 				$scope.editors = {};
 				$scope.isUploadingFile = {};
@@ -60,7 +60,7 @@ function(app,classicEditor, template,lodash) {
 				function initializeEditor(lang){
 					//available toolbar : code, 'emoji'
 					var editorOptions = {
-						plugins1: [],
+						plugins: [],
 						alignment: {
 							options: [ 'left', 'right' ]
 						},
@@ -86,6 +86,26 @@ function(app,classicEditor, template,lodash) {
 						image: {
 							toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
 							styles  : ['full', 'alignLeft', 'alignRight']
+						},
+						heading: {
+							options: [
+								{ model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+								{ model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+								{ model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+								{ model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+							]
+						},
+						link: {
+							addTargetToExternalLinks: true,
+							decorators: [
+								{
+									mode: 'manual',
+									label: 'Downloadable',
+									attributes: {
+										download: 'download'
+									}
+								}
+							]
 						}
 					}
 					if(lang=='ar')
@@ -153,6 +173,7 @@ function(app,classicEditor, template,lodash) {
 							if(!$scope.binding)
 								$scope.binding = {};
 							$scope.binding[lang] = ed.getData();
+							ngModelController.$setViewValue($scope.binding);
 						});
 					})
 					.catch(function(error){
