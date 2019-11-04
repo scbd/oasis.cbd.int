@@ -25,7 +25,9 @@ define(['app', 'lodash', 'js/extended-route-provider', 'services/app-config-serv
                when('/articles/new',                { templateUrl: 'views/article/editor.html', label:'Article Editor', isNew:true, resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
                when('/articles/:id/:title?/edit',   { templateUrl: 'views/article/editor.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
                when('/articles/:id/:title?',        { templateUrl: 'views/article/view.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
-              
+               
+               when('/workflows',                   { templateUrl: 'views/workflows/index.html', label:'Workflow Manager', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisWorkflowManager'], null, true) }}).
+                             
                when('/manage/:schema',              { templateUrl: 'views/tags/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).               
                when('/signin',                      { templateUrl: 'views/shared/login.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
                
