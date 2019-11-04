@@ -29,7 +29,10 @@ require.config({
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
         'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
-        'angulargrid'               : 'libs/angulargrid/angulargrid'
+        'angulargrid'               : 'libs/angulargrid/angulargrid',
+        'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.x/dist/vuetify.min',
+        'axios'                     : 'https://cdn.cbd.int/axios/dist/axios.min'
+        
     },
     'shim': {
         'angular'                       : { 'deps': ['jquery'], 'exports': 'angular' },
@@ -46,7 +49,11 @@ require.config({
         'ngAria'                        : { 'deps': ['angular'] },
         'select2'                       : { 'deps': ['angular', 'jquery'] },
         'angular-ui-select2'            : { 'deps': ['angular', 'select2']} ,
-        'angulargrid'                   : { 'deps': ['angular']}
+        'angulargrid'                   : { 'deps': ['angular']},
+        'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css',
+                                                         'css!https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css',
+                                                         'css!https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' ]},
+        
     },
     packages: [
         { name: 'scbd-branding'          , location : 'components/scbd-branding' },
@@ -55,7 +62,10 @@ require.config({
         { name: 'scbd-angularjs-filters',  location : 'components/scbd-angularjs-services/filters' }
     ]
 });
-
+define('vue', ['https://unpkg.com/vue/dist/vue'], function(Vue){
+    window.Vue = Vue;
+    return Vue;
+})
 require(['angular', 'angular-flex', 'angular-route', 'angular-cookies',  'bootstrap', 'domReady'
     /*, 'main'*/], function (ng) {
     // NOTE: place operations that need to initialize prior to app start here using the `run` function on the top-level module
