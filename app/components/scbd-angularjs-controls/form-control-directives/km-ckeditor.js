@@ -130,7 +130,7 @@ function(app,classicEditor, template,lodash) {
 						};
 						
 						ed.editing.view.document.on('paste', function(eventInfo, data){
-							console.log('paste', eventInfo, data)
+							// console.log('paste', eventInfo, data)
 						});
 
 						ed.editing.view.document.on('drop', function(eventInfo, data){

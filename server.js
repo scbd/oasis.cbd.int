@@ -24,9 +24,11 @@ if(!process.env.API_URL) {
 }
 
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
+let appVersion = process.env.TAG      || gitVersion;
 
 console.info(`info: www.cbd.int/management`);
-console.info(`info: Git version: ${gitVersion}`);
+console.info(`info: Git commit:  ${gitVersion}`);
+console.info(`info: App version: ${appVersion}`);
 console.info(`info: API address: ${config.api.url}`);
 
 
@@ -39,7 +41,7 @@ app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.url, ch
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
 // CONFIGURE TEMPLATE
-app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',gitVersion: gitVersion }); });
+app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',appVersion: appVersion }); });
 
 
 
@@ -62,7 +64,7 @@ process.on('SIGTERM', ()=>process.exit());
 //============================================================
 function setCustomCacheControl(res, path) {
 
-	if(res.req.query && res.req.query.v && res.req.query.v==gitVersion && gitVersion!='UNKNOWN')
+	if(res.req.query && res.req.query.v && res.req.query.v==appVersion && appVersion!='UNKNOWN')
         return res.setHeader('Cache-Control', 'public, max-age=86400000'); // one day
 
     res.setHeader('Cache-Control', 'public, max-age=0');
