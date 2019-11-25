@@ -2,6 +2,8 @@
 
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
+var appVersion = document.documentElement.attributes['app-version'].value;
+
 require.config({
     baseUrl : 'app/',
     'paths': {
@@ -60,9 +62,10 @@ require.config({
         { name: 'scbd-angularjs-controls', location : 'components/scbd-angularjs-controls/form-control-directives', main : 'all-controls.js' },
         { name: 'scbd-angularjs-services', location : 'components/scbd-angularjs-services/services' },
         { name: 'scbd-angularjs-filters',  location : 'components/scbd-angularjs-services/filters' }
-    ]
+    ],
+    urlArgs: 'v=' + appVersion
 });
-define('vue', ['https://unpkg.com/vue/dist/vue'], function(Vue){
+define('vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
     window.Vue = Vue;
     return Vue;
 })
