@@ -1,13 +1,14 @@
 ﻿
-define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
+define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
  'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
  'components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml',
  'scbd-angularjs-services/storage', 'scbd-angularjs-filters', 'ng-file-upload'], 
- function (app, template, _) {
+ function (app, _) {
     
     return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
         function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
+            var originalDocument;
             $scope.document = {};
             $scope.locales = ['en','ar','es','fr','ru','zh'];
 
@@ -15,15 +16,20 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
             $scope.articlecustomtags = [];
             $scope.articleadmintags = [];
             $scope.loading = true;
+            $scope.showTranslationAlert = false;
 
             $scope.article = {
                 tags        : [],
                 customTags  : [],
                 adminTags   : []
             }
+
+
             $scope.loadArticle = function(){
-                if($route.current.$$route && $route.current.$$route.isNew)
+                if($route.current.$$route && $route.current.$$route.isNew){
                     $scope.document = {};
+                    originalDocument = {};
+                }
                 else{                    
                     return $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
                     .then(function (data) {
@@ -31,6 +37,10 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
                         $scope.article.tags         = _.map(data.tags,      function(t){ return {_id:t}});
                         $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
                         $scope.article.adminTags    = _.map(data.adminTags, function(t){ return t});
+
+                        $timeout(function(){
+                            originalDocument = angular.copy($scope.document);
+                        }, 200)
                     });
                 }
             }
@@ -84,7 +94,10 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
 
                 //temp solution for media table
                 updateHtml($scope.document.content, $scope.document.adminTags)
-                // return;
+                // //another special case for 
+                // if($scope.document._id == '5c992c30f2fd9c0001d8d3c1'){
+
+                // }
                 var operation;
                 if($scope.document && $scope.document._id){
                     operation = genericService.update('v2017', 'articles',$scope.document._id, $scope.document);
@@ -142,9 +155,7 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
             });
         
             $scope.upload = function (files) {
-                if (files && files.length) {
-                    console.log(files.length)
-                   
+                if (files && files.length) {                   
 
                     for (var i = 0; i < files.length; i++) {
                       var file = files[i];
@@ -162,6 +173,7 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
                                     $scope.document.coverImage.url = undefined;
                                     $scope.document.coverImage.url = resp.data.default;
                                     $scope.coverImageProgress = undefined;
+                                    $scope.onEditorFileUpload(resp.data)
                                 });
                             }, null, function (evt) {
                                 var progressPercentage = parseInt(100.0 * evt.loaded / evt.total)-5;
@@ -186,6 +198,25 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
                 .replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
             }
 
+            $scope.showTranslationMessage = function(){
+                if(!originalDocument || $scope.showTranslationAlert)
+                    return;
+
+                if(!hasLangString($scope.document.title) && !hasLangString($scope.document.content))
+                    return;
+
+                if((originalDocument.title && originalDocument.title.en != $scope.document.title.en) ||
+                    originalDocument.content && originalDocument.content.en != $scope.document.content.en)
+                    $scope.showTranslationAlert = true;
+            }
+
+            $scope.onEditorFileUpload = function(data){
+                // console.log(data)
+                $scope.document.attachments = $scope.document.attachments||[];
+                $scope.document.attachments.push(data)
+
+            }
+
             function updateHtml (content, tags){
 
                 // if(_.contains(tags, 'media')){
@@ -199,6 +230,12 @@ define(['app', 'text!views/article/editor-directive.html', 'lodash', 'angular-ui
                     })
 
                 // }
+            }
+
+            function hasLangString(element){
+                return element && (element.hasOwnProperty('ar') ||
+                        element.hasOwnProperty('fr') || element.hasOwnProperty('es') || 
+                        element.hasOwnProperty('ru') || element.hasOwnProperty('zh'));
             }
     }]
 });
