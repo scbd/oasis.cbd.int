@@ -160,7 +160,12 @@ function(app,classicEditor, template, _) {
 							{
 								name: 'customEmbed',
 								url: [
-									/cdn\.knightlab\.com\/.*/
+									/cdn\.knightlab\.com\/libs\/timeline3\/.*/,
+									/uploads\.knightlab\.com\/storymapjs\/.*/,
+									/cdn\.knightlab\.com\/libs\/juxtapose\/.*/,
+									/uploads\.knightlab\.com\/scenevr\/.*/,
+									/cdn\.knightlab\.com\/libs\/storyline\/.*/,
+									/theydrawit\.mucollective\.co\/vis\/.*/
 								],
 								html: function(id){
 									return '<figure class="media">' +
