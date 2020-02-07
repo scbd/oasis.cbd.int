@@ -3,6 +3,6 @@
         "name"      : "Articles",
         "api"       : "/api/v2017/articles",
         "fields"    : ["title", "content"],
-        "query"     : {"adminTags.title.en" : {"$in" : ["ABSCH-About"]}}
+        "query1"     : {"adminTags.title.en" : {"$in" : ["ABSCH-About"]}}
     }
 ]

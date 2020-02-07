@@ -1,5 +1,8 @@
 ﻿<div>
     <ul class="pagination ">
+        <li>
+            <a  translation-url href> Total pages : {{pageCount}}</a>           
+        </li>
         <li ng-hide="currentPage == 0">
             <a translation-url href ng-click="actionSetPage(currentPage-1)">« Prev</a>
         </li>
@@ -8,6 +11,9 @@
         </li>
         <li ng-hide="currentPage >= pageCount - 1">
             <a  translation-url href ng-click="actionSetPage(currentPage+1)">Next »</a>
+        </li>
+        <li>
+            <a  translation-url href> Total found : {{rowCount}}</a>           
         </li>
     </ul>
 </div>
