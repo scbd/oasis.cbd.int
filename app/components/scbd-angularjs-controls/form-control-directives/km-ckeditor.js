@@ -1,6 +1,6 @@
 define(['app','ck-editor', 'text!./km-ckeditor.html','lodash','scbd-angularjs-services/authentication', 
 'scbd-angularjs-services/storage'], 
-function(app,classicEditor, template,lodash) {
+function(app,classicEditor, template, _) {
 
 	app.directive('ckEditor', ['$q', 'apiToken', '$http', 'IStorage', '$timeout',  function($q, apiToken, $http, storage, $timeout){
         
@@ -9,16 +9,18 @@ function(app,classicEditor, template,lodash) {
                 this.loader = loader;
             }
             upload() {
+				var loader = this.loader;
                 return this.loader.file.then(function(file){
                
                     var data = new FormData();
                     data.append('file', file);
 
                     return $http.post('/api/v2015/temporary-files', data, {
-                        headers: {'Content-Type': undefined}
+						headers: {'Content-Type': undefined}
                     })
                     .then(function(success) {
-                            return success.data;
+						loader.uploaded = success.data;						
+                        return success.data;
                     })
                     .catch(function(error) {  
                         console.log(error);                         
@@ -62,7 +64,7 @@ function(app,classicEditor, template,lodash) {
 						
 					var editorOptions = {
 						alignment: {
-							options: [ 'left', 'right' ]
+							options: [ 'left', 'right', 'center', 'justify']
 						},
 						highlight: {
 							options: [
@@ -82,7 +84,47 @@ function(app,classicEditor, template,lodash) {
 								}
 							]
 						},
-						toolbar: [ 'heading', 'fontFamily', '|', 'bold', 'italic', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'alignment', 'highlight', 'insertTable', '|', 'imageUpload', 'mediaEmbed', '|', 'undo', 'redo' ],
+						fontSize: {
+							options: [
+								9,
+								11,
+								13,
+								'default',
+								17,
+								19,
+								21,
+								24,
+								27,
+								30,
+								32
+							]
+						},
+						fontColor: {
+							colors: [
+								{
+									color: 'hsl(0, 0%, 0%)',
+									label: 'Black'
+								},
+								{
+									color: 'hsl(0, 0%, 30%)',
+									label: 'Dim grey'
+								},
+								{
+									color: 'hsl(0, 0%, 60%)',
+									label: 'Grey'
+								},
+								{
+									color: 'hsl(0, 0%, 90%)',
+									label: 'Light grey'
+								},
+								{
+									color: 'hsl(0, 0%, 100%)',
+									label: 'White',
+									hasBorder: true
+								}
+							]
+						},
+						toolbar: [ 'heading', 'fontFamily', , 'fontSize', 'fontColor', '|', 'bold', 'italic', 'alignment', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'highlight', 'insertTable', '|', 'imageUpload', 'mediaEmbed', '|', 'undo', 'redo', '|', 'horizontalLine' ],
 						image: {
 							toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
 							styles  : ['full', 'alignLeft', 'alignRight']
@@ -106,6 +148,28 @@ function(app,classicEditor, template,lodash) {
 									}
 								}
 							]
+						},
+						wordCount: {
+							onUpdate:function(stats){
+								$scope.wordCount = stats.words;
+							}
+						},
+						mediaEmbed:{
+							previewsInData: false,
+							extraProviders: [
+							{
+								name: 'customEmbed',
+								url: [
+									/cdn\.knightlab\.com\/.*/
+								],
+								html: function(id){
+									return '<figure class="media">' +
+										   '	<oembed url="' + id.input + '">' + 
+										   			'<a href="' + id.input + '">' + id.input + '</a>'
+										   '	</oembed>' +
+											'</figure>'
+								}
+							}]
 						}
 					}
 					if(lang=='ar')
@@ -114,8 +178,9 @@ function(app,classicEditor, template,lodash) {
 					classicEditor.create($element.find('#km-inline-editor_'+lang)[0], editorOptions)
 					.then(function(ed){
 						// console.log(Array.from( ed.ui.componentFactory.names()))
-
+						
 						$scope.editors[lang] = ed;
+						
 						if(!$scope.binding){
 							$q.when($scope.onInit()).then(function(content){
 								if(content)
@@ -126,8 +191,11 @@ function(app,classicEditor, template,lodash) {
 							$scope.editors[lang].setData($scope.binding[lang]||'');
 
 						ed.plugins.get('FileRepository').createUploadAdapter = function(loader){
-							return new UploadAdapter(loader);
+							var uploadAdapter = new UploadAdapter(loader);
+							uploadAdapter.loader.on('change:uploaded' , onEditorImageUploaded);
+							return uploadAdapter;
 						};
+						
 						
 						ed.editing.view.document.on('paste', function(eventInfo, data){
 							// console.log('paste', eventInfo, data)
@@ -138,11 +206,11 @@ function(app,classicEditor, template,lodash) {
 							if(data.dataTransfer){
 
 								$scope.isUploadingFile[lang] = true;
-								var fileUploads = _.map(data.dataTransfer.files, function(file){
+								var fileUploads = _.map(data.dataTransfer.files, function(file, i){
 									
 
 									var formData = new FormData();
-									var file = data.dataTransfer.files[0];
+									var file = data.dataTransfer.files[i];
 
 									var fileType = file.type.substring( 0, 5 );
 									var mimeType = storage.attachments.getMimeType(file);
@@ -150,6 +218,10 @@ function(app,classicEditor, template,lodash) {
 									if(fileType == "image")
 										return;
 
+									if (storage.attachments.mimeTypeWhitelist.indexOf(mimeType) < 0) {
+										alert("File type not supported: " + mimeType + "(" + file.name + ")");
+										return;
+									}
 									formData.append('file', file);
 
 									return $http.post('/api/v2015/temporary-files', formData, {
@@ -159,6 +231,7 @@ function(app,classicEditor, template,lodash) {
 										var viewFragment = ed.data.processor.toView('&nbsp;<a target="_blank" href="'+success.data.url+'">'+success.data.metadata.fileName+ '</a>' );
 										var modelFragment = ed.data.toModel(viewFragment);
 										ed.model.insertContent( modelFragment);
+										$scope.onFileUpload({data:success.data});
 									})
 
 								});
@@ -170,11 +243,17 @@ function(app,classicEditor, template,lodash) {
 						});
 
 						ed.model.document.on('change:data', function(eventInfo, data){
-							if(!$scope.binding)
-								$scope.binding = {};
-							$scope.binding[lang] = ed.getData();
+							var binding = angular.copy($scope.binding||{});
+							binding[lang] = ed.getData();
+							$scope.binding = binding;
 							ngModelController.$setViewValue($scope.binding);
 						});
+
+						function onEditorImageUploaded(eventInfo, name, value, oldValue){
+							if(value.url){
+								$scope.onFileUpload({data:value})
+							}
+						}
 					})
 					.catch(function(error){
 						console.error(error);

@@ -27,6 +27,9 @@
     "angulargrid": "0.6.5",
     "ckeditor5": "https://cdn.ckeditor.com/ckeditor5/12.4.0/inline/ckeditor.js"
   },
+  "devDependencies-old":{
+    "ckeditor5-build-inline-full":"*"
+  },
   "resolutions": {
     "angular": "1.4.14"
   }
