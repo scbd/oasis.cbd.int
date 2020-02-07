@@ -26,7 +26,7 @@ require.config({
         'angular-flex'              : 'libs/angular-flex/angular-flex',
         'ngAria'                    : 'libs/angular-aria/angular-aria.min',
         'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
-        'ck-editor'                 : 'libs/ckeditor5/index',
+        'ck-editor'                 : 'https://cdn.cbd.int/ckeditor5-build-inline-full@16.0.0/build/ckeditor',
         'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
