@@ -1,8 +1,8 @@
 ﻿define(['app', 'scbd-angularjs-services/generic-service'],
  function (app, classicEditor) {
    
-    return ['$scope', '$http', 'IGenericService', '$q', '$route', '$rootScope', '$location',
-        function ($scope, $http, genericService, $q, $route, $rootScope, $location) {
+    return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http',
+        function ($scope, genericService, $q, $route, $rootScope, $timeout, $http) {
             $scope.baseUrl = window.baseUrl;
             $scope.locales = ['en','ar','es','fr','ru','zh'];
             $scope.activeLocale = 'en';
@@ -17,6 +17,41 @@
                     data.customTags = _.map(data.customTags, function(t){return {_id:t}});
 
                     $scope.article = data;
+
+                    $timeout(function(){
+                        var getLocation = function(href) {
+                            var l = document.createElement("a");
+                            l.href = href;
+                            return l;
+                        };
+                        function parseQuery(queryString) {
+                            var query = {};
+                            var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+                            for (var i = 0; i < pairs.length; i++) {
+                                var pair = pairs[i].split('=');
+                                query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+                            }
+                            return query;
+                        }
+
+                        document.querySelectorAll( 'oembed[url]' ).forEach( element => {
+                            var url = element.attributes.url.value;
+                            var urlDetails = getLocation(url);
+                            var qs = parseQuery(urlDetails.search);
+                            var params = {
+                                url : encodeURI(url),
+                                maxheight:qs.height||qs.maxheight||'450',
+                                maxwidth:qs.width||qs.maxwidth||'750'
+                            }
+                            $http.get('/api/v2020/oembed', {params:params})
+                            .then(function(response){
+                                var embedHtml = '<div class="ck-media__wrapper">' + response.data.html +'</div>'
+                                element.insertAdjacentHTML("afterend", embedHtml);
+                            })
+                        });
+
+                    }, 200)
+
                     
             });            
 
