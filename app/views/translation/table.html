@@ -1,5 +1,6 @@
 ﻿<div>
 
+    <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
     <section class="content">
         <div class="row">
             <div class="col-md-12">
@@ -27,14 +28,75 @@
 
                         <div class="row">
                             
-                            <div class="col-md-6">
-                               
-                            </div>
                             <div class="col-md-12">
-                                <button ng-if="!fetchingFiles" type="submit" class="btn btn-primary" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
-                                    <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
-                                </button>                              
+                                <div class="box box-default">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">Search</h3>
+                                    </div>
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label> Title / Content</label>
+                                                    <input type="text" class="form-control" ng-model="search.titleContent">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label> Tags</label>
+                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search tags)" ng-model="search.tags" theme="bootstrap" ng-disabled="disabled">
+                                                        <ui-select-match placeholder="tags...">
+                                                            <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices refresh="funcAsync('article-tags', $select.search)" refresh-delay="500" repeat="tag in articletags track by $index">
+                                                            <!-- <div ng-bind-html="tag.title|lstring |unsafe | highlight: $select.search"></div> -->
+                                                            {{tag.title|lstring}}
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Custom Tags</label>
+                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search custom tags)" ng-model="search.customTags" theme="bootstrap"
+                                                        ng-disabled="disabled">
+                                                        <ui-select-match placeholder="custom tags...">
+                                                            <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
+                                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
+                                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Admin Tags</label>
+                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search admin tags)" ng-model="search.adminTags" theme="bootstrap"
+                                                        ng-disabled="disabled">
+                                                        <ui-select-match placeholder="admin tags...">
+                                                            <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                        </ui-select-match>
+                                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
+                                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
+                                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                                        </ui-select-choices>
+                                                    </ui-select>
+                                                </div>
+                                            </div>
+    
+                                        </div>
+                                    </div>
+                                    <div class="box-footer">
+                                        <button class="btn btn-sm btn-primary" ng-click="searchArticles(search)">Search</button>
+                                        <button ng-if="!fetchingFiles" type="submit" class="btn btn-sm btn-primary pull-right" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
+                                            <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
+                                        </button>     
+                                    </div>
+                                </div>
                             </div>
+    
                            
                         </div>
 
@@ -43,7 +105,7 @@
                                 <div class="box">
                                     <div class="box-body table-responsive no-padding ">
                                             <div class="text-center" ng-if="translation.rowCount>0" pagination current-page="translation.currentPage" 
-                                                    page-count="translation.pageCount" on-page-change="onPageChange(page)"></div> 
+                                                page-count="translation.pageCount" row-count="translation.rowCount" on-page-change="onPageChange(page)"></div> 
                                                
                                         <table class="table table-hover table-stripped table-bordered">
                                             <tr>

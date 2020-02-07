@@ -8,6 +8,7 @@
             scope: {
                 currentPage: '=',
                 pageCount: '=',
+                rowCount: '=',
                 onPageChange: '&'
             },
             link: function ($scope, $element, $attr) {
