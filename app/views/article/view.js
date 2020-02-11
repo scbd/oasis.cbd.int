@@ -1,4 +1,4 @@
-﻿define(['app', 'scbd-angularjs-services/generic-service'],
+define(['app', 'scbd-angularjs-services/generic-service'],
  function (app, classicEditor) {
    
     return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http',
@@ -36,16 +36,16 @@
 
                         document.querySelectorAll( 'oembed[url]' ).forEach( element => {
                             var url = element.attributes.url.value;
-                            var urlDetails = getLocation(url);
-                            var qs = parseQuery(urlDetails.search);
+                            // var urlDetails = getLocation(url);
+                            // var qs = parseQuery(urlDetails.search);
                             var params = {
                                 url : encodeURI(url),
-                                maxheight:qs.height||qs.maxheight||'450',
-                                maxwidth:qs.width||qs.maxwidth||'750'
+                                // maxheight:qs.height||qs.maxheight||'450',
+                                // maxwidth:qs.width||qs.maxwidth||'100%'
                             }
                             $http.get('/api/v2020/oembed', {params:params})
                             .then(function(response){
-                                var embedHtml = '<div class="ck-media__wrapper">' + response.data.html +'</div>'
+                                var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + response.data.html +'</div>'
                                 element.insertAdjacentHTML("afterend", embedHtml);
                             })
                         });
