@@ -1,4 +1,4 @@
-﻿<div>
+<div>
     <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
     <style type="text/css">
         .button {
@@ -214,17 +214,16 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Attachments</label>
-                                    </hr>
-                                    {{document.attachments|json}}
+                                    </hr>                                    
                                     <div class="row">
                                         <div class="col-md-12">
                                             <table class="table">
-                                                <tr ng-repeat="attachment in document.attachments" style="margin:5px;">
+                                                <tr ng-repeat="attachment in document.attachments" >
                                                     <td>
                                                         {{attachment.contentType}}
                                                     </td>
                                                     <td>
-                                                        <a target="_blank" ng-href="{{attachment.url}}">{{attachment.metadata.fileName}}</a>
+                                                        <a target="_blank" ng-href="{{attachment.url}}">{{attachment.filename||attachment.metadata.fileName}}</a>
                                                     </td>
                                                     <td>
 
