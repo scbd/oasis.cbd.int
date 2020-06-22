@@ -32,8 +32,8 @@ require.config({
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
         'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
         'angulargrid'               : 'libs/angulargrid/angulargrid',
-        'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.x/dist/vuetify.min',
-        'axios'                     : 'https://cdn.cbd.int/axios/dist/axios.min'
+        'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.2.32/dist/vuetify.min',
+        'axios'                     : 'https://cdn.cbd.int/axios@0.19.2/dist/axios.min'
         
     },
     'shim': {
@@ -52,7 +52,7 @@ require.config({
         'select2'                       : { 'deps': ['angular', 'jquery'] },
         'angular-ui-select2'            : { 'deps': ['angular', 'select2']} ,
         'angulargrid'                   : { 'deps': ['angular']},
-        'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css',
+        'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',
                                                          'css!https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css',
                                                          'css!https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' ]},
         

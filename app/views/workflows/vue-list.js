@@ -5,17 +5,29 @@ function(Vue, template, axios, vueBaseService){
         props: ['vueValue'],
         template: template,
         data: function() {
-            return {                
+            return {     
+                search: '',           
                 errors:[],
                 processWorkflowModel : {
                     show : false,
                     workflow : {},
                     action:''
                 },
+                confirmModal : {
+                    show : false,
+                    workflow : {}
+                },
+                toastMessage : {
+                    text:'',
+                    timeout:5000,
+                    show:false,
+                    color:'success'
+                },
                 failedRecords:{
                     page:1,
                     options:{
-                        "page": 1, "itemsPerPage": 20,
+                        "page": 1, 
+                        "itemsPerPage": 20,
                         sortDesc:[true],
                         sortBy:['failedExecution.failDate']
                     },
@@ -45,6 +57,11 @@ function(Vue, template, axios, vueBaseService){
                 },
                 deep: true,
             },
+            'search': {
+                handler () {
+                  this.loadFailedWorkflows()
+                }
+            },
             vueValue: function(update) {
                 this.angularVueValue = update;
                 this.countUpdated();
@@ -54,10 +71,35 @@ function(Vue, template, axios, vueBaseService){
             loadFailedWorkflows : function(){
 
                 var self = this;
+
+                if (self.searchCountSource) {
+                    self.searchCountSource.cancel('Cancel previous count request');
+                }
+                if (self.searchSource) {
+                    self.searchSource.cancel('Cancel previous search request');
+                }
+                self.searchCountSource = axios.CancelToken.source();
+                self.searchSource = axios.CancelToken.source();
+
                 var options = self.failedRecords.options||{};
 
-                self.failedRecordsLoading = true
+                self.failedRecords.loading = true
                 var ag = [];
+                var countAg = [];
+
+                if(this.search!=''){
+                    var searchQuery = {
+                        "$or" : [
+                            {"data.title.en": { "$$contains" : this.search}}, 
+                            {"data.abstract.en": { "$$contains" : this.search}},
+                            {"data.realm": { "$$contains" : this.search}},
+                            {"data.metadata.schema": { "$$contains" : this.search}},
+                        ]
+                    };
+                    ag.push({$match:searchQuery});
+                    countAg.push({$match:searchQuery})
+                }
+                
                 if(options.sortBy){
                     var sortDesc = options.sortDesc[0]
                     var sort = {}
@@ -65,26 +107,49 @@ function(Vue, template, axios, vueBaseService){
                     ag.push({$sort:sort})
                 }
                 ag.push({$skip:options.itemsPerPage * (options.page-1)})
-                ag.push({$limit:options.itemsPerPage})
-
+                if(options.itemsPerPage>0)
+                    ag.push({$limit:options.itemsPerPage})
 
                 var queryString = {
                     ag : JSON.stringify(ag)
                 }
-
-                axios.get(`/api/v2013/workflows/failed-workflows`, { params : {c:1}})
+                countAg.push({ $count    : 'count' });
+                var countAgQuery = {
+                    ag: JSON.stringify(countAg)
+                }
+                
+                axios.get(`/api/v2013/workflows/failed-workflows`, { params : countAgQuery, cancelToken: self.searchCountSource.token})
                 .then(function(response){
                     self.failedRecords.total = response.data[0].count
                 })
-                axios.get(`/api/v2013/workflows/failed-workflows`, { params : queryString})
+                .catch(function(err) {
+                    if (axios.isCancel(err)) {
+                        console.log('Request canceled', err.message);
+                    }
+                    else{
+                        self.errors.push(err)
+                        self.showError(err);
+                    }
+                })
+                .finally(function(){
+                    self.searchCountSource=undefined
+                })
+                axios.get(`/api/v2013/workflows/failed-workflows`, { params : queryString, cancelToken: self.searchSource.token})
                 .then(function(response){
                     self.failedRecords.workflows = response.data
                 })
                 .catch(function(err){
-                    self.errors.push(e)
+                    if (axios.isCancel(err)) {
+                        console.log('Request canceled', err.message);
+                    }
+                    else{
+                        self.errors.push(err)
+                        self.showError(err);
+                    }
                 })
                 .finally(function(){
-                    self.failedRecordsLoading = false;
+                    self.failedRecords.loading = false;
+                    self.searchSource=undefined
                 })
             }, 
             showProcessWorkflow         : function(workflow){
@@ -93,7 +158,8 @@ function(Vue, template, axios, vueBaseService){
             },
             setFailedWorkflowToProcessed: function(workflow){
                 var self = this;
-                self.updatingAction = true;
+                self.failedRecords.updatingAction = true;
+                self.processWorkflowModel.show = false;
                 axios.put('/api/v2013/workflows/failed-workflows/' + workflow._id + 
                             '/processed', {action:self.processWorkflowModel.action})
                 .then(function(response){
@@ -101,20 +167,22 @@ function(Vue, template, axios, vueBaseService){
                         workflow.failureProcessed = {
                             action : self.processWorkflowModel.action
                         }
-                        self.processWorkflowModel.show = false;
+                        self.toastMessage.show = true;
+                        self.toastMessage.color='success'
+                        self.toastMessage.text = 'Workflow was successfully set to processed.'
                     }
                 })
                 .catch(function(err){
-                    self.errors.push(e)
+                    self.errors.push(err)
+                        self.showError(err);
                 })
                 .finally(function(){
-                    self.updatingAction=false;
+                    self.failedRecords.updatingAction=false;
                 })
             },
             startNewWorkflow: function(workflow){
-                
                 var self = this;
-                self.updatingAction = true;
+                self.failedRecords.updatingAction = true;
                 axios.put('/api/v2013/workflows/failed-workflows/' + workflow._id + '/new-workflow')
                 .then(function(response){
                     if(response.status == 200){
@@ -127,16 +195,33 @@ function(Vue, template, axios, vueBaseService){
                             }
                         
                             self.processWorkflowModel.show = false;
+                            self.confirmModal.show = false;
+                            self.toastMessage.show = true;
+                            self.toastMessage.color='success'
+                            self.toastMessage.text = 'New workflow was successfully started.'
                         }
                     }
                 })
                 .catch(function(err){
                     console.log(err)
                     self.errors.push(err)
+                    self.showError(err);
                 })
                 .finally(function(){
-                    self.updatingAction=false;
+                    self.failedRecords.updatingAction=false;
                 })
+            },
+            confirm: function(item){
+                this.confirmModal.show = true;
+                this.confirmModal.workflow = item;
+            },
+            showError:function(err){
+                this.toastMessage.show = true;
+                this.toastMessage.color='error'
+                if(err && err.message)
+                    this.toastMessage.text = err.message;
+                else
+                    this.toastMessage.text = 'Error occoured when processing request.';
             }
         }
     });
