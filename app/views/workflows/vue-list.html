@@ -1,15 +1,19 @@
-﻿<div data-app>
+﻿<div >
     <template>
         <v-card>
             <v-container fluid>
-                <v-toolbar flat color="primary" dark>
-                    <v-toolbar-title>Failed workflows</v-toolbar-title>
-                </v-toolbar>
-                
+                    <v-toolbar flat color="primary" dark>
+                        <v-toolbar-title>Failed workflows</v-toolbar-title>
+                    </v-toolbar>
+                    <v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
+                    </v-card-title>
+
                     <v-data-table :headers="failedRecords.headers" :items="failedRecords.workflows" :single-expand="false" :expanded.sync="failedRecords.expanded" 
-                    item-key="_id" show-expand class="elevation-1" :loading="failedRecords.loading" loading-text="Loading... Please wait"
-                    :server-items-length="failedRecords.total" :options.sync="failedRecords.options">     
-                       
+                    item-key="_id" show-expand class="elevation-4" :loading="failedRecords.loading" loading-text="Loading... Please wait"
+                    :server-items-length="failedRecords.total" :options.sync="failedRecords.options" >     
+                        <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
                         <template v-slot:item.failedExecution.failDate="{ item }">
                             {{item.failedExecution.failDate  | formatDate('format','DD MMM YYYY HH:MM')}}
                         </template>
@@ -26,7 +30,7 @@
                                         <table class="table">
                                             <tr><td colspan="2">Workflow details</td></tr>
                                             <tr>
-                                                <td>
+                                                <td style="vertical-align: top;width: 50%;padding: 10px;">
                                                     <table class="table table-bordered">
                                                         <tr>
                                                             <th colspan="4">Workflow Details</th>
@@ -60,7 +64,7 @@
                                                         </tr>
                                                     </table>
                                                 </td>
-                                                <td>
+                                                <td style="vertical-align: top;width: 50%;padding-top: 10px">
                                                      <table style="padding-top:10px" class="table table-bordered">
                                                         <tr>
                                                             <th colspan="3">Workflow Activities</th>
@@ -76,6 +80,11 @@
                                                             <td> {{activity.canceledOn}} ({{activity.canceledBy}})</td>
                                                         </tr>
                                                     </table>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2"  style="vertical-align: top;padding: 10px">
+
                                                     <table class="table table-bordered">
                                                         <tr>
                                                             <th colspan="6">Failiure details (AWS SWF)</th>
@@ -115,9 +124,9 @@
                                             </tr>
                                         </table>
                                         <v-card-actions  v-if="!item.failureProcessed">
-                                            <v-btn class="btn btn-primary" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="showProcessWorkflow(item)">No Action required</v-btn> &nbsp;
-                                            <v-btn class="btn btn-warning" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="">Delete record lock</v-btn> &nbsp;
-                                            <v-btn class="btn btn-danger"  :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="startNewWorkflow(item)">Start new workflow</v-btn> &nbsp;                                    
+                                            <v-btn color="primary" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="showProcessWorkflow(item)">No Action required</v-btn> &nbsp;
+                                            <v-btn color="warning" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="">Delete record lock</v-btn> &nbsp;
+                                            <v-btn color="danger"  :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="confirm(item)">Start new workflow</v-btn> &nbsp;                                    
                                         </v-card-actions>
                                     </v-card>
                                 </div>
@@ -138,11 +147,30 @@
                             </v-card-text>
                             <hr />
                             <v-card-actions>
-                                <v-btn :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" class="btn btn-primary" @click="setFailedWorkflowToProcessed(processWorkflowModel.workflow)">Save</v-btn> &nbsp;
-                                <v-btn :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" class="btn btn-default">Close</v-btn> &nbsp;
+                                <v-btn :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" color="primary" @click="setFailedWorkflowToProcessed(processWorkflowModel.workflow)">Save</v-btn> &nbsp;
+                                <v-btn :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" color="default" @click="processWorkflowModel.show=false">Close</v-btn> &nbsp;
                             </v-card-actions>
                         </v-card>
-                </v-dialog>
+                    </v-dialog>
+
+                    <v-dialog v-model="confirmModal.show" persistent max-width="350">
+                        <v-card>
+                            <v-card-title class="headline">Are you sure you wan to proceed?</v-card-title>
+                            <!-- <v-card-text>Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.</v-card-text> -->
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn  color="primary" :loading="failedRecords.updatingAction" :disabled="failedRecords.updatingAction" @click="startNewWorkflow(confirmModal.workflow)">Yes</v-btn>
+                                <v-btn  color="primary" :disabled="failedRecords.updatingAction" @click="confirmModal.show = false">No</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+
+                    <v-snackbar v-model="toastMessage.show" right top :color="toastMessage.color" :timeout="toastMessage.timeout">
+                        {{ toastMessage.text }}
+                        <v-btn color="primary" text @click="toastMessage.show = false">
+                            Close
+                        </v-btn>
+                    </v-snackbar>
             </v-container>
         </v-card>
     </template>
