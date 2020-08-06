@@ -26,76 +26,91 @@
                         <template v-slot:expanded-item="{ headers, item }">
                             <td :colspan="headers.length" style="padding:10px;">
                                 <div>
-                                    <v-card flat1 tile1 style="background: #eee;">        
-                                        <table class="table">
-                                            <tr><td colspan="2">Workflow details</td></tr>
-                                            <tr>
-                                                <td style="vertical-align: top;width: 50%;padding: 10px;">
-                                                    <table class="table table-bordered">
-                                                        <tr>
-                                                            <th colspan="4">Workflow Details</th>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="width:35px">Realm</td><td>{{item.data.realm}}</td>
-                                                            <td style="width:35px">Identifier</td>
-                                                            <td>
-                                                                <a target="_blank" :href="'https://api.cbd.int/api/v2013/documents/'+item.data.identifier">{{item.data.identifier}}</a> 
-                                                                ({{item.data.documentID}})
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Schema</td><td>{{item.data.metadata.schema}}</td>
-                                                            <td>Workflow Id</td><td>{{item._id}}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Type</td><td>{{item.type.name}}</td>
-                                                            <td>Version</td><td>{{item.type.version}}</td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>Created</td><td>{{item.createdOn}} ({{item.createdBy}})</td>
-                                                            <td>Closed</td><td>{{item.closedOn}} ({{item.closedBy}})</td>
-                                                        </tr>
-                                                        <tr v-if="item.failedExecution.lockInfo">
-                                                            <td>Lock Id</td><td>{{item.failedExecution.lockInfo.lockID}} ({{item.failedExecution.lockInfo.lockedOn}})</td>
-                                                            <td>locked By</td>
-                                                            <td>
-                                                            {{item.failedExecution.lockInfo.lockedBy.firstName}} {{item.failedExecution.lockInfo.lockedBy.lastName  }}
-                                                            ({{item.failedExecution.lockInfo.lockedBy.email}})</td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td style="vertical-align: top;width: 50%;padding-top: 10px">
-                                                     <table style="padding-top:10px" class="table table-bordered">
-                                                        <tr>
-                                                            <th colspan="3">Workflow Activities</th>
-                                                        </tr>
-                                                        <tr>                                                    
-                                                            <td style="width:35px">Created on</td>           
-                                                            <td style="width:35px">Closed on</td>           
-                                                            <td style="width:35px">Canceled on</td>
-                                                        </tr>
-                                                        <tr v-for="activity in item.activities">
-                                                            <td> {{activity.createdOn}} ({{activity.createdBy}})</td>
-                                                            <td> {{activity.closedOn}} ({{activity.closedBy}})</td>
-                                                            <td> {{activity.canceledOn}} ({{activity.canceledBy}})</td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2"  style="vertical-align: top;padding: 10px">
+                                    <v-card flat tile>    
+                                        <v-card-title>Workflow details</v-card-title>
+                                            <v-row class="mb-12" no-gutters >
+                                                <v-col md="6">
+                                                    <div class="v-data-table v-data-table--fixed-height theme--light">
+                                                        <div class="v-data-table__wrapper">
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th colspan="4">Workflow</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th style="width:35px">Realm</th><td>{{item.data.realm}}</td>
+                                                                        <th style="width:35px">Identifier</th>
+                                                                        <td>
+                                                                            <a target="_blank" :href="'https://api.cbd.int/api/v2013/documents/'+item.data.identifier">{{item.data.identifier}}</a> 
+                                                                            ({{item.data.documentID}})
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Schema</th><td>{{item.data.metadata.schema}}</td>
+                                                                        <th>Workflow Id</th><td>{{item._id}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Type</th><td>{{item.type.name}}</td>
+                                                                        <th>Version</th><td>{{item.type.version}}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th>Created</th><td>{{item.createdOn}} ({{item.createdBy}})</td>
+                                                                        <th>Closed</th><td>{{item.closedOn}} ({{item.closedBy}})</td>
+                                                                    </tr>
+                                                                    <tr v-if="item.failedExecution.lockInfo">
+                                                                        <th>Lock Id</th><td>{{item.failedExecution.lockInfo.lockID}} ({{item.failedExecution.lockInfo.lockedOn}})</td>
+                                                                        <th>locked By</th>
+                                                                        <td>
+                                                                        {{item.failedExecution.lockInfo.lockedBy.firstName}} {{item.failedExecution.lockInfo.lockedBy.lastName  }}
+                                                                        ({{item.failedExecution.lockInfo.lockedBy.email}})</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </v-col>
+                                                <v-col md="6"> 
+                                                    <div class="v-data-table v-data-table--fixed-height theme--light">
+                                                        <div class="v-data-table__wrapper">
+                                                            <table class="table table-bordered">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th colspan="3">Workflow Activities</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr>                                                    
+                                                                        <th style="width:35px">Created on</th>           
+                                                                        <th style="width:35px">Closed on</th>           
+                                                                        <th style="width:35px">Canceled on</th>
+                                                                    </tr>
+                                                                    <tr v-for="activity in item.activities">
+                                                                        <td> {{activity.createdOn}} ({{activity.createdBy}})</td>
+                                                                        <td> {{activity.closedOn}} ({{activity.closedBy}})</td>
+                                                                        <td> {{activity.canceledOn}} ({{activity.canceledBy}})</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </v-col>
+                                            </v-row>
+                                            <div class="v-data-table v-data-table--fixed-height theme--light">
+                                                <div class="v-data-table__wrapper">
 
                                                     <table class="table table-bordered">
                                                         <tr>
                                                             <th colspan="6">Failiure details (AWS SWF)</th>
                                                         </tr>
                                                         <tr>                                                    
-                                                            <td style="width:35px">event Id</td>           
-                                                            <td style="width:35px">Timestamp</td>           
-                                                            <td style="width:35px">Type</td>         
-                                                            <td style="width:35px">Parent Id</td>           
-                                                            <td style="width:35px">Details</td>           
-                                                            <td style="width:35px">Reason</td>
+                                                            <th style="width:35px">event Id</th>           
+                                                            <th style="width:35px">Timestamp</th>           
+                                                            <th style="width:35px">Type</th>         
+                                                            <th style="width:35px">Parent Id</th>           
+                                                            <th style="width:35px">Details</th>           
+                                                            <th style="width:35px">Reason</th>
                                                         </tr>
                                                         <tr v-for="event in item.failedExecution.events">
                                                             <td> {{event.eventId}}</td>
@@ -106,11 +121,10 @@
                                                             <td> {{event.workflowExecutionFailedEventAttributes.reason}}</td>
                                                         </tr>
                                                     </table>
-
-                                                </td>
-                                            </tr>
-                                            <tr v-if="item.validationErrors">
-                                                <td colspan="2">
+                                                </div>
+                                            </div>
+                                            <div class="v-data-table v-data-table--fixed-height theme--light"  v-if="item.validationErrors">
+                                                <div class="v-data-table__wrapper">
                                                     <table class="table table-bordered">
                                                         <tr style="background-color: #dd4b39;">
                                                             <td colspan="2">The draft record has validation Errors, please modify the record on the owner clearing-house</td>
@@ -120,9 +134,8 @@
                                                             <td>{{error.property}}</td>
                                                         </tr>
                                                     </table>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                                </div>
+                                            </div>
                                         <v-card-actions  v-if="!item.failureProcessed">
                                             <v-btn color="primary" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="showProcessWorkflow(item)">No Action required</v-btn> &nbsp;
                                             <v-btn color="warning" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="">Delete record lock</v-btn> &nbsp;
