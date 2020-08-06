@@ -92,12 +92,6 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 $scope.document.customTags  = pluckTags($scope.article.customTags);
                 $scope.document.adminTags   = pluckTags($scope.article.adminTags);
 
-                //temp solution for media table
-                updateHtml($scope.document.content, $scope.document.adminTags)
-                // //another special case for 
-                // if($scope.document._id == '5c992c30f2fd9c0001d8d3c1'){
-
-                // }
                 var operation;
                 if($scope.document && $scope.document._id){
                     operation = genericService.update('v2017', 'articles',$scope.document._id, $scope.document);
@@ -215,21 +209,6 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 $scope.document.attachments = $scope.document.attachments||[];
                 $scope.document.attachments.push(data)
 
-            }
-
-            function updateHtml (content, tags){
-
-                // if(_.contains(tags, 'media')){
-
-                    _.each(content, function(lang, key){
-                        if(lang.indexOf('<td><strong>Date</strong></td>')>=0 && lang.indexOf('<td><strong>Time</strong></td>')>=0){
-                           content[key] =  lang.replace('<table>', '<table class="table table-responsive">')
-                            .replace('<td><strong>Date</strong></td>', '<td width="10%"><strong>Date</strong></td>')
-                            .replace('<td><strong>Time</strong></td>', '<td width=\"15%\"><strong>Time</strong></td>');
-                        }
-                    })
-
-                // }
             }
 
             function hasLangString(element){

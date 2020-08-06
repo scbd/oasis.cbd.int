@@ -63,6 +63,17 @@ function(app,classicEditor, template, _) {
 					//available toolbar : code, 'emoji',plugins1: [],
 						
 					var editorOptions = {
+						
+						toolbar: [ 	
+							'heading', 'fontFamily', , 'fontSize', 'fontColor', '|', 
+							'bold', 'italic', 'link', '|', 
+							'indent', 'outdent','alignment', '|',
+							'bulletedList', 'numberedList', 'blockQuote', '|', 
+							'highlight', 'insertTable', '|', 
+							'imageUpload', 'mediaEmbed', '|', 
+							'horizontalLine', '|',
+							'removeFormat', 'undo', 'redo'
+						],
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
 						},
@@ -124,10 +135,15 @@ function(app,classicEditor, template, _) {
 								}
 							]
 						},
-						toolbar: [ 'heading', 'fontFamily', , 'fontSize', 'fontColor', '|', 'bold', 'italic', 'alignment', 'link', '|', 'bulletedList', 'numberedList', 'blockQuote', '|', 'highlight', 'insertTable', '|', 'imageUpload', 'mediaEmbed', '|', 'undo', 'redo', '|', 'horizontalLine' ],
 						image: {
-							toolbar : ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight'],
-							styles  : ['full', 'alignLeft', 'alignRight']
+							resizeOptions: [
+								{ name: 'imageResize:original', label: 'Original', value: null },
+								{ name: 'imageResize:25', label: '25%', value: '25' },
+								{ name: 'imageResize:50', label: '50%', value: '50' },
+								{ name: 'imageResize:75', label: '75%', value: '75' }
+							],
+							toolbar : [	'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight', '|', 'imageTextAlternative', 'linkImage', '|', 'imageResize'],
+							styles  : ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight']
 						},
 						heading: {
 							options: [
@@ -136,6 +152,13 @@ function(app,classicEditor, template, _) {
 								{ model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
 								{ model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
 							]
+						},
+						table: {
+							contentToolbar: [
+								'tableColumn', 'tableRow', 'mergeTableCells',
+								'tableProperties', 'tableCellProperties'
+							],
+				
 						},
 						link: {
 							addTargetToExternalLinks: true,
@@ -146,7 +169,15 @@ function(app,classicEditor, template, _) {
 									attributes: {
 										download: 'download'
 									}
-								}
+								},
+								// {
+								// 	mode: 'manual',
+								// 	label: 'Open in a new tab',
+								// 	attributes: {
+								// 		target: '_blank',
+								// 		rel: 'noopener noreferrer'
+								// 	}
+								// }
 							]
 						},
 						wordCount: {

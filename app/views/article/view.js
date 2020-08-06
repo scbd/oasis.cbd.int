@@ -1,5 +1,5 @@
-define(['app', 'scbd-angularjs-services/generic-service'],
- function (app, classicEditor) {
+define(['app', 'scbd-angularjs-services/generic-service', 'css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@21.0.0-1/build/ckeditor.css', 'css!dist/ckeditor5/style.css'],
+ function (app) {
    
     return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http',
         function ($scope, genericService, $q, $route, $rootScope, $timeout, $http) {
