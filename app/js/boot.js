@@ -26,7 +26,7 @@ require.config({
         'angular-flex'              : 'libs/angular-flex/angular-flex',
         'ngAria'                    : 'libs/angular-aria/angular-aria.min',
         'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
-        'ck-editor'                 : 'https://cdn.cbd.int/ckeditor5-build-inline-full@16.0.0/build/ckeditor',
+        'ck-editor'                 : 'https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@21.0.0-1/build/ckeditor',
         'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
@@ -55,6 +55,7 @@ require.config({
         'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',
                                                          'css!https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css',
                                                          'css!https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' ]},
+        'ck-editor'                     : { 'deps': ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@21.0.0-1/build/ckeditor.css']},
         
     },
     packages: [
