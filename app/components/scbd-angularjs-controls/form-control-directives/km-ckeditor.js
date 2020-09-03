@@ -146,7 +146,7 @@ function(app,classicEditor, template, _) {
 				
 						},
 						link: {
-							addTargetToExternalLinks: true,
+							addTargetToExternalLinks: false,
 							decorators: [
 								{
 									mode: 'manual',
@@ -155,14 +155,14 @@ function(app,classicEditor, template, _) {
 										download: 'download'
 									}
 								},
-								// {
-								// 	mode: 'manual',
-								// 	label: 'Open in a new tab',
-								// 	attributes: {
-								// 		target: '_blank',
-								// 		rel: 'noopener noreferrer'
-								// 	}
-								// }
+								{
+									mode: 'manual',
+									label: 'Open in a new tab',
+									attributes: {
+										target: '_blank',
+										rel: 'noopener noreferrer'
+									}
+								}
 							]
 						},
 						wordCount: {
