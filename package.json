@@ -8,7 +8,7 @@
     "ejs": "2.5.5",
     "express": "4.16.4",
     "express-zip": "2.0.1",
-    "http-proxy": "1.13.2",
+    "http-proxy": "1.18.1",
     "simple-git": "1.107.0",
     "superagent": "4.1.0",
     "winston": "3.2.1"
