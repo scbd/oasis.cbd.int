@@ -3,7 +3,7 @@
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
 var appVersion = document.documentElement.attributes['app-version'].value;
-var ckeditorVersion = '21.0.0-1'
+var ckeditorVersion = '22.0.0'
 require.config({
     baseUrl : 'app/',
     'paths': {
