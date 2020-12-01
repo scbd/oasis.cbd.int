@@ -54,51 +54,53 @@
 
 <script>
 
+define(['Vue'], function(vue){
+  return {  
+      template: template,
+      props: {
+          populateWith: {
+          type: Object,
+          default: () => ({ empty: true }),
+          },
+      },
+      data() {
+          return {
+          todo: {
+              title: "",
+              priority: null,
+          },
+          };
+      },
+      methods: {
+          clearForm() {
+          this.todo = {
+              title: "",
+              priority: null,
+          };
+          },
+          submit() {
+          if (
+              this.todo.title !== "" &&
+              this.todo.priority !== null &&
+              this.todo.priority >= 1 &&
+              this.todo.priority <= 10
+          ) {
+              this.$emit("submit", this.todo);
+              this.clearForm();
+              this.close();
+          }
+          },
+          close() {
+          this.$emit("close");
+          },
+      },
+      created() {
+          if (!this.populateWith.empty) {
+          this.todo = this.populateWith;
+          }
+      },
+  }      
+});
 
-return {
-    name: "editWidget",
-    props: {
-        populateWith: {
-        type: Object,
-        default: () => ({ empty: true }),
-        },
-    },
-    data() {
-        return {
-        todo: {
-            title: "",
-            priority: null,
-        },
-        };
-    },
-    methods: {
-        clearForm() {
-        this.todo = {
-            title: "",
-            priority: null,
-        };
-        },
-        submit() {
-        if (
-            this.todo.title !== "" &&
-            this.todo.priority !== null &&
-            this.todo.priority >= 1 &&
-            this.todo.priority <= 10
-        ) {
-            this.$emit("submit", this.todo);
-            this.clearForm();
-            this.close();
-        }
-        },
-        close() {
-        this.$emit("close");
-        },
-    },
-    created() {
-        if (!this.populateWith.empty) {
-        this.todo = this.populateWith;
-        }
-    },
-}
 </script>
 

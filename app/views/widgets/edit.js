@@ -8,7 +8,7 @@
         }
 
         $scope.$vueComponents = {
-            editWidget:editComponent
+            blaBla:editComponent
         }
 
     }]
