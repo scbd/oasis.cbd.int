@@ -60,12 +60,12 @@ function(app,classicEditor, template, _) {
 				}
 
 				function initializeEditor(lang){
-					//available toolbar : code, 'emoji',plugins1: [],
-						
+					//available toolbar : code, 'emoji',plugins1: [],'fontFamily', , 'fontSize',
+					// fontSize: { options: [ 9,'default' ] },
 					var editorOptions = {
 						
 						toolbar: [ 	
-							'heading', 'fontFamily', , 'fontSize', 'fontColor', '|', 
+							'heading',  'fontColor', '|', 
 							'bold', 'italic', 'link', '|', 
 							'indent', 'outdent','alignment', '|',
 							'bulletedList', 'numberedList', 'blockQuote', '|', 
@@ -93,21 +93,6 @@ function(app,classicEditor, template, _) {
 									color: 'var(--ck-highlight-pen-red)',
 									type: 'pen'
 								}
-							]
-						},
-						fontSize: {
-							options: [
-								9,
-								11,
-								13,
-								'default',
-								17,
-								19,
-								21,
-								24,
-								27,
-								30,
-								32
 							]
 						},
 						fontColor: {
@@ -161,7 +146,7 @@ function(app,classicEditor, template, _) {
 				
 						},
 						link: {
-							addTargetToExternalLinks: true,
+							addTargetToExternalLinks: false,
 							decorators: [
 								{
 									mode: 'manual',
@@ -170,14 +155,14 @@ function(app,classicEditor, template, _) {
 										download: 'download'
 									}
 								},
-								// {
-								// 	mode: 'manual',
-								// 	label: 'Open in a new tab',
-								// 	attributes: {
-								// 		target: '_blank',
-								// 		rel: 'noopener noreferrer'
-								// 	}
-								// }
+								{
+									mode: 'manual',
+									label: 'Open in a new tab',
+									attributes: {
+										target: '_blank',
+										rel: 'noopener noreferrer'
+									}
+								}
 							]
 						},
 						wordCount: {
