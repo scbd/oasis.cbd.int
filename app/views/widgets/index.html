@@ -1,0 +1,7 @@
+﻿<div>
+    <div>
+        <h1>Hello from {{ngWorld}}</h1>
+        <h1 ng-vue ng-vue-expose="vueWorld" >Hello from {{vueWorld}}</h1>
+        <button ng-vue ng-vue-expose="vueWorld,&alert" :click="alert('Hello from'+vueWorld)">click me</button>
+    </div>
+</div>

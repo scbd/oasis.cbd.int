@@ -14,6 +14,7 @@ require.config({
         'css'                       : 'libs/require-css/css.min',
         'text'                      : 'libs/requirejs-text/text',
         'json'                      : 'libs/requirejs-plugins/src/json',
+        'vueFile'                   : 'https://cdn.cbd.int/requirejs-vue@1.1.5/requirejs-vue',
         'shim'                      : 'libs/require-shim/src/shim',
         'angular-localizer'         : 'libs/ngLocalizer/localizer',
         'async'                     : 'libs/requirejs-plugins/src/async',
@@ -33,7 +34,8 @@ require.config({
         'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
         'angulargrid'               : 'libs/angulargrid/angulargrid',
         'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.2.32/dist/vuetify.min',
-        'axios'                     : 'https://cdn.cbd.int/axios@0.19.2/dist/axios.min'
+        'axios'                     : 'https://cdn.cbd.int/axios@0.19.2/dist/axios.min',
+        'angular-vue'               : 'https://cdn.cbd.int/@scbd/angular-vue@1.0.5/dist/angular-vue.min'
         
     },
     'shim': {
@@ -56,6 +58,8 @@ require.config({
                                                          'css!https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css',
                                                          'css!https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900' ]},
         'ck-editor'                     : { 'deps': ['ck-editor-css']},
+        'angular-vue'                   : { 'deps': ['angular', 'vue']},
+        'vueFile'                       : { 'deps': ['vue']},
         
     },
     packages: [
@@ -70,6 +74,10 @@ require.config({
 define('ck-editor-css', ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
 
 define('vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
+    window.Vue = Vue;
+    return Vue;
+})
+define('Vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
     window.Vue = Vue;
     return Vue;
 })
