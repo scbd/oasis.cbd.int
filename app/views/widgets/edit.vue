@@ -3,104 +3,122 @@
     @submit.prevent="submit"
     class="flex flex-wrap justify-between sm:justify-center"
   >
-    <label class="inline sm:mr-4" :class="populateWith.empty ? 'mr-8' : ''">
-      Priority
-      <input
-        class="block my-2 p-2 rounded border border-gray-400 focus:border-green-400 focus:outline-none"
-        type="number"
-        min="1"
-        max="10"
-        placeholder="1-10"
-        v-model.number="todo.priority"
-      />
-    </label>
-
-    <label class="inline"
-      >Task
-      <input
-        class="block my-2 p-2 rounded border border-gray-400 focus:border-green-400 focus:outline-none"
-        type="text"
-        placeholder="Get milk..."
-        v-model.trim="todo.title"
-      />
-    </label>
-
-    <div
-      class="flex flex-grow sm:ml-4"
-      :class="{ 'sm:flex-grow-0': populateWith.empty }"
-    >
-      <button
-        type="submit"
-        title="save"
-        class="bg-white flex-grow active:bg-green-800 text-green-500 border border-green-500 mt-2 mb-3 rounded-full w-8 h-8 self-end font-bold hover:bg-green-500 hover:text-white focus:outline-none"
-        :class="populateWith.empty ? 'sm:flex-grow-0' : 'mr-4'"
-      >
-        {{ populateWith.empty ? "+" : "Save" }}
-      </button>
-
-      <button
-        v-if="!populateWith.empty"
-        @click="close"
-        type="button"
-        title="cancel"
-        class="bg-white active:bg-green-800 text-green-500 border border-green-500 mt-2 mb-3 rounded-full w-8 h-8 self-end font-bold hover:bg-green-500 hover:text-white focus:outline-none"
-        :class="populateWith.empty ? 'flex-grow-0' : 'flex-grow'"
-      >
-        Cancel
-      </button>
-    </div>
+    Hello
+    <section class="content">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">New Widget</h3>
+            </div>
+            <div class="box-body">
+              <!-- <div class="alert alert-danger alert-dismissible" ng-if="showTranslationAlert">                            
+                            <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                            Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
+                        </div>
+                        <div class="blockRegion" ng-if="loading">
+                            <div class="inverted dimmer active">
+                                <div class="center">
+                                    <div class="medium loader"><i class="fa fa-spin fa-cog" /> loading...</div>					
+                                </div>
+                            </div>
+                        </div> -->
+              <CRow>
+                <CCol sm="12">
+                    <code-editor></code-editor>
+                  <!-- <CInput label="Name" placeholder="Enter widget name" /> -->
+                </CCol>
+              </CRow>
+              <CRow>
+                <CCol sm="6">
+                  <CSelect
+                    label="Content type"
+                    :options="['application/html', 'application/json']"
+                  />
+                </CCol>
+                <CCol sm="6">
+                  <CSelect
+                    label="Http method"
+                    :options="[
+                      'GET',
+                      'POST',
+                      'PUT'
+                    ]"
+                  />
+                </CCol>
+              </CRow>
+            </div>
+            <div class="box-footer">
+              <button type="submit" class="btn btn-primary" ng-click="submit()">
+                Submit
+              </button>
+              <!-- <button type="submit" class="btn btn-primary" ng-click="getTags()">Get Tags</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </form>
 </template>
 
 <script>
-
-define(['Vue'], function(vue){
-  return {  
-      template: template,
-      props: {
-          populateWith: {
-          type: Object,
-          default: () => ({ empty: true }),
-          },
+define(["Vue", "coreui-vue", 'vueFile!views/widgets/components/code-editor.vue'], 
+function (vue, coreui, codeEditor) {
+//   Vue.use(coreui);
+  console.log(codeEditor);
+  return {
+    components: {
+      CRow: coreui.CRow,
+      CCol: coreui.CCol,
+      CInput: coreui.CInput,
+      CSelect: coreui.CSelect,
+      CInput: coreui.CInput,
+      codeEditor    : codeEditor
+    },
+    template: template,
+    props: {
+      populateWith: {
+        type: Object,
+        default: () => ({ empty: true }),
       },
-      data() {
-          return {
-          todo: {
-              title: "",
-              priority: null,
-          },
-          };
+    },
+    data() {
+      return {
+        todo: {
+          title: "test",
+          priority: null,
+        },
+      };
+    },
+    methods: {
+      clearForm() {
+        this.todo = {
+          title: "",
+          priority: null,
+        };
       },
-      methods: {
-          clearForm() {
-          this.todo = {
-              title: "",
-              priority: null,
-          };
-          },
-          submit() {
-          if (
-              this.todo.title !== "" &&
-              this.todo.priority !== null &&
-              this.todo.priority >= 1 &&
-              this.todo.priority <= 10
-          ) {
-              this.$emit("submit", this.todo);
-              this.clearForm();
-              this.close();
-          }
-          },
-          close() {
-          this.$emit("close");
-          },
+      submit() {
+        if (
+          this.todo.title !== "" &&
+          this.todo.priority !== null &&
+          this.todo.priority >= 1 &&
+          this.todo.priority <= 10
+        ) {
+          this.$emit("submit", this.todo);
+          this.clearForm();
+          this.close();
+        }
       },
-      created() {
-          if (!this.populateWith.empty) {
-          this.todo = this.populateWith;
-          }
+      close() {
+        this.$emit("close");
       },
-  }      
+    },
+    created() {
+      if (!this.populateWith.empty) {
+        this.todo = this.populateWith;
+      }
+    },
+  };
 });
-
 </script>
 
