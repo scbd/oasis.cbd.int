@@ -14,7 +14,10 @@
 
         
 <script>
-    define(["Vue", 'code-editor-vue'], function (vue, codemirror) {
+    define(["Vue", 'code-editor-vue', 
+        "https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml",
+        'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css'
+    ], function (vue, codemirror) {
         console.log(codemirror)
         // Vue.use(VueCodemirror)
         return {
@@ -25,17 +28,10 @@
             data: function() {
                 return {
                     cmOptions: {
-                        tabSize: 4,
-                        styleActiveLine: true,
                         lineNumbers: true,
-                        autoCloseTags: true,
-                        line: true,
-                        matchBrackets: true,
-                        mode: {name: "handlebars", base: "text/html"},
+                        mode: "xml",
                         theme: 'base16-dark',
-                        foldGutter: true,
-                        styleSelectedText: true,
-                        showCursorWhenSelecting: true,
+
                     },
                     code: '<div><span>{{name}}</span></div>'
                 }

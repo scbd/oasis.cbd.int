@@ -38,8 +38,7 @@ require.config({
         'axios'                     : 'https://cdn.cbd.int/axios@0.19.2/dist/axios.min',
         'angular-vue'               : 'https://cdn.cbd.int/@scbd/angular-vue@1.0.5/dist/angular-vue.min',
         'coreui-vue'                : 'https://cdn.cbd.int/@coreui/vue@3.1.4/dist/coreui-vue.umd',
-        'code-editor-vue'           : 'https://cdn.cbd.int/vue-codemirror@4.0.6/dist/vue-codemirror',
-        'codemirror'                : 'https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror',
+        'code-editor-vue'           : 'https://cdn.cbd.int/vue-codemirror@4.0.6/dist/vue-codemirror'
 
         
     },
@@ -66,9 +65,8 @@ require.config({
         'ck-editor'                     : { 'deps': ['ck-editor-css']},
         'angular-vue'                   : { 'deps': ['angular', 'vue']},
         'vueFile'                       : { 'deps': ['vue']},
-        'coreui-vue'                    : { 'deps': ['vue', ]},
-        'codemirror'                    : { 'deps': ['jquery' ]},
-        'code-editor-vue'               : { 'deps': ['vue', 'code-mirror-dep' ]},
+        'coreui-vue'                    : { 'deps': ['vue' ]},
+        'code-editor-vue'               : { 'deps': ['vue', 'codemirror' ]},
         
     },
     packages: [
@@ -82,25 +80,17 @@ require.config({
 //'css!https://cdn.cbd.int/@coreui/coreui@3.4.0/dist/css/coreui.min.css' 
 define('ck-editor-css', ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
 
-define('vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
-    window.Vue = Vue;
-    return Vue;
-})
+define('vue', ['Vue'],                              function(Vue){ return Vue; });
 define('Vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
     window.Vue = Vue;
     return Vue;
 })
 
-define('code-mirror-dep', ['codemirror','https://cdn.cbd.int/codemirror@5.58.3/addon/mode/simple',
-'https://cdn.cbd.int/codemirror@5.58.3/addon/mode/multiplex',
-'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets',
-'https://cdn.cbd.int/codemirror@5.58.3/mode/css/css',
-'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml',
-'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars',
-'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line',
-'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag',
-'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css',
-'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css'])
+define('codemirror', [ 'https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror',
+                   "css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css", 
+], function(codemirror) { 
+    return codemirror;
+});
 
 require(['angular', 'angular-flex', 'angular-route', 'angular-cookies',  'bootstrap', 'domReady'
     /*, 'main'*/], function (ng) {
