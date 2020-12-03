@@ -65,7 +65,7 @@ require.config({
         'ck-editor'                     : { 'deps': ['ck-editor-css']},
         'angular-vue'                   : { 'deps': ['angular', 'vue']},
         'vueFile'                       : { 'deps': ['vue']},
-        'coreui-vue'                    : { 'deps': ['vue' ]},
+        'coreui-vue'                    : { 'deps': ['vue', 'css!https://cdn.cbd.int/@coreui/coreui@3.4.0/dist/css/coreui.css' ]},
         'code-editor-vue'               : { 'deps': ['vue', 'codemirror' ]},
         
     },
@@ -77,7 +77,7 @@ require.config({
     ],
     urlArgs: 'v=' + appVersion
 });
-//'css!https://cdn.cbd.int/@coreui/coreui@3.4.0/dist/css/coreui.min.css' 
+//
 define('ck-editor-css', ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
 
 define('vue', ['Vue'],                              function(Vue){ return Vue; });

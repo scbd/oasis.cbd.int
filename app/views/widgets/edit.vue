@@ -1,9 +1,5 @@
 <template>
-  <form
-    @submit.prevent="submit"
-    class="flex flex-wrap justify-between sm:justify-center"
-  >
-    Hello
+  <form class="flex flex-wrap justify-between sm:justify-center">
     <section class="content">
       <div class="row">
         <div class="col-md-12">
@@ -12,6 +8,7 @@
               <h3 class="box-title">New Widget</h3>
             </div>
             <div class="box-body">
+              {{widget}}
               <!-- <div class="alert alert-danger alert-dismissible" ng-if="showTranslationAlert">                            
                             <h4><i class="icon fa fa-ban"></i> Alert!</h4>
                             Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
@@ -25,28 +22,51 @@
                         </div> -->
               <CRow>
                 <CCol sm="12">
-                    <code-editor></code-editor>
-                  <!-- <CInput label="Name" placeholder="Enter widget name" /> -->
+                  <CInput label="Name" placeholder="Enter widget name" :value="widget.name" @input="widget.name=$event" />
                 </CCol>
               </CRow>
               <CRow>
                 <CCol sm="6">
-                  <CSelect
+                  <CSelect :value.sync="widget.contentType"
                     label="Content type"
                     :options="['application/html', 'application/json']"
                   />
                 </CCol>
                 <CCol sm="6">
-                  <CSelect
-                    label="Http method"
-                    :options="[
-                      'GET',
-                      'POST',
-                      'PUT'
-                    ]"
-                  />
+                  <CSelect :value.sync="widget.method" label="Http method" :options="['GET', 'POST', 'PUT' ]" />
                 </CCol>
               </CRow>
+              <CRow>
+                <CCol sm="12">
+                  <label>Querystring params</label>
+                  <CButton color="primary" size="sm" class="m-2" @click="showParamDialog = true">
+                    Add
+                  </CButton>
+                  <table class="table">
+                    <tr>
+                      <td>Name</td>
+                      <td>Type</td>
+                      <td>Value</td>
+                    </tr>
+                    <tr>
+                      <td v-for="param in widget.queryString">
+                        {{param}}
+                      </td>
+                    </tr>
+                  </table>
+                </CCol>
+              </CRow>
+
+
+              <CRow>
+                <CCol sm="12">
+                  <label>Template</label>
+                  <code-editor v-model="widget.template"  :mode="handlebarMode" preview="true"></code-editor>
+                  <br/>
+                  <code-editor v-model="widget.template"  :mode="jsonMode" template="{'r':'df'}"></code-editor>
+                </CCol>
+              </CRow>
+
             </div>
             <div class="box-footer">
               <button type="submit" class="btn btn-primary" ng-click="submit()">
@@ -58,65 +78,82 @@
         </div>
       </div>
     </section>
+    <div>
+      <CModal title="Modal title" :show.sync="showParamDialog" >
+          <cParam :param="{name:'test', type:'jsonSchema'}"></cParam>
+      </CModal>
+    </div>
   </form>
 </template>
 
 <script>
-define(["Vue", "coreui-vue", 'vueFile!views/widgets/components/code-editor.vue'], 
-function (vue, coreui, codeEditor) {
-//   Vue.use(coreui);
-  console.log(codeEditor);
-  return {
+define(["Vue", "coreui-vue", 'vueFile!views/widgets/components/code-editor.vue', 
+'vueFile!views/widgets/components/params.vue',
+'css!/app/css/default-vue.css'], 
+function (vue, coreui, codeEditor, cParam) {
+
+return {
     components: {
       CRow: coreui.CRow,
       CCol: coreui.CCol,
       CInput: coreui.CInput,
       CSelect: coreui.CSelect,
       CInput: coreui.CInput,
-      codeEditor    : codeEditor
+      CButton:coreui.CButton,
+      CModal:coreui.CModal,
+      codeEditor    : codeEditor,
+      cParam        : cParam
     },
     template: template,
     props: {
-      populateWith: {
-        type: Object,
-        default: () => ({ empty: true }),
-      },
+      
     },
     data() {
       return {
-        todo: {
-          title: "test",
-          priority: null,
+        widget:{
+          name       : 'test',
+          contentType: 'text/html',
+          method     : 'GET',
+          queryString: {},
+          formData   : {},
+          dataSource : [{}],
+          template:'<div><b>Add your widget template here!</b></div>'
         },
+        showParamDialog:false,
+        jsonMode:'application/json',
+        handlebarMode:{name: "handlebars", base: "text/html"}
       };
     },
     methods: {
       clearForm() {
-        this.todo = {
-          title: "",
-          priority: null,
-        };
+        // this.todo = {
+        //   title: "",
+        //   priority: null,
+        // };
       },
       submit() {
-        if (
-          this.todo.title !== "" &&
-          this.todo.priority !== null &&
-          this.todo.priority >= 1 &&
-          this.todo.priority <= 10
-        ) {
-          this.$emit("submit", this.todo);
-          this.clearForm();
-          this.close();
-        }
+        // if (
+        //   this.todo.title !== "" &&
+        //   this.todo.priority !== null &&
+        //   this.todo.priority >= 1 &&
+        //   this.todo.priority <= 10
+        // ) {
+        //   this.$emit("submit", this.todo);
+        //   this.clearForm();
+        //   this.close();
+        // }
       },
       close() {
         this.$emit("close");
       },
+      inputChange(a, b){
+        // console.log(a,b)
+      }
     },
     created() {
-      if (!this.populateWith.empty) {
-        this.todo = this.populateWith;
-      }
+      // if (!this.populateWith.empty) {
+      //   this.todo = this.populateWith;
+      // }
     },
   };
 });
