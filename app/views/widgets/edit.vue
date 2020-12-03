@@ -9,17 +9,7 @@
             </div>
             <div class="box-body">
               {{widget}}
-              <!-- <div class="alert alert-danger alert-dismissible" ng-if="showTranslationAlert">                            
-                            <h4><i class="icon fa fa-ban"></i> Alert!</h4>
-                            Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
-                        </div>
-                        <div class="blockRegion" ng-if="loading">
-                            <div class="inverted dimmer active">
-                                <div class="center">
-                                    <div class="medium loader"><i class="fa fa-spin fa-cog" /> loading...</div>					
-                                </div>
-                            </div>
-                        </div> -->
+              
               <CRow>
                 <CCol sm="12">
                   <CInput label="Name" placeholder="Enter widget name" :value="widget.name" @input="widget.name=$event" />
@@ -79,7 +69,7 @@
       </div>
     </section>
     <div>
-      <CModal title="Modal title" :show.sync="showParamDialog" >
+      <CModal title="Modal title" :show.sync="showParamDialog" on-update="dialogClosed">
           <cParam :param="{name:'test', type:'jsonSchema'}"></cParam>
       </CModal>
     </div>
@@ -90,7 +80,10 @@
 define(["Vue", "coreui-vue", 'vueFile!views/widgets/components/code-editor.vue', 
 'vueFile!views/widgets/components/params.vue',
 'css!/app/css/default-vue.css'], 
-function (vue, coreui, codeEditor, cParam) {
+function (Vue, coreui, codeEditor, cParam) {
+
+
+// Vue.use(coreui);
 
 return {
     components: {
@@ -148,6 +141,9 @@ return {
       },
       inputChange(a, b){
         // console.log(a,b)
+      },
+      dialogClosed(a,b){
+        console.log(a,b)
       }
     },
     created() {

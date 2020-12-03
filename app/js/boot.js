@@ -81,7 +81,7 @@ require.config({
 define('ck-editor-css', ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
 
 define('vue', ['Vue'],                              function(Vue){ return Vue; });
-define('Vue', ['https://cdn.cbd.int/vue/dist/vue'], function(Vue){
+define('Vue', ['https://cdn.cbd.int/vue@2.6.12/dist/vue'], function(Vue){
     window.Vue = Vue;
     return Vue;
 })

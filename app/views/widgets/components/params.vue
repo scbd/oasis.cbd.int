@@ -1,6 +1,7 @@
 <template>
     <div>
         {{param}}
+        {{newParam}}
         <CRow>
             <CCol sm="12">
                 <CInput label="Name" placeholder="Enter param name" 
@@ -10,13 +11,12 @@
         <CRow>
             <CCol sm="12">
                 <CSelect :value.sync="newParam.type" label="Type" :options="[{label:'Regex', value:'regex'}, {label:'JSON Schema', value:'jsonSchema'}]" />
-                <CSelect :value.sync="newParam.method" label="Http method" :options="['GET', 'POST', 'PUT' ]" />
             </CCol>
         </CRow>
         <CRow>
             <CCol sm="12" v-if="newParam.type=='jsonSchema'">
                 <label>Template</label>
-                <!-- <code-editor v-model="param.jsonSchema"  mode="jsonMode" :template="{'r':'df'}"></code-editor> -->
+                <code-editor v-model="param.jsonSchema"  mode="jsonMode" :template="newParam.template"></code-editor>
             </CCol>
         </CRow>
     </div>
