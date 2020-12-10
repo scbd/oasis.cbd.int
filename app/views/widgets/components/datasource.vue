@@ -1,9 +1,13 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="localParams"
+    :items="localDatasource"
     class="elevation-1"
     hide-default-footer
+    item-key="name"
+    :single-expand="singleExpand"
+    :expanded.sync="expanded"
+    show-expand
   >
     <template v-slot:top>
       <v-toolbar flat>
@@ -12,7 +16,7 @@
         <v-dialog v-model="dialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn x-small color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              New Param
+              New datasource
             </v-btn>
           </template>
           <v-card>
@@ -38,39 +42,32 @@
                     </v-col>
 
                     <v-col cols="12">
+                      <v-text-field
+                        v-model="editedItem.url"
+                        label="URL"
+                        :rules="validations.paramUrlRules"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="12">
                       <v-select
-                        v-model="editedItem.type"
+                        v-model="editedItem.method"
                         flat
                         solo-inverted
                         hide-details
-                        :items="paramTypes"
-                        label="Type"
-                        :rules="validations.paramTypeRules"
+                        :items="datasourceMethods"
+                        label="Method"
+                        :rules="validations.paramMethodRules"
                       ></v-select>
                     </v-col>
 
-                    <v-col cols="12" v-if="editedItem.type == 'jsonSchema'">
-                      <label>Validation JSON schema</label>
-
-                      <code-editor
-                        mode='application/ld+json'
-                        v-model="editedItem.validationJsonSchema"
-                        :rules="validations.paramSchemaRules"
-                        placeholder=''
-                      ></code-editor>
-                      <CError error-message="JSON schema is required" v-if="validations.jsonSchemaRules.isMissing"></CError>
-                      <CError :error-message="validations.jsonSchemaRules.isInvalid" v-if="validations.jsonSchemaRules.isInvalid"></CError>
-                      
+                    <v-col cols="12" v-if="editedItem.method" >
+                        <cParam v-model="editedItem.queryString" placeholder="Querystring params"></cParam>
                     </v-col>
 
-                    <v-col cols="12" v-if="editedItem.type == 'regex'">
-                      <v-text-field
-                        v-model="editedItem.validationRegex"
-                        label="Validation regex"
-                        :rules="validations.paramRegexRules"
-                      ></v-text-field>
-                      <CError :error-message="validations.invalidRegex" v-if="validations.invalidRegex"></CError>
-                    </v-col>
+                    <v-col cols="12" v-if="editedItem.method == 'POST' || editedItem.method == 'PUT'">
+                        <cParam v-model="editedItem.formData" placeholder="Form data params"></cParam>
+                    </v-col>                    
                   </v-row>
                 </v-form>
               </v-container>
@@ -109,65 +106,67 @@
         </v-dialog>
       </v-toolbar>
     </template>
-    <template v-slot:item.validation="{ item }">
-        <span v-if="item.type == 'regex'">{{item.validationRegex}}</span>
-        <span v-if="item.type == 'jsonSchema'">{{item.validationJsonSchema}}</span>
+
+    <template v-slot:expanded-item="{ headers, item }">
+      <td :colspan="headers.length">
+       
+        <v-col cols="12" v-if="item.method" >
+            <cParam v-model="item.queryString" placeholder="Querystring params" crud="false"></cParam>
+        </v-col>
+
+        <v-col cols="12" v-if="item.method == 'POST' || item.method == 'PUT'">
+            <cParam v-model="item.formData" placeholder="Form data params" crud="false"></cParam>
+        </v-col>   
+      </td>
     </template>
     <template v-slot:item.actions="{ item }">
       <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
       <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
     </template>
     <template v-slot:no-data>
-      <b>No params configured!</b>
+      <b>No querystring params configured!</b>
     </template>
   </v-data-table>
 </template>
 
 <script>
 define([
-  "vueFile!views/widgets/components/code-editor.vue",
   "vueFile!views/widgets/components/error.vue",
+  "vueFile!views/widgets/components/params.vue",
   "lodash",
-], function (codeEditor, CError, _) {
+], function (CError, cParam, _) {
   return {
     components: {
-      codeEditor: codeEditor,
-      CError:CError
+      CError:CError,
+      cParam:cParam
     },
     template: template,
     props: ["value", "placeholder"],
     data: () => ({
+        expanded: [],
+        singleExpand: false,
         dialog: false,
         dialogDelete: false,
         headers: [
-            {
-            text: "Name",
-            align: "start",
-            sortable: false,
-            value: "name",
-            },
-            { text: "Type", value: "type", sortable: false },
-            { text: "Validation", value: "validation", sortable: false },
+            { text: "Name", align: "start", sortable: false, value: "name",},
+            { text: "URL", value: "url", sortable: false },
+            { text: "Method", value: "method", sortable: false },,
+            { text: '', value: 'data-table-expand' },
             { text: 'Actions', value: 'actions', sortable: false },
         ],
-        localParams: [],
+        localDatasource: [],
         editedIndex: -1,
         editedItem: {
             name: "",
-            type: '',
-            validationRegex: '',
-            validationJsonSchema: '',
+            url: '',
+            method: '',
         },
         defaultItem: {
             name: "",
-            type: '',
-            validationRegex: '',
-            validationJsonSchema: '',
+            url: '',
+            method: '',
         },
-        paramTypes: [
-            { text: "Regex", value: "regex" },
-            { text: "JSON Schema", value: "jsonSchema" },
-        ],
+        datasourceMethods: ['GET', 'POST', 'PUT'],
         validations: {
             valid: false,
             paramNameRules: [
@@ -180,26 +179,19 @@ define([
                     );
                 },
             ],
-            paramTypeRules: [
+            paramUrlRules: [
                 function (v) {
-                    return !!_.trim(v) || "Type is required";
+                    return !!_.trim(v) || "URL is required";
+                },
+                function (v) {
+                    return (/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.\{\}]+$/.test(v)) || "Please enter a valid url";
                 },
             ],
-            paramSchemaRules: [
+            paramMethodRules: [
                 function (v) {
-                    return !!_.trim(v) || "Validation schema is required";
+                    return !!_.trim(v) || "Method is required";
                 },
             ],
-            paramRegexRules: [
-                function (v) {
-                    return !!_.trim(v) || "Validation regex is required";
-                },
-            ],
-            jsonSchemaRules:{
-                isInvalid : '',
-                isMissing:false,
-            },
-            invalidRegex:''
         },
     }),
 
@@ -224,43 +216,26 @@ define([
 
     methods: {
       initialize() {
-        this.localParams = [];
+        this.localDatasource = [];
         if (this.value) {
-          //params are passed make sure its array or convert to array
-          if (!_.isArray(this.value) && _.isObject(this.value)) {     
-            var params = this.value;
-            this.localParams = _(this.value)
-              .keys()
-              .map(function (key) {
-                var param = params[key];
-                param.name = key;
-                return param;
-              })
-              .value();
-          }
+          this.localDatasource = _.clone(this.value);
         }
       },
 
       editItem(item) {
-        this.editedIndex = this.localParams.indexOf(item);
+        this.editedIndex = this.localDatasource.indexOf(item);
         this.editedItem = Object.assign({}, item);
-        if(this.editedItem.type == 'jsonSchema'){
-            try{
-               this.editedItem.validationJsonSchema = JSON.stringify(this.editedItem.validationJsonSchema, null, 4);
-            }
-            catch{}
-        }
         this.dialog = true;
       },
 
       deleteItem(item) {
-        this.editedIndex = this.localParams.indexOf(item);
+        this.editedIndex = this.localDatasource.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialogDelete = true;
       },
 
       deleteItemConfirm() {
-        this.localParams.splice(this.editedIndex, 1);
+        this.localDatasource.splice(this.editedIndex, 1);
         this.closeDelete();
       },
 
@@ -281,51 +256,19 @@ define([
       },
 
       save() {
-        this.validations.invalidRegex = '';
-        this.validations.jsonSchemaRules.isInvalid = '';
-
+       
         var result = this.$refs.form.validate();
         if(!result)
             return
         console.log(result, this.editedItem);
 
-        if(this.editedItem.type == 'regex'){
-            try{
-                if(!/^\/\^/.test(this.editedItem.validationRegex) || !/\$\/(i?g?)?$/.test(this.editedItem.validationRegex))
-                    return this.validations.invalidRegex = 'Invalid regex, please make sure regex starts with /^ and ends with $/ and available flags are ig';
-                   
-                var regex = new RegExp(this.editedItem.validationRegex)
-            }
-            catch(e){
-                this.validations.invalidRegex = 'Invalid regex';
-                return;
-            }
-        }
-        else if(this.editedItem.type == 'jsonSchema'){
-            try{
-               this.editedItem.validationJsonSchema = JSON.parse(this.editedItem.validationJsonSchema);
-            }
-            catch(e){
-                this.validations.jsonSchemaRules.isInvalid = 'Invalid JSON schema. \n' + e;
-                return;
-            }
-        }
-
         if (this.editedIndex > -1) {
-          Object.assign(this.localParams[this.editedIndex], this.editedItem);
+          Object.assign(this.localDatasource[this.editedIndex], this.editedItem);
         } else {
-          this.localParams.push(this.editedItem);
+          this.localDatasource.push(this.editedItem);
         }
-        var newParams = {};
-        _.each(this.localParams, function(param){
-            newParams[param.name] = _.clone(param);
-            delete newParams[param.name].name;
-            if(param.type == 'jsonSchema')
-                delete newParams[param.name].validationRegex;
-            else
-                delete newParams[param.name].validationJsonSchema;
-        })
-        this.$emit('input', newParams)    
+        
+        this.$emit('input', this.localDatasource)    
         this.close();
       },
     },

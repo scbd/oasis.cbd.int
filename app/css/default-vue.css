@@ -1,15 +1,5 @@
 
-body{
-    font-size: 14px!important;
-}
-
 .CodeMirror {
-    height: auto;
+    height: auto!important;
     min-height:300px
-}
-
-
-/*bootstrap overrides */
-.fade {
-    opacity: inherit;
 }
