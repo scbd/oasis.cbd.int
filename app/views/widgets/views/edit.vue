@@ -1,73 +1,80 @@
 <template>
-  <form class="flex flex-wrap justify-between sm:justify-center">
-    <link
-      href="https://fonts.googleapis.com/css?family=Material+Icons"
-      rel="stylesheet"
-    />
-    <section>
-      <v-container fluid>
-        {{widget}}
-        <v-overlay :value="loading" style="position:absolute">
-          <v-progress-circular indeterminate size="64"></v-progress-circular>
-        </v-overlay>
-        <v-card v-if="initialized">
-          <v-toolbar flat color="primary" dark>
-            <v-toolbar-title>Widgets</v-toolbar-title>
-          </v-toolbar>
-          <v-card-text>
-            <v-form ref="form" v-model="validations.valid" lazy-validation style="width:100%">
-              <v-text-field v-model="widget.name" :counter="30" :rules="validations.widgetNameRules" label="Name" required></v-text-field>
-              <v-row>
-                <v-col cols="6">
-                  <v-select v-model="widget.contentType" :items="items.contentType" :rules="[(v) => !!v || 'Item is required']" 
-                      label="Content type" required></v-select>
-                </v-col>
-                <v-col cols="6">
-                  <v-select v-model="widget.method" :items="items.method" :rules="[(v) => !!v || 'Item is required']" 
-                      label="HTTP method" required></v-select>
-                </v-col>
-              </v-row>
-
-              <v-row v-if="widget.method">
-                <v-col cols="12">
-                    <cParam v-model="widget.queryString" placeholder="Querystring params"></cParam>
-                </v-col>
-              </v-row>
-
-              <v-row v-if="widget.method == 'POST' || widget.method == 'PUT'">
-                <v-col cols="12">
-                    <cParam v-model="widget.formData" placeholder="Form data params"></cParam>
-                </v-col>
-              </v-row>
-
-              <v-row>
-                <v-col cols="12">
-                    <cDatasource v-model="widget.dataSource" placeholder="Datasources"></cDatasource>
-                </v-col>
-              </v-row>
-  
-              <v-row>
-                  <v-col cols="12">
-                    <label class="v-label theme--light primary--text">Template</label>
-                    <code-editor v-model="widget.template"  :mode="handlebarMode" preview="true"></code-editor>
+  <div>
+    <form class="flex flex-wrap justify-between sm:justify-center">
+      <link
+        href="https://fonts.googleapis.com/css?family=Material+Icons"
+        rel="stylesheet"
+      />
+      <section>
+        <v-container fluid>
+          <v-overlay :value="loading" absolute>
+            <v-progress-circular indeterminate size="64"></v-progress-circular>
+          </v-overlay>
+          <v-card v-if="initialized">
+            <v-toolbar flat color="primary" dark>
+              <v-toolbar-title>Widgets</v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+              <v-form ref="form" v-model="validations.valid" lazy-validation style="width:100%">
+                <v-text-field v-model="widget.name" :counter="30" :rules="validations.widgetNameRules" label="Name" required></v-text-field>
+                <v-row>
+                  <v-col cols="6">
+                    <v-select v-model="widget.contentType" :items="items.contentType" :rules="[(v) => !!v || 'Item is required']" 
+                        label="Content type" required></v-select>
                   </v-col>
-              </v-row>
+                  <v-col cols="6">
+                    <v-select v-model="widget.method" :items="items.method" :rules="[(v) => !!v || 'Item is required']" 
+                        label="HTTP method" required></v-select>
+                  </v-col>
+                </v-row>
 
-              <br/>
-              <v-btn :disabled="!validations.valid" color="success" class="mr-4" @click="save">
-                Save
-              </v-btn>
+                <v-row v-if="widget.method">
+                  <v-col cols="12">
+                      <cParam v-model="widget.queryString" placeholder="Querystring params"></cParam>
+                  </v-col>
+                </v-row>
 
-              <v-btn color="error" class="mr-4" @click="reset">
-                Cancel
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-container>
-     
-    </section>
-  </form>
+                <v-row v-if="widget.method == 'POST' || widget.method == 'PUT'">
+                  <v-col cols="12">
+                      <cParam v-model="widget.formData" placeholder="Form data params"></cParam>
+                  </v-col>
+                </v-row>
+
+                <v-row>
+                  <v-col cols="12">
+                      <cDatasource v-model="widget.dataSource" placeholder="Datasources"></cDatasource>
+                  </v-col>
+                </v-row>
+    
+                <v-row>
+                    <v-col cols="12">
+                      <label class="v-label theme--light primary--text">Template</label>
+                      <code-editor v-model="widget.template"  :mode="handlebarMode" preview="true"></code-editor>
+                    </v-col>
+                </v-row>
+
+                <br/>
+                <v-btn :disabled="!validations.valid" color="success" class="mr-4" @click="save">
+                  Save
+                </v-btn>
+
+                <v-btn color="error" class="mr-4" @click="reset">
+                  Cancel
+                </v-btn>
+              </v-form>
+            </v-card-text>
+          </v-card>
+        </v-container>
+      
+      </section>
+    </form>
+     <v-snackbar v-model="toastMessage.show" right top :color="toastMessage.color" :timeout="toastMessage.timeout">
+        {{ toastMessage.text }}
+        <v-btn color="white" text @click="toastMessage.show = false">
+            Close
+        </v-btn>
+    </v-snackbar>
+  </div>
 </template>
 
 <script>
@@ -114,6 +121,12 @@ define([
         },
         jsonMode: "application/json",
         handlebarMode: { name: "handlebars", base: "text/html" },
+        toastMessage : {
+            text:'',
+            timeout:5000,
+            show:false,
+            color:'success'
+        }
       };
     },
     methods: {
@@ -137,7 +150,8 @@ define([
           request.then(function(response){
             self.failedRecords.total = response.data[0].count
           })
-          .catch(function(err) {          
+          .catch(function(e){
+            self.showToast('Error loasing widgets', 'error')
             console.log(err);
             // self.errors.push(err)
             // self.showError(err);
@@ -166,10 +180,19 @@ define([
             self.widget = result.data;
             console.log(self.widget)
           })
+          .catch(function(e){
+            console.log(e)
+            self.showToast('Error loading widget details', 'error')
+          })
           .finally(function(){
             self.loading = false;
             self.initialized=true
           });
+      },
+      showToast(text, color){
+        this.toastMessage.show = true;
+        this.toastMessage.color= color||'success'
+        this.toastMessage.text = text;
       }
     },
     created() {
@@ -183,7 +206,7 @@ define([
         this.loading = false;
         this.initialized=true
       }
-    },
+    }
   };
 });
 </script>

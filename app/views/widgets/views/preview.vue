@@ -1,6 +1,6 @@
 <template>
     <v-container fluid>
-        <v-overlay :value="loading" style="position:absolute">
+        <v-overlay :value="loading" absolute>
           <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
         <v-card v-if="!loading">
@@ -45,16 +45,12 @@
                 
                 <v-row>
                     <v-col col="12">
-                        <v-card >
+                       <v-card v-if="!loading">
                             <v-toolbar flat>
                                 <v-toolbar-title>Preview</v-toolbar-title>
                             </v-toolbar>
                             <v-card-text>
-                              {{loadingPreview}}
-                               <v-overlay :value="loadingPreview" style="position:absolute">
-                                <v-progress-circular indeterminate size="64"></v-progress-circular>
-                              </v-overlay>
-                              <iframe ref="templatePreview"  width="100%" height="100%" style="border:none display: block;border: none;height: calc(100vh - 30px);width: 100%;"></iframe>
+                                <iframe ref="templatePreview"  width="100%" height="100%" style="border:none display: block;border: none;height: calc(100vh - 30px);width: 100%;"></iframe>
                             </v-card-text>
                          </v-card>
                     </v-col>
@@ -62,7 +58,13 @@
             </v-form>
           </v-card-text>
         </v-card>
-      </v-container>
+        <v-snackbar v-model="toastMessage.show" right top :color="toastMessage.color" :timeout="toastMessage.timeout">
+            {{ toastMessage.text }}
+            <v-btn color="primary" text @click="toastMessage.show = false">
+                Close
+            </v-btn>
+        </v-snackbar>
+    </v-container>
 </template>
 
 <script>
@@ -87,12 +89,21 @@ define([
       return {
         loading:false,
         dialogDelete: false,
-        widget:[]
+        widget:[],
+        toastMessage : {
+            text:'',
+            timeout:5000,
+            show:false,
+            color:'success'
+        }
       }
     },
     computed: {      
     },
-    watch: {      
+    watch: {    
+      loadingPreview(val){
+        this.loadingPreview = val
+      }  
     },
 
     created() {
@@ -139,32 +150,64 @@ define([
       loadWidget(widgetId){
         var self = this;
         self.loading = true;
+        self.loadingPreview = true; 
+
         axios.get('/api/v2020/widgets/'+encodeURIComponent(widgetId))
         .then(function(result){
             self.widget = result.data;
-            self.onPreview();
+            return self.onPreview();
+        })
+        .catch(function(e){
+          console.debug(e)
+          self.showToast('Error loading widget details', 'error')
         })
         .finally(function(){
             self.loading = false;
             self.initialized=true
+            // self.loadingPreview = false;
         });
       },
       onPreview(){
-            var self = this;
-            self.loadingPreview = true;
-            var lWidget = Object.assign({}, this.widget);
-            var queryString = {};
-            var formData = {};
 
-            if(lWidget.queryString){
-              _.each(lWidget.queryString, function(param, key){
+
+        var self = this;
+
+        if(self.loading)
+          return;
+          
+        self.loading = true; 
+        self.widgetPreview = '';
+        var lWidget = Object.assign({}, this.widget);
+        var queryString = {};
+        var formData = {};
+
+        if(lWidget.queryString){
+          _.each(lWidget.queryString, function(param, key){
+            if(param.value)
+              queryString[key] = param.value
+          })
+        }
+
+        if(lWidget.formData){
+          _.each(lWidget.formData, function(param, key){
+            if(param.value)
+              if(lWidget.method == 'GET')
+                queryString[key] = param.value;
+              else 
+                formData[key] = param.value;
+          })
+        }
+
+        if(lWidget.dataSource){
+          _.each(lWidget.dataSource, function(source){                
+            if(source.queryString){
+              _.each(source.queryString, function(param, key){
                 if(param.value)
                   queryString[key] = param.value
               })
             }
-
-            if(lWidget.formData){
-              _.each(lWidget.formData, function(param, key){
+            if(source.formData){
+              _.each(source.formData, function(param, key){
                 if(param.value)
                   if(lWidget.method == 'GET')
                     queryString[key] = param.value;
@@ -172,51 +215,41 @@ define([
                     formData[key] = param.value;
               })
             }
+          })
+        }
 
-            if(lWidget.dataSource){
-              _.each(lWidget.dataSource, function(source){                
-                if(source.queryString){
-                  _.each(source.queryString, function(param, key){
-                    if(param.value)
-                      queryString[key] = param.value
-                  })
-                }
-                if(source.formData){
-                  _.each(source.formData, function(param, key){
-                    if(param.value)
-                      if(lWidget.method == 'GET')
-                        queryString[key] = param.value;
-                      else 
-                        formData[key] = param.value;
-                  })
-                }
-              })
-            }
+        var axiosPromise;
+        if(lWidget.method == 'GET')
+          axiosPromise = axios.get('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render', { params: queryString } );
+        else if(lWidget.method == 'POST')
+            axiosPromise = axios.post('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render', { data:formData, params: queryString } );
+        else if(lWidget.method == 'PUT')
+            axiosPromise = axios.put('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render',  { data:formData, params: queryString } );          
 
-            var axiosPromise;
-            if(lWidget.method == 'GET')
-              axiosPromise = axios.get('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render', { params: queryString } );
-            else if(lWidget.method == 'POST')
-                axiosPromise = axios.post('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render', { data:formData, params: queryString } );
-            else if(lWidget.method == 'PUT')
-                axiosPromise = axios.put('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render',  { data:formData, params: queryString } );          
-
-
-            axiosPromise.then(function(result){
-                self.widgetPreview = result.data;
-                console.log(result);
-                self.loadingPreview = false;
-                self.$nextTick(function(){
-                  var previewFrame = self.$refs.templatePreview;
-                  var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
-                  preview.open();
-                  preview.write(self.widgetPreview);
-                  preview.close();
-                })
+        return axiosPromise.then(function(result){
+            self.widgetPreview = result.data;
+            console.log(result);
+            self.loading = false;
+            self.$nextTick(function(){
+              var previewFrame = self.$refs.templatePreview;
+              var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+              preview.open();
+              preview.write(self.widgetPreview);
+              preview.close();
             })
-            .finally(function(){
-                self.loadingPreview = false;
-            });
+        })        
+        .catch(function(e){
+          console.debug(e);
+          self.showToast('Error while previewing widget, try again later', 'error')
+        })
+        .finally(function(){
+            self.loading = false;
+        });
+      },
+      showToast(text, color){
+        this.toastMessage.show = true;
+        this.toastMessage.color= color||'success'
+        this.toastMessage.text = text;
       }
     },
   };

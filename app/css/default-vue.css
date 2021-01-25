@@ -3,3 +3,7 @@
     height: auto!important;
     min-height:300px
 }
+
+.v-snack:not(.v-snack--absolute){
+    z-index: 1000000;
+}
