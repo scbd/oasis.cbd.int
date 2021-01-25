@@ -176,9 +176,12 @@ define([
       // if (!this.populateWith.empty) {
       //   this.todo = this.populateWith;
       // }
-      console.log('ds')
-      if(this.widgetId){
+      if(this.widgetId && this.widgetId!='new'){
         this.loadWidgetDetails(this.widgetId);
+      }
+      else{
+        this.loading = false;
+        this.initialized=true
       }
     },
   };

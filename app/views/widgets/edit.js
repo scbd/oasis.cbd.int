@@ -7,7 +7,7 @@ function(app, editComponent, Vuetify, vueBaseService){
             vueBaseService.setToken(token); 
         });
 
-        $scope.widgetId = $routeParams.id
+        $scope.widgetId = $routeParams.id||'new'
         $scope.vueOptions = {
             components:{
                 editWidget:editComponent

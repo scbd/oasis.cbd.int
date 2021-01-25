@@ -1,5 +1,5 @@
-﻿define(['app', 'vueFile!views/widgets/views/list.vue', 'vuetify', 'views/workflows/vue-base-service', 'scbd-angularjs-services/authentication', 'angular-vue'], 
-function(app, listComponent, Vuetify, vueBaseService){
+﻿define(['app', 'vueFile!views/widgets/views/preview.vue', 'vuetify', 'views/workflows/vue-base-service', 'scbd-angularjs-services/authentication', 'angular-vue'], 
+function(app, previewComponent, Vuetify, vueBaseService){
     return ['$scope', 'apiToken', '$routeParams', function($scope, apiToken, $routeParams){        
 
         apiToken.get().then(function(token){
@@ -10,7 +10,7 @@ function(app, listComponent, Vuetify, vueBaseService){
         $scope.widgetId = $routeParams.id
         $scope.vueOptions = {
             components:{
-                listWidget:listComponent
+                previewWidget:previewComponent
             },
             vuetify : new Vuetify({                          
                         theme: {

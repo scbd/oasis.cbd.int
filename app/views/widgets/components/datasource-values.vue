@@ -10,15 +10,10 @@
     show-expand
   >
     <template v-slot:top>
-      <v-toolbar flat>
+      <v-toolbar flat color="blue lighten-5" >
         <v-toolbar-title>{{ placeholder }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-dialog v-model="dialog" max-width="600px">
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn x-small color="primary" dark class="mb-2" v-bind="attrs" v-on="on">
-              New datasource
-            </v-btn>
-          </template>
+        <v-dialog v-model="dialog" max-width="1200px">
           <v-card>
             <v-card-title>
               <span class="headline">{{ formTitle }}</span>
@@ -86,24 +81,7 @@
               </v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="600px">
-          <v-card>
-            <v-card-title class="headline"
-              >Are you sure you want to delete this item?</v-card-title
-            >
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn color="blue darken-1" text @click="closeDelete"
-                >Cancel</v-btn
-              >
-              <v-btn color="blue darken-1" text @click="deleteItemConfirm"
-                >OK</v-btn
-              >
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        </v-dialog>        
       </v-toolbar>
     </template>
 
@@ -111,20 +89,18 @@
       <td :colspan="headers.length">
        
         <v-col cols="12" v-if="item.method" >
-            <cParam v-model="item.queryString" placeholder="Querystring params" crud="false"></cParam>
+            <CParamValues v-model="item.queryString" placeholder="Querystring params" crud="false"></CParamValues>
         </v-col>
 
         <v-col cols="12" v-if="item.method == 'POST' || item.method == 'PUT'">
-            <cParam v-model="item.formData" placeholder="Form data params" crud="false"></cParam>
+            <CParamValues v-model="item.formData" placeholder="Form data params" crud="false"></CParamValues>
         </v-col>   
       </td>
     </template>
     <template v-slot:item.actions="{ item }">
-      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
-      <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
     </template>
     <template v-slot:no-data>
-      <b>No querystring params configured!</b>
+      <b>No datasource params configured!</b>
     </template>
   </v-data-table>
 </template>
@@ -133,12 +109,14 @@
 define([
   "vueFile!views/widgets/components/error.vue",
   "vueFile!views/widgets/components/params.vue",
+  "vueFile!views/widgets/components/param-values.vue",
   "lodash",
-], function (CError, cParam, _) {
+], function (CError, cParam, CParamValues, _) {
   return {
     components: {
       CError:CError,
-      cParam:cParam
+      cParam:cParam,
+      CParamValues:CParamValues
     },
     template: template,
     props: ["value", "placeholder"],
@@ -199,16 +177,13 @@ define([
 
     computed: {
       formTitle() {
-        return this.editedIndex === -1 ? "New Item" : "Edit Item";
+        return "Datsource param value";
       },
     },
 
     watch: {
       dialog(val) {
         val || this.close();
-      },
-      dialogDelete(val) {
-        val || this.closeDelete();
       },
     },
 
@@ -230,27 +205,8 @@ define([
         this.dialog = true;
       },
 
-      deleteItem(item) {
-        this.editedIndex = this.localDatasource.indexOf(item);
-        this.editedItem = Object.assign({}, item);
-        this.dialogDelete = true;
-      },
-
-      deleteItemConfirm() {
-        this.localDatasource.splice(this.editedIndex, 1);
-        this.closeDelete();
-      },
-
       close() {
         this.dialog = false;
-        this.$nextTick(function() {
-          this.editedItem = Object.assign({}, this.defaultItem);
-          this.editedIndex = -1;
-        });
-      },
-
-      closeDelete() {
-        this.dialogDelete = false;
         this.$nextTick(function() {
           this.editedItem = Object.assign({}, this.defaultItem);
           this.editedIndex = -1;
