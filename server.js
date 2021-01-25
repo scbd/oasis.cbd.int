@@ -37,6 +37,9 @@ app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCu
 app.use('/translation-api/git/:repository',          require('./app/api/git-query')  ());
 app.use('/translation-api/database-table/:table',    require('./app/api/database-table')());
 
+app.all('/api/v2020/widgets*', (req, res) => {
+    proxy.web(req, res, { target: 'http://localhost:8000', changeOrigin: true, secure:false })
+});
 app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.url, changeOrigin: true, secure:false }));
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
