@@ -37,7 +37,7 @@
             components: {
                 codeMirror:codemirror.codemirror
             },
-            props:['mode', 'preview', 'value', 'placeholder'],
+            props:['mode', 'preview', 'value', 'placeholder', 'readOnly'],
             data: function() {
                 return {
                     cmOptions: {
@@ -51,6 +51,7 @@
                             base: "text/html"
                         },
                         theme: 'base16-dark',
+                        readOnly:this.readOnly
                     },
                     code:''
                 }
