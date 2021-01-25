@@ -60,8 +60,8 @@ function(app,classicEditor, template, _) {
 				}
 
 				function initializeEditor(lang){
-					//available toolbar : code, 'emoji',plugins1: [],'fontFamily', , 'fontSize',
-					// fontSize: { options: [ 9,'default' ] },
+					//available toolbar : code, 'emoji', 'htmlEmbed',plugins1: [],
+					
 					var editorOptions = {
 						
 						toolbar: [ 	
@@ -70,9 +70,9 @@ function(app,classicEditor, template, _) {
 							'indent', 'outdent','alignment', '|',
 							'bulletedList', 'numberedList', 'blockQuote', '|', 
 							'highlight', 'insertTable', '|', 
-							'imageUpload', 'mediaEmbed', '|', 
+							'imageInsert', 'mediaEmbed', '|', 
 							'horizontalLine', '|',
-							'removeFormat', 'undo', 'redo'
+							'removeFormat', 'undo', 'redo',
 						],
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
