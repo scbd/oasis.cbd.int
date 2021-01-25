@@ -26,4 +26,5 @@ app/views/mockups
 i18n
 TestCases
 app/api/repositories
+app/api/db-translation-files
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" app-version="<%=appVersion%>">
 
 <head>
   <base href="<%=baseUrl%>">
@@ -19,7 +19,8 @@
   <!-- AdminLTE Skins. Choose a skin from the css/skins
        folder instead of downloading all of them to reduce the load. -->
   <link rel="stylesheet" href="app/dist/css/skins/_all-skins.min.css">
-
+  <link rel="stylesheet" href="app/dist/css/application-style.css">
+  
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -230,6 +231,31 @@ class="hold-transition skin-blue sidebar-mini">
             </a>
           </li>
           <li>
+            <a href="<%=baseUrl%>workflows">
+              <i class="fa fa-th"></i>
+              <span>Workflows</span>
+            </a>
+          </li>
+          <li>
+            <a href="<%=baseUrl%>widgets">
+              <i class="fa fa-th"></i>
+              <span>Widgets</span>
+            </a>
+          </li>
+          <!-- <li class="treeview menu-open">
+            <a href="#">
+              <i class="fa fa-edit"></i> <span>Forms</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu" style="display: block;">
+              <li><a href="forms/general.html"><i class="fa fa-circle-o"></i> General Elements</a></li>
+              <li><a href="forms/advanced.html"><i class="fa fa-circle-o"></i> Advanced Elements</a></li>
+              <li><a href="forms/editors.html"><i class="fa fa-circle-o"></i> Editors</a></li>
+            </ul>
+          </li> -->
+          <li>
             <a href="<%=baseUrl%>documentation">
               <i class="fa fa-book"></i>
               <span>Documentation</span>
@@ -271,7 +297,7 @@ class="hold-transition skin-blue sidebar-mini">
             <a href="#">
               <i class="fa fa-dashboard"></i> Home</a>
           </li>
-          <li class="active">Dashboard</li>
+          <!-- <li class="active">Dashboard</li> -->
         </ol>
       </section>
       <ng-view autoscroll="true"></ng-view>
@@ -279,15 +305,19 @@ class="hold-transition skin-blue sidebar-mini">
     <!-- /.content-wrapper -->
     <footer class="main-footer">
       <div class="pull-right hidden-xs">
-        <b>Version</b> 0.1
+        <b>Version: </b> <%=appVersion%>
       </div>
+      <hr/>
     </footer>
 
     <div class="control-sidebar-bg"></div>
 
   </div>
-
-  <script src="app/libs/requirejs/require.js?v=<%=gitVersion%>" data-main="app/js/boot.js?v=<%=gitVersion%>"></script>
+  <script>
+    window.baseUrl = '<%=baseUrl.replace(/\/*$/, "") + "/" %>';
+    window.appVersion = '<%=appVersion%>';
+  </script>
+  <script src="app/libs/requirejs/require.js?v=<%=appVersion%>" data-main="app/js/boot.js?v=<%=appVersion%>"></script>
 </body>
 
 </html>

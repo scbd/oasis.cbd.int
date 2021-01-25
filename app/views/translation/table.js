@@ -1,0 +1,187 @@
+﻿define(['app', 'lodash', 'json!views/translation/database-tables.json',
+'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination'],
+ function (app, _, dbTables) {
+    return ['$scope', '$http', '$q', '$routeParams','IGenericService',
+    function ($scope, $http, $q, $routeParams, genericService) {
+        var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
+        $scope.baseUrl  = window.baseUrl;
+        
+        $scope.articletags = [];
+        $scope.articlecustomtags = [];
+        $scope.articleadmintags = [];
+        $scope.search = {};
+
+        $scope.translation = _.find(dbTables, {name:$routeParams.table})
+        $scope.translation.languages = [];
+        $scope.translation.itemsPerPage = 50;
+        $scope.translation.currentPage  = 0;
+        $scope.fetchingFiles = true;        
+        var fields = {_id:1}
+
+        _.each($scope.translation.fields, function(f){
+            fields[f] = 1
+            _.each(languages, function(l){
+                $scope.translation.languages.push({
+                    field: f, language : l
+                })
+            })
+            // $scope.translation.languages = _.concat($scope.translation.languages, languages);
+        })
+
+        function load(page){
+            var ag = [{ $sort   : $scope.translation.sort || {"meta.modifiedOn":-1}},
+                    { $skip     : (page||0)*$scope.translation.itemsPerPage },
+                    { $limit    : $scope.translation.itemsPerPage           },
+                    { $project  : fields }];
+            var agCount = [{ $sort   : $scope.translation.sort || {"meta.modifiedOn":-1}}]
+            var rowCountQuery;
+            if($scope.translation.query){
+                ag.splice(1, 0, { $match    : $scope.translation.query})
+                agCount.push({ $match       : $scope.translation.query})
+            }
+            if(page == 0){
+                agCount.push({$count:'count'})
+                rowCountQuery = $http.get($scope.translation.api, {params: { ag : JSON.stringify(agCount)}})
+                     .then(function(data){                          
+                         return (_.first(data.data)||{count:0}).count
+                        })
+            }
+            else
+                rowCountQuery = $scope.translation.rowCount
+
+            $q.all([$http.get($scope.translation.api, {params: { ag : JSON.stringify(ag)}}),rowCountQuery])
+            .then(function(result){
+                $scope.translation.rows          = result[0].data;
+                $scope.translation.rowCount      = result[1];
+                $scope.translation.pageCount     = Math.ceil($scope.translation.rowCount / $scope.translation.itemsPerPage);
+                $scope.translation.currentPage   = page;
+            })
+            .finally(function(){
+                $scope.fetchingFiles = false;
+            });
+        }
+
+        $scope.dowloadFiles = function(){
+
+
+            var translation = $scope.translation;
+
+            var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
+            var filesForTranslation = _.map(_.filter($scope.translation.rows, {translate:true}), '_id');
+
+            if(filesForTranslation.length > 0){
+                $scope.gettingSignedUrl = true;
+                $http.get(url+'/signed-url', {params:{ids:filesForTranslation}})
+                .then(function(result){
+                    window.open(url+'/download?hash='+ encodeURIComponent(result.data),'_new');
+                })
+                .finally(function(){
+                    $scope.gettingSignedUrl = false;
+                })
+            }
+        }
+
+        $scope.checkAll = function(selectAll){
+            _.each($scope.translation.rows, function(row){
+                row.translate = selectAll;
+            })
+        }
+
+        $scope.onPageChange = function(page){
+            load(page)
+        }
+
+        //-------------------------------------------------------------------------
+        $scope.funcAsync = function (schema, query) {
+            var tableName = schema.replace(/-/g, '')
+            if(!query || query == ''){
+                // $scope[tableName].length = 0;
+                return;
+            }
+            // if($scope.customTags.length>0)
+            //     return;
+            var queryOptions = {
+                    query       : { "title.en" : {"$$startsWith":query }}, 
+                    pageNumber  : 0,
+                    pageLength  : 100,
+                    sort        : {"title.en":1},
+                    field       : {"_id":1, "title":1}
+                };
+            genericService.query('v2017', schema, queryOptions )
+            .then(function (response) {
+                $scope[tableName].length = 0;
+            
+                for(var i=0;i<response.length; i++){
+                    var tag =  response[i];
+                    var recordsToVerify = [];
+                    if(tableName == 'articlecustomtags')
+                        recordsToVerify = $scope.search.customTags;
+                    else
+                        recordsToVerify = $scope.search.tags;
+                    if(!_.some(recordsToVerify, function(eTag){return eTag == tag._id})){
+                        $scope[tableName].push({_id:tag._id, title: tag.title});
+                    }
+                }
+            },
+            function (err) {
+                console.log('ERROR!!!', err);
+            }
+            );
+        }
+
+        //-------------------------------------------------------------------------
+        $scope.getTerm = function(term, table){
+
+            if(term.title)
+                return term.title.en;
+
+            var searchTerm = {
+                _id : term
+            }
+            if(term._id)
+                searchTerm._id = term._id;
+
+            var result = $filter('tagTerm')(searchTerm, table)
+            // console.log(result, term)
+            return result;
+        }
+
+        //-------------------------------------------------------------------------
+        $scope.tagTransform = function (newTag) {
+            var item = {
+                title: { en : newTag}
+            };
+        
+            return item;
+        };
+
+        //-------------------------------------------------------------------------
+        $scope.searchArticles = function(search){
+            // console.log(search);
+            search = search || {};
+            var query =  { $and : []};
+            if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0 && (search.adminTags||[]).length==0)
+                query=undefined;
+
+            if(search.titleContent && search.titleContent!=''){
+                query.$and.push({"$or" : [{"title.en": { "$$contains" : search.titleContent}}, 
+                                            {"content.en": { "$$contains" : search.titleContent}}]});
+            }
+
+            if(search.tags && search.tags.length>0){
+                query.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
+            }
+            if(search.customTags && search.customTags.length>0){
+                query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
+            }
+            if(search.adminTags && search.adminTags.length>0){
+                query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title.en })}});
+            }
+            $scope.translation.query = query;
+            load(0)
+        }
+
+        $scope.searchArticles({})
+
+    }];
+});

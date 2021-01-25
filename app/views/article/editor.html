@@ -1,5 +1,4 @@
-﻿<div>
-    <link rel="stylesheet" href="app/libs/angular-material/angular-material.css" />
+<div>
     <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
     <style type="text/css">
         .button {
@@ -57,12 +56,29 @@
                         <h3 class="box-title">New Article</h3>
                     </div>
                     <div class="box-body">
-                        <!-- <div ckeditor="options" ng-model="content" ready="onReady()"></div> -->
+                        <div class="alert alert-danger alert-dismissible" ng-if="showTranslationAlert">                            
+                            <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                            Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
+                        </div>
+                        <div class="blockRegion" ng-if="loading">
+                            <div class="inverted dimmer active">
+                                <div class="center">
+                                    <div class="medium loader"><i class="fa fa-spin fa-cog" /> loading...</div>					
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Title</label>
-                                    <input type="text" class="form-control my-colorpicker1 colorpicker-element" ng-model="document.title.en">
+                                    <km-textbox-ml class="my-colorpicker1 colorpicker-element" ng-model="document.title"
+                                    placeholder="Title of the article" locales="locales" ng-change="showTranslationMessage()"></km-textbox-ml>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Summary</label>
+                                    <km-textbox-ml  class="my-colorpicker1 colorpicker-element" locales="['en']" ng-model="document.summary">
                                 </div>
                             </div>
                             <div class="col-md-12">
@@ -169,10 +185,16 @@
                         <br/>
                         <div class="row">
                             <div class="col-md-12">
+                                <div class="alert alert-danger alert-dismissible" ng-if="showTranslationAlert">                            
+                                    <h4><i class="icon fa fa-ban"></i> Alert!</h4>
+                                    Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
+                                </div>
                                 <div class="form-group">
                                     <label>Content</label>
                                     </br>
-                                    <editor></editor>
+                                    <ck-editor locales="locales" on-init="onEditorInitialized()" ng-model="document.content"  ng-change="showTranslationMessage()"
+                                    on-file-upload="onEditorFileUpload(data)"></ck-editor>
+                                    <!-- <editor></editor> -->
                                 </div>
                             </div>
                         </div>
@@ -193,6 +215,32 @@
                             </div>
                         </div>
                         <!-- /.row -->
+
+                        <div class="row" ng-if="document.attachments">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Attachments</label>
+                                    </hr>                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <table class="table">
+                                                <tr ng-repeat="attachment in document.attachments" >
+                                                    <td>
+                                                        {{attachment.contentType}}
+                                                    </td>
+                                                    <td>
+                                                        <a target="_blank" ng-href="{{attachment.url}}">{{attachment.filename||attachment.metadata.fileName}}</a>
+                                                    </td>
+                                                    <td>
+
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="box-footer">
                         <button type="submit" class="btn btn-primary" ng-click="submit()">Submit</button>

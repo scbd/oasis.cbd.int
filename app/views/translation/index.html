@@ -5,49 +5,51 @@
             <div class="col-md-12">
                 <div class="box1">
                     <div class="box-header with-border">
-                        <h3 class="box-title">SCBD Projects</h3>
+                        <h3 class="box-title">SCBD Translation</h3>
                     </div>
                     <div class="box-body1" id="editor">
 
                         <div class="row">
 
 
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <!-- Widget: user widget style 1 -->
                                 <div class="box box-widget widget-user">
                                     <!-- Add the bg color to the header using any of the bg-* classes -->
                                     <div class="widget-user-header bg-aqua-active">
-                                        <h3 class="widget-user-username">{{project.name}}</h3>
+                                        <h3 class="widget-user-username">Projects</h3>
                                         <!-- <h5 class="widget-user-desc">Founder &amp; CEO</h5> -->
                                     </div>
                                     <div class="widget-user-image">
-                                        <img class="img-circle" src="{{project.owner.avatar_url}}" alt="Repo Avatar">
+                                        <img class="img-circle" src="https://avatars2.githubusercontent.com/u/4614187?v=4" alt="Repo Avatar">
                                     </div>
                                     <div class="box-footer">
-                                        <div class="row">
-                                            <div class="col-sm-4 border-right">
-                                                <div class="description-block">
-                                                    <h5 class="description-header">{{project.stargazers_count}}</h5>
-                                                    <span class="description-text">Star Count</span>
-                                                </div>
-                                                <!-- /.description-block -->
+                                        <div class="row">                                           
+                                            <div class="col-sm-12 border-right" style="text-align:center">
+                                               <a ng-href="{{baseUrl}}projects">Translate</a>
                                             </div>
-                                            <!-- /.col -->
-                                            <div class="col-sm-4 border-right">
-                                                <div class="description-block">
-                                                    <h5 class="description-header">{{project.forks_count}}</h5>
-                                                    <span class="description-text">Forks</span>
-                                                </div>
-                                                <!-- /.description-block -->
+                                        </div>
+                                        <!-- /.row -->
+                                    </div>
+                                </div>
+                                <!-- /.widget-user -->
+                            </div>
+                            <div class="col-md-6">
+                                <!-- Widget: user widget style 1 -->
+                                <div class="box box-widget widget-user">
+                                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                                    <div class="widget-user-header bg-aqua-active">
+                                        <h3 class="widget-user-username">Database Tables</h3>
+                                        <!-- <h5 class="widget-user-desc">Founder &amp; CEO</h5> -->
+                                    </div>
+                                    <div class="widget-user-image">
+                                        <img class="img-circle" src="https://avatars2.githubusercontent.com/u/4614187?v=4" alt="Repo Avatar">
+                                    </div>
+                                    <div class="box-footer">
+                                        <div class="row">                                            
+                                            <div class="col-sm-12 border-right"style="text-align:center">
+                                               <a ng-href="{{baseUrl}}translation/database-tables">Translate</a>
                                             </div>
-                                            <!-- /.col -->
-                                            <!-- <div class="col-sm-4">
-                                                <div class="description-block">
-                                                    <h5 class="description-header">35</h5>
-                                                    <span class="description-text">PRODUCTS</span>
-                                                </div>
-                                            </div> -->
-                                            <!-- /.col -->
                                         </div>
                                         <!-- /.row -->
                                     </div>
@@ -57,48 +59,6 @@
 
                         </div>
 
-                        <div class="row">
-
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Previous Releases</label>
-                                    <select class="form-control" ng-options="release.tag_name for release in releases" ng-model="previousRelease">
-                                    </select>
-                                  </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label>Current Releases</label>
-                                    <span class="form-control">{{latestRelease.tag_name}}</span>
-                                  </div>
-                            </div>
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary" ng-click="showTranslationFiles()">Show Files</button>
-                                <a ng-if="previousRelease" target="_blank" type="submit" class="btn btn-primary" 
-                                    ng-click1="showTranslationFiles()"
-                                    ng-href="{{'/api/git/'+project.name +'?zip=true&branch=' + latestRelease.tag_name +'&date='+previousRelease.created_at;}}">Download Zip</a>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="box">
-                                    <div class="box-body table-responsive no-padding">
-                                <table class="table table-hover table-stripped">
-                                    <tr>
-                                        <th>File</th>
-                                        <th>File Path</th>
-                                    </tr>
-                                    <tr ng-repeat="file in translationFiles">
-                                        <td ng-bind="file.name"></td>
-                                        <td ng-bind="file.path"></td>
-                                    </tr>
-                                </table>
-                                </div></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 

@@ -1,0 +1,15 @@
+﻿<div  style="max-width: 99.5%">
+    <div style="margin-left:10px;" ng-if="hasAuthToken">
+        <div ng-vue="vueOptions" ng-vue-expose="widgetId">
+            <v-app>
+                <!-- Sizes your content based upon application components -->
+                <!-- <v-main> -->
+                    <!-- Provides the application the proper gutter -->
+                    <!-- <v-container fluid> -->
+                        <edit-widget :widget-id="widgetId"></edit-widget>
+                    <!-- </v-container> -->
+                <!-- </v-main> -->
+            </v-app>
+        </div>
+    </div>
+</div>

@@ -7,7 +7,7 @@ process.on('SIGTERM', ()=>process.exit());
 var express     = require('express');
 var app = express();
 var proxy   = require('http-proxy').createProxyServer({});
-var gitQuery =  require('./app/api/git-query.js')();
+let config = require('./app/api/config.js');
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -18,30 +18,30 @@ app.set('view engine', 'ejs');
 
 app.set('port', process.env.PORT || 2012);
 
-var apiUrl = process.env.API_URL || 'https://api.cbddev.xyz:443';
+// CONFIGURE /APP/* ROUTES
+if(!process.env.API_URL) {
+    console.warn('warning: evironment API_URL not set. USING default (https://api.cbd.int:443)');
+}
+
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
+let appVersion = process.env.TAG      || gitVersion;
 
 console.info(`info: www.cbd.int/management`);
-console.info(`info: Git version: ${gitVersion}`);
-console.info(`info: API address: ${apiUrl}`);
+console.info(`info: Git commit:  ${gitVersion}`);
+console.info(`info: App version: ${appVersion}`);
+console.info(`info: API address: ${config.api.url}`);
 
 
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
-// app.all('/api/v2017/*', (req, res) =>{
-//     console.log(req.url);
-//      proxy.web(req, res, { target: 'http://localhost:8000', changeOrigin: true, secure:false })
-//     });
 
-app.all('/translation-api/git/:repository',async (req, res) => {
-    await gitQuery(req, res)
-});
+app.use('/translation-api/git/:repository',          require('./app/api/git-query')  ());
+app.use('/translation-api/database-table/:table',    require('./app/api/database-table')());
 
-app.all('/api/*', (req, res) => proxy.web(req, res, { target: apiUrl, changeOrigin: true, secure:false }));
-
+app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.url, changeOrigin: true, secure:false }));
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
 // CONFIGURE TEMPLATE
-app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',gitVersion: gitVersion }); });
+app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',appVersion: appVersion }); });
 
 
 
@@ -64,7 +64,7 @@ process.on('SIGTERM', ()=>process.exit());
 //============================================================
 function setCustomCacheControl(res, path) {
 
-	if(res.req.query && res.req.query.v && res.req.query.v==gitVersion && gitVersion!='UNKNOWN')
+	if(res.req.query && res.req.query.v && res.req.query.v==appVersion && appVersion!='UNKNOWN')
         return res.setHeader('Cache-Control', 'public, max-age=86400000'); // one day
 
     res.setHeader('Cache-Control', 'public, max-age=0');

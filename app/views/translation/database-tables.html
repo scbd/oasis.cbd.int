@@ -1,0 +1,51 @@
+﻿<div>
+
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box1">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">SCBD Projects</h3>
+                    </div>
+                    <div class="box-body1" id="editor">
+
+                        <div class="row">
+                            
+                            <div class="col-md-4" ng-repeat="table in dbTables">
+                                <div class="box box-widget widget-user">
+                                    <div class="widget-user-header bg-aqua-active">
+                                        <h3 class="widget-user-username">{{table.name}}</h3>
+                                    </div>                                    
+                                    <div class="box-footer">
+                                        <div class="row">
+                                            <div class="col-sm-4 border-right">
+                                                <div class="description-block">
+                                                    <!-- <h5 class="description-header">{{table.rows}}</h5>
+                                                    <span class="description-text">Rows</span> -->
+                                                </div>
+                                            </div>                                            
+                                            <div class="col-sm-4">
+                                                <a ng-href="{{baseUrl}}translation/database-tables/{{table.name}}">
+                                                    <div class="description-block">
+                                                        <h5 class="description-header"></h5>
+                                                        <span class="description-text">Translation</span>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <!-- /.col -->
+                                        </div>
+                                        <!-- /.row -->
+                                    </div>
+                                </div>
+                                <!-- /.widget-user -->
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</div>

@@ -1,4 +1,4 @@
-﻿define(['app'], function(app) {
+﻿define(['app', 'lodash'], function(app, _) {
     'use strict';
 
     app.factory("IStorage", ["$http", "$q", "authentication", "realm", function($http, $q, authentication, defaultRealm) {
@@ -392,12 +392,12 @@
                     "params": oTrans.params
                 }).then(
                     function(success) {
-                        return angular.extend(success.data || {}, {
+                        return _.defaults(success.data || {}, {
                             "url": oTrans.url
                         });
                     },
                     function(error) {
-                        error.data = angular.extend(error.data || {}, {
+                        error.data = _.defaults(error.data || {}, {
                             "url": oTrans.url
                         });
                         throw error;
@@ -406,7 +406,20 @@
 
             "getMimeType": function(file) {
                 return getMimeTypes(file.name, file.type || "application/octet-stream");
-            }
+            },
+
+            mimeTypeWhitelist : [
+                "application/json","application/ogg","application/pdf","application/xml","application/zip",
+                "application/x-zip","application/x-zip-compressed","audio/mpeg","audio/x-ms-wma","audio/x-wav",
+                "image/gif","image/jpeg", "image/png","image/bmp",
+                "image/tiff",
+                "text/csv","text/html","text/plain","text/xml","video/mpeg","video/mp4","video/quicktime",
+                "video/x-ms-wmv","video/x-msvideo","video/x-flv","application/vnd.oasis.opendocument.text",
+                "application/vnd.oasis.opendocument.spreadsheet","application/vnd.oasis.opendocument.presentation","application/vnd.oasis.opendocument.graphics",
+                "application/vnd.ms-excel","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-powerpoint","application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ]
+
         };
 
         //==================================================

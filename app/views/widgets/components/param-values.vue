@@ -1,0 +1,298 @@
+<template>
+  <v-data-table
+    :headers="headers"
+    :items="localParams"
+    class="elevation-1"
+    hide-default-footer
+  >
+    <template v-slot:top>
+      <v-toolbar flat color="blue lighten-5">
+        <v-toolbar-title>{{ placeholder }}</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-dialog v-model="dialog" max-width="1200px">
+          <v-card>
+            <v-card-title>
+              <span class="headline">{{ formTitle }}</span>
+            </v-card-title>
+
+            <v-card-text>
+              <v-container>
+                <!-- CodeMirror-lines     padding-left: 15px; -->
+                <v-form
+                  ref="form"
+                  v-model="validations.valid"
+                  lazy-validation
+                  style="width: 100%"
+                >
+                  <v-row>
+                    <v-col cols="6">
+                      <v-text-field disabled
+                        v-model="editedItem.name"
+                        label="Name"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="6">
+                      <v-text-field disabled
+                        v-model="editedItem.type"
+                        label="Type"
+                      ></v-text-field>
+                    </v-col>
+
+                    <v-col cols="6" v-if="editedItem.type == 'jsonSchema'">
+                      <label>JSON schema</label>
+
+                      <code-editor
+                        mode='application/ld+json'
+                        v-model="editedItem.validationJsonSchema"
+                        read-only="true"
+                        placeholder=''
+                      ></code-editor>
+                    </v-col>
+                    <v-col cols="6" v-if="editedItem.type == 'jsonSchema'">
+                      
+                      <label>JSON value</label>
+                      <code-editor
+                        mode='application/ld+json'
+                        v-model="editedItem.value"
+                        :rules="validations.paramSchemaRules"
+                        placeholder=''
+                      ></code-editor>
+                      <CError error-message="JSON schema is required" v-if="validations.jsonSchemaRules.isMissing"></CError>
+                      <CError :error-message="validations.jsonSchemaRules.isInvalid" v-if="validations.jsonSchemaRules.isInvalid"></CError>
+                      
+                    </v-col>
+
+                    <v-col cols="6" v-if="editedItem.type == 'regex'">
+                      <v-text-field
+                        v-model="editedItem.validationRegex"
+                        label="Validation regex"
+                        disabled
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="6" v-if="editedItem.type == 'regex'">                      
+                      <v-text-field
+                        v-model="editedItem.value"
+                        label="Value"
+                        :rules="validations.paramRegexRules"
+                        ></v-text-field>
+                        <CError :error-message="validations.invalidRegexValue" v-if="validations.invalidRegexValue"></CError>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="blue darken-1" text @click="close"> Cancel </v-btn>
+              <v-btn
+                color="blue darken-1"
+                text
+                @click="save"
+                :disabled="!validations.valid"
+              >
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        
+      </v-toolbar>
+    </template>
+    <template v-slot:item.validation="{ item }">
+        <span v-if="item.type == 'regex'">{{item.validationRegex}}</span>
+        <span v-if="item.type == 'jsonSchema'">{{item.validationJsonSchema}}</span>
+    </template>
+    <template v-slot:item.actions="{ item }">
+      <v-icon small class="mr-2" @click="editItem(item)"> mdi-pencil </v-icon>
+    </template>
+    <template v-slot:no-data>
+      <b>No params configured!</b>
+    </template>
+  </v-data-table>
+</template>
+
+<script>
+define([
+  "vueFile!views/widgets/components/code-editor.vue",
+  "vueFile!views/widgets/components/error.vue",
+  "lodash",
+], function (codeEditor, CError, _) {
+  return {
+    components: {
+      codeEditor: codeEditor,
+      CError:CError
+    },
+    template: template,
+    props: ["value", "placeholder"],
+    data: function() { 
+      return {
+        dialog: false,
+        dialogDelete: false,
+        headers: [
+            { text: "Name", align: "start", sortable: false, value: "name", },
+            { text: "Type", value: "type",  sortable: false },
+            { text: "Validation", value: "validation", sortable: false },
+            { text: "Type", value: "value", sortable: false },
+            { text: 'Actions', value: 'actions', sortable: false },
+        ],
+        localParams: [],
+        editedIndex: -1,
+        editedItem: {
+            name: "",
+            type: '',
+            validationRegex: '',
+            value: '',
+            validationJsonSchema: '',
+        },
+        defaultItem: {
+            name: "",
+            type: '',
+            validationRegex: '',
+            value: '',
+            validationJsonSchema: '',
+        },
+        paramTypes: [
+            { text: "Regex", value: "regex" },
+            { text: "JSON Schema", value: "jsonSchema" },
+        ],
+        validations: {
+            valid: false,            
+            paramSchemaRules: [
+                function (v) {
+                    return !!_.trim(v) || "Value is required";
+                },
+            ],
+            paramRegexRules: [
+                function (v) {
+                    return !!_.trim(v) || "Value is required";
+                },
+            ],
+            jsonSchemaRules:{
+                isInvalid : '',
+                isMissing:false,
+            },
+            invalidRegexValue:''
+        },
+      }
+    },
+
+    computed: {
+      formTitle() {
+        return "Param value";
+      },
+    },
+
+    watch: {
+      dialog(val) {
+        val || this.close();
+      },
+      dialogDelete(val) {
+        val || this.closeDelete();
+      },
+    },
+
+    created() {
+      this.initialize();
+    },
+
+    methods: {
+      initialize() {
+        this.localParams = [];
+        if (this.value) {
+          //params are passed make sure its array or convert to array
+          if (!_.isArray(this.value) && _.isObject(this.value)) {     
+            var params = this.value;
+            this.localParams = _(this.value)
+              .keys()
+              .map(function (key) {
+                var param = params[key];
+                param.name = key;
+                return param;
+              })
+              .value();
+          }
+        }
+      },
+
+      editItem(item) {
+        this.editedIndex = this.localParams.indexOf(item);
+        this.editedItem = Object.assign({}, item);
+        if(this.editedItem.type == 'jsonSchema'){
+            try{
+               this.editedItem.validationJsonSchema = JSON.stringify(this.editedItem.validationJsonSchema, null, 4);
+            }
+            catch{}
+        }
+        this.dialog = true;
+      },
+
+      close() {
+        this.dialog = false;
+        this.$nextTick(function() {
+          this.editedItem = Object.assign({}, this.defaultItem);
+          this.editedIndex = -1;
+        });
+      },
+
+      save() {
+        this.validations.invalidRegexValue = '';
+        this.validations.jsonSchemaRules.isInvalid = '';
+
+        var result = this.$refs.form.validate();
+        if(!result)
+            return
+        console.log(result, this.editedItem);
+
+        if(this.editedItem.type == 'regex'){
+            try{
+                  var regex;
+                  var regParts = this.editedItem.validationRegex.match(/^\/(.*?)\/([gim]*)$/);
+                  if (regParts) {
+                    regex = RegExp(regParts[1], regParts[2]);
+                  }
+                  else
+                    regex = new RegExp(this.editedItem.validationRegex);
+
+                if(!regex.test(this.editedItem.value)){
+                  this.validations.invalidRegexValue = 'The value does not pass the regex expression';
+                  return
+                }
+            }
+            catch(e){
+                this.validations.invalidRegexValue = 'Invalid value';
+                return;
+            }
+        }
+        else if(this.editedItem.type == 'jsonSchema'){
+            try{
+              JSON.parse(this.editedItem.value);
+            }
+            catch(e){
+                this.validations.jsonSchemaRules.isInvalid = 'Invalid JSON schema. \n' + e;
+                return;
+            }
+        }
+
+        if (this.editedIndex > -1) {
+          Object.assign(this.localParams[this.editedIndex], this.editedItem);
+        } else {
+          this.localParams.push(this.editedItem);
+        }
+        var newParams = {};
+        _.each(this.localParams, function(param){
+            newParams[param.name] = _.clone(param);
+            delete newParams[param.name].name;
+            if(param.type == 'jsonSchema')
+                delete newParams[param.name].validationRegex;
+            else
+                delete newParams[param.name].validationJsonSchema;
+        })
+        this.$emit('input', newParams)    
+        this.close();
+      },
+    },
+  };
+});
+</script>
