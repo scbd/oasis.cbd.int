@@ -78,6 +78,10 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
         $scope.isShowLocale = function() {
           return $scope.locales && $scope.locales.length > 1;
         };
+
+        $scope.showOtherLocales = function(){
+          $scope.showOthers = !$scope.showOthers;
+        }
       }
     };
   });
