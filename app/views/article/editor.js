@@ -36,7 +36,7 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         $scope.document = data;
                         $scope.article.tags         = _.map(data.tags,      function(t){ return {_id:t}});
                         $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
-                        $scope.article.adminTags    = _.map(data.adminTags, function(t){ return t});
+                        $scope.article.adminTags    = _.map(data.adminTags, function(t){ return {title:t}});
 
                         $timeout(function(){
                             originalDocument = angular.copy($scope.document);
@@ -45,30 +45,51 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 }
             }
 
-            $scope.funcAsync = function (schema, query, table) {
-                var tableName = table || schema.replace(/-/g, '')
+            $scope.asyncCustomTags = function (query) {
+
                 if(!query || query == ''){
-                    // $scope[tableName].length = 0;
                     return;
                 }
-                // if($scope.customTags.length>0)
-                //     return;
                 var queryParam = {"title.en" : { "$$startsWith" : query }};
-                genericService.query('v2017', schema, {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
+                genericService.query('v2017', 'article-custom-tags', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
                 .then(function (response) {
-                    $scope[tableName].length = 0;
+                    $scope.articleCustomTags = [];
                 
+                    var hasExactMatch = _.find(response, function(item){return item.title.en == query});
+                    if(!hasExactMatch)
+                        $scope.articleCustomTags.push({title: { en : query }, isTag:true});
+
                     for(var i=0;i<response.length; i++){
                         var tag =  response[i];
-                        var recordsToVerify = [];
-                        if(tableName == 'articlecustomtags')
-                            recordsToVerify = $scope.article.customTags;
-                        if(tableName == 'admintags')
-                            recordsToVerify = $scope.article.adminTags;
-                        else
-                            recordsToVerify = $scope.article.tags;
-                        if(!_.some(recordsToVerify, function(eTag){return eTag == tag._id})){
-                            $scope[tableName].push({_id:tag._id, title: tag.title});
+                        if(!_.some($scope.article.customTags, function(eTag){return eTag == tag._id})){
+                            $scope.articleCustomTags.push({_id:tag._id, title: tag.title});
+                        }
+                    }
+                },
+                function (err) {
+                    console.log('ERROR!!!', err);
+                }
+              );
+            }
+
+            $scope.asyncAdminTags = function (query) {
+                if(!query || query == ''){
+                    return;
+                }
+                
+                var queryParam = {"title" : { "$$startsWith" : query }};
+                genericService.query('v2021', 'article-admin-tags', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title":1}})
+                .then(function (response) {
+                    $scope.articleAdminTags = [];
+                    
+                    var hasExactMatch = _.find(response, {title:query})
+                    if(!hasExactMatch)
+                        $scope.articleAdminTags.push({title:query, isTag:true});
+
+                    for(var i=0;i<response.length; i++){
+                        var tag =  response[i];             
+                        if(!_.some($scope.article.adminTags, function(eTag){return eTag == tag._id})){
+                            $scope.articleAdminTags.push(tag);
                         }
                     }
                 },
@@ -90,7 +111,7 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
 
                 $scope.document.tags        = _.map($scope.article.tags, "_id");
                 $scope.document.customTags  = pluckTags($scope.article.customTags);
-                $scope.document.adminTags   = pluckTags($scope.article.adminTags);
+                $scope.document.adminTags   = _($scope.article.adminTags).map('title').compact().uniq().value();
 
                 var operation;
                 if($scope.document && $scope.document._id){
@@ -135,14 +156,23 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 // console.log(result, term)
                 return result;
             }
-
-            $scope.tagTransform = function (newTag) {
+            
+            $scope.tagCustomTransform = function (newTag) {
                 var item = {
                     title: { en : newTag}
                 };
             
                 return item;
             };
+
+            $scope.tagAdminTransform = function (newTag) {
+                var item = {
+                    title: newTag
+                };
+            
+                return item;
+            };
+
             $scope.$watch('coverImage', function (newVal) {
                 if(newVal)
                     $scope.upload([newVal]);

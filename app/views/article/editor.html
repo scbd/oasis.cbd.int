@@ -99,14 +99,14 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Custom Tags</label>
-                                    <ui-select multiple tagging="tagTransform" tagging-label="(Create new tag)" ng-model="article.customTags" theme="bootstrap"
+                                    <ui-select multiple tagging="tagCustomTransform" tagging-label="(Custom 'new' tag)" ng-model="article.customTags" theme="bootstrap"
                                         ng-disabled="disabled">
-                                        <ui-select-match placeholder="custom tags...">
+                                        <ui-select-match placeholder="Custom tags...">
                                             <span>{{getTerm($item)}}</span>
                                         </ui-select-match>
-                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
-                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
-                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                        <ui-select-choices refresh="asyncCustomTags($select.search)" refresh-delay="500" repeat="tag in articleCustomTags track by $index">
+                                            <div ng-if="tag.isTag"  ng-bind-html="(tag.title|lstring) +' (Custom \'new\' tag)'"></div>
+                                            <div ng-if="!tag.isTag" ng-bind-html="tag.title|lstring | highlight: $select.search"></div>
                                         </ui-select-choices>
                                     </ui-select>
                                 </div>
@@ -114,14 +114,15 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>Admin Tags</label>
-                                    <ui-select multiple tagging="tagTransform" tagging-label="(Create new tag)" ng-model="article.adminTags" theme="bootstrap"
+                                    <div class="help">Please use lowercase tags and "<b>-</b>" instead of space for eg. abs-procedure. The server will automatically convert space to "<b>-</b>" and uppercase to lowercase.</div>
+                                    <ui-select multiple tagging="tagAdminTransform" tagging-label="(Custom 'new' tag)" ng-model="article.adminTags" theme="bootstrap"
                                         ng-disabled="disabled">
-                                        <ui-select-match placeholder="admin tags...">
-                                            <span>{{getTerm($item)}}</span>
+                                        <ui-select-match placeholder="Admin tags...">
+                                            <span>{{$item.title}}</span>
                                         </ui-select-match>
-                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search, 'articleadmintags')" refresh-delay="500" repeat="tag in articleadmintags track by $index">
-                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
-                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                        <ui-select-choices refresh="asyncAdminTags($select.search)" refresh-delay="500" repeat="tag in articleAdminTags track by $index">
+                                            <div ng-if="tag.isTag"  ng-bind-html="(tag.title) +' (Custom \'new\' tag)'"></div>
+                                            <div ng-if="!tag.isTag" ng-bind-html="tag.title | highlight: $select.search"></div>
                                         </ui-select-choices>
                                     </ui-select>
                                 </div>
