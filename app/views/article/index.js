@@ -13,7 +13,7 @@
 
             $scope.articletags = [];
             $scope.articlecustomtags = [];
-            $scope.articleadmintags = [];
+            $scope.articleAdminTags = [];
             $scope.search = {};
             $scope.layout = 'grid';
 
@@ -23,7 +23,7 @@
                 $location.path('/articles/'+ tile._id+ '/' + url  )
             }
             //-------------------------------------------------------------------------
-            $scope.delete = function(article){
+            $scope.delete = function($evt, article){
 
                 if(window.confirm("Are you sure you want to delete this record?")){
                     $q.when(genericService.delete('v2017', 'articles', article._id))
@@ -32,7 +32,17 @@
                         $scope.articles.splice(index, 1);
                     })
                 }
+                else{
+                    $evt.stopPropagation();
+                    return false;
+                }
 
+            }
+
+            $scope.edit = function($event, article) {
+                $location.path('articles/'+article._id+'/edit')                
+                $event.stopPropagation();
+                return false;
             }
             //-------------------------------------------------------------------------
             $scope.getSizedImage = function(url, size){
@@ -80,6 +90,33 @@
               );
             }
 
+            $scope.asyncAdminTags = function (query) {
+                if(!query || query == ''){
+                    return;
+                }
+                
+                var queryParam = {"title" : { "$$startsWith" : query }};
+                genericService.query('v2021', 'article-admin-tags', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title":1}})
+                .then(function (response) {
+                    $scope.articleAdminTags = [];
+                    
+                    var hasExactMatch = _.find(response, {title:query})
+                    if(!hasExactMatch)
+                        $scope.articleAdminTags.push({title:query, isTag:true});
+
+                    for(var i=0;i<response.length; i++){
+                        var tag =  response[i];             
+                        if(!_.some($scope.search.adminTags, function(eTag){return eTag == tag._id})){
+                            $scope.articleAdminTags.push(tag);
+                        }
+                    }
+                },
+                function (err) {
+                    console.log('ERROR!!!', err);
+                }
+              );
+            }
+
             //-------------------------------------------------------------------------
             $scope.getTerm = function(term, table){
 
@@ -101,6 +138,14 @@
             $scope.tagTransform = function (newTag) {
                 var item = {
                     title: { en : newTag}
+                };
+            
+                return item;
+            };
+
+            $scope.tagAdminTransform = function (newTag) {
+                var item = {
+                    title: newTag
                 };
             
                 return item;
@@ -174,7 +219,7 @@
                     pageNumber:currentPage,
                     pageLength:pageSize,
                     sort:{"meta.modifiedOn":-1},
-                    fields:{"_id":1,"title.en":1, "content.en":1, coverImage:1, 'meta.modifiedOn':1}
+                    fields:{"_id":1,"title.en":1, "content.en":1, coverImage:1, 'meta.modifiedOn':1, 'meta.modifiedBy':1}
                 };
                 
                 if(queryOptions.query && Object.keys(queryOptions.query).length>0){
