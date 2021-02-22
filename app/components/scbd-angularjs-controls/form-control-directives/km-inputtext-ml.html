@@ -5,12 +5,18 @@
 			direction: rtl
 		}
 	</style>
-	<div>
-		<div ng-repeat="locale in locales" class="input-group" ng-class="{ 'multiple-languages' : isShowLocale() && !last }" style="white-space:nowrap" ng-switch="rows">
+	<div class="easing">
+		<div ng-repeat="locale in locales" class="input-group" ng-class="{ 'multiple-languages' : isShowLocale() && !last }"
+		 style="white-space:nowrap" ng-switch="rows" ng-hide="!$first && !showOthers">
 				<input 		lang="{{locale}}" ng-change="onchange()" ng-switch-when="1"         class="form-control" ng-required="isRequired()" ng-model="text[locale]" ng-disabled="ngDisabledFn()" placeholder="{{placeholder}}" type="text"/>
 				<input  	lang="{{locale}}" ng-change="onchange()" ng-switch-when="undefined" class="form-control" ng-required="isRequired()" ng-model="text[locale]" ng-disabled="ngDisabledFn()" placeholder="{{placeholder}}" type="text"/>
 				<textarea   lang="{{locale}}" ng-change="onchange()" ng-switch-default          class="form-control" ng-required="isRequired()" ng-model="text[locale]" ng-disabled="ngDisabledFn()" placeholder="{{placeholder}}" rows="{{rows}}" style="display:inline-block"></textarea>
 			<span class="input-group-addon" disabled-ng-show="isShowLocale()" style="cursor:default">{{locale | uppercase }}</span>
+			<span class="input-group-addon" disabled-ng-show="isShowLocale()" style="cursor:pointer" ng-click="showOtherLocales()" 
+				ng-if="locales.length>1 && $first">
+				<i class="fa fa-chevron-down" ng-if="!showOthers"></i>
+				<i class="fa fa-chevron-up"   ng-if="showOthers"></i>
+			</span>
 		</div>
 	</div>
 		
