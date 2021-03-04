@@ -1,0 +1,179 @@
+<html>
+<head>
+ <script src="https://momentjs.com/downloads/moment.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA==" crossorigin="anonymous" />
+ <link href="./fonts/stylesheet.css" rel="stylesheet">
+ <style>
+     body {
+        position:relative;
+        padding: 0px;
+        margin: 0px;
+        background-color: #202020;
+        height: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+     }
+    
+     #timer {
+        text-align: center;
+        color: white;
+        font-size: 55vh;
+        padding-top: 5vh;
+     }
+     #timer.negative{
+         color: red;
+     }
+     .logo {
+        position: absolute;
+        bottom:40px; 
+        left:192px; 
+     }
+
+     .logo > img {
+        height: 25vh;
+     }
+
+     .controls {
+        position: absolute;
+        bottom:5px; 
+        right:5px; 
+        font-size: 10vh;
+     }
+     
+     a.control {
+        display: inline-block;
+        margin:10px; 
+        margin-right:10px; 
+     }
+
+     .dimmed {
+        color: #1c1c1c !important
+     }
+
+     input.item{
+        font-family: "AlternateGotNo3D";
+        background-color: #00000000;
+        color: #009b48;
+        font-size: 10vh;
+        /* width: 50%; */
+        position: absolute;
+        /* bottom: 16vh; */
+        /* right:0px; */
+        border: none;
+        text-align: center;
+        width: 100%;
+     }
+
+     input.item:focus{
+        outline: none;
+     }
+
+ </style>
+</head>
+<body>
+
+    <div id="app">
+        <br/><br/>
+        <input type="text" class="item"></br>
+        <div id="timer" v-if="visible" v-bind:class="{'negative':elapsed<0}">{{ timeSpan }}</div>
+
+
+        <div class="controls">
+            <a class="control dimmed" @click="visible = false"  v-if="visible" ><i class="far fa-eye"></i></a>
+            <a class="control dimmed" @click="visible = true" v-if="!visible"><i class="far fa-eye-slash"></i></a>
+            <a class="control dimmed" @click="start(0, 250)" v-if="paused"><i class="fas fa-play"></i></a>
+            
+            <a class="control dimmed" @click="start(2, -250)" v-if="paused"><i class="fas fa-step-backward"></i></a>
+            <a class="control dimmed" @click="start(3, -250)" v-if="paused"><i class="fas fa-step-backward"></i></a>
+            <a class="control dimmed" @click="start(5, -250)" v-if="paused"><i class="fas fa-fast-backward"></i></a>
+            <a class="control dimmed" @click="stop()"  v-if="!paused"><i class="fas fa-pause"></i></a>
+            <a class="control dimmed" @click="stop(); reset(); visible = false" ><i class="fas fa-retweet"></i></a>
+        </div>
+
+
+        <div class="logo">
+            <img src="https://www.cbd.int/themes/custom/bootstrap_sass/images/CBD_logo_green.png">
+        </div>
+                
+
+        <!-- <span class="fa-stack">
+            <span class="fa fa-circle-o fa-stack-2x"></span>
+            <strong class="fa-stack-1x">
+                2    
+            </strong>
+        </span> -->
+    </div>
+
+    <script>
+
+        var app = new Vue({
+          el: '#app',
+          data: () => ({
+            elapsed: 0,
+            paused: true,
+            visible: false,
+            delayBy:250, //ms,
+            resetTimer:true
+          }),
+          computed : {
+            timeSpan () {
+
+                // if(this.elapsed < 0){
+                //     this.pause();${negative?'-':''}
+                // }
+                const diff = moment.duration(this.elapsed);
+                const negative = this.elapsed < 0;
+                return `${pad0(diff.minutes(),1)}:${pad0(diff.seconds(), 2)}`;
+            }
+          },
+          methods : {
+            incrementDelay,
+            reset,
+            start,
+            stop
+          },
+          mounted : function() {
+              
+            this.reset();
+
+            setInterval(()=> { 
+              if(this.paused) return;
+
+              this.incrementDelay(this.delayBy) }, Math.abs(this.delayBy));
+          } 
+        })        
+
+        function incrementDelay(inc) {
+            this.elapsed += inc;
+        }
+
+        function start(startFrom, delay) {
+            this.elapsed    = !this.resetTimer ? this.elapsed : ((startFrom||0)*60*1000)+500 //extra 500 ms so that 3:00 is displayed
+            this.delayBy    = !this.resetTimer ? this.delayBy : (delay||250)//ms
+            this.paused     = false;
+            this.visible    = true
+            this.resetTimer = false;
+        }
+
+        function stop() {
+            this.paused = true;
+        }
+
+        function reset() {
+            this.elapsed = 0;
+            this.resetTimer = true;
+        }
+        
+        function pad0(val, length) {
+
+            val = Math.abs(val).toString()
+
+            while(val.length<length)
+                val = "0"+val;
+                
+            return val;
+        }
+    </script>
+
+</body>
+</html>

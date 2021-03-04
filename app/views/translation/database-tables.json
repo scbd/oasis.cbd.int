@@ -4,5 +4,23 @@
         "api"       : "/api/v2017/articles",
         "fields"    : ["title", "content"],
         "query1"     : {"adminTags.title.en" : {"$in" : ["ABSCH-About"]}}
+    },
+    {
+        "name"      : "Articles tags",
+        "api"       : "/api/v2017/article-tags",
+        "fields"    : ["title"],
+        "sort"      : { "title.en":1}
+    },
+    {
+        "name"      : "Articles custom tags",
+        "api"       : "/api/v2017/article-custom-tags",
+        "fields"    : ["title"],
+        "sort"      : { "title.en":1}
+    },
+    {
+        "name"      : "Articles admin tags",
+        "api"       : "/api/v2021/article-admin-tags",
+        "fields"    : ["title"],
+        "sort"      : { "title":1}
     }
 ]
