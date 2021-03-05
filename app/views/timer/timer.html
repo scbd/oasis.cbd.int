@@ -172,7 +172,7 @@
             var startFrom = 3;
             var delay = -250;
             if(params.time){
-                startFrom = Number(params.time);
+                startFrom = Number(params.time) + (params.seconds ? (parseInt(params.seconds)/60) : 0);
             }
             if(params.upwards=='true')
                 delay = 250;
