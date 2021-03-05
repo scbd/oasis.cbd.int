@@ -79,6 +79,7 @@
 
 
         <div class="controls">
+            <a class="control dimmed" @click="startFromQS()" v-if="paused"><i class="fas fa-question"></i></a>
             <a class="control dimmed" @click="visible = false"  v-if="visible" ><i class="far fa-eye"></i></a>
             <a class="control dimmed" @click="visible = true" v-if="!visible"><i class="far fa-eye-slash"></i></a>
             <a class="control dimmed" @click="start(0, 250)" v-if="paused"><i class="fas fa-play"></i></a>
@@ -130,7 +131,8 @@
             incrementDelay,
             reset,
             start,
-            stop
+            stop,
+            startFromQS
           },
           mounted : function() {
               
@@ -163,6 +165,21 @@
             this.elapsed = 0;
             this.resetTimer = true;
         }
+
+        function startFromQS(){
+            this.reset();
+            var params = readQS();
+            var startFrom = 3;
+            var delay = -250;
+            if(params.time){
+                startFrom = Number(params.time);
+            }
+            if(params.upwards=='true')
+                delay = 250;
+
+            this.start(startFrom, delay)
+
+        }
         
         function pad0(val, length) {
 
@@ -172,6 +189,21 @@
                 val = "0"+val;
                 
             return val;
+        }
+
+        function readQS(){
+            let uri = window.location.href.split('?');
+            if (uri.length == 2){
+                let vars = uri[1].split('&');
+                let getVars = {};
+                let tmp = '';
+                vars.forEach(function(v){
+                    tmp = v.split('=');
+                    if(tmp.length == 2)
+                    getVars[tmp[0]] = tmp[1];
+                });
+                return getVars;
+            }
         }
     </script>
 
