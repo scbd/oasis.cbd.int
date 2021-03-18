@@ -171,7 +171,7 @@
                     query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
                 }
                 if(search.adminTags && search.adminTags.length>0){
-                    query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title.en })}});
+                    query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title })}});
                 }
 
                 currentQuery = query;
