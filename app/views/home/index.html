@@ -26,7 +26,7 @@
         <!-- small box -->
         <div class="small-box bg-green">
           <div class="inner">
-            <h3>{{count.widgets}}<sup style="font-size: 20px">%</sup></h3>
+            <h3>{{count.widgets}}</h3>
 
             <p>Widgets</p>
           </div>
@@ -165,7 +165,7 @@
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>Title</th>
+                        <th>Name</th>
                         <th>Updated by</th>
                         <th>Updated on</th>
                         <th></th>
@@ -176,7 +176,7 @@
                         <td ng-bind="$index+1"></td>
                         <td style="width: 60%;">
                           <a ng-href="widgets/{{widget._id}}">
-                            <span ng-bind="widget.title|lstring"></span>
+                            <span ng-bind="widget.name|lstring"></span>
                           </a>
                         </td>
                         <td ng-bind="widget.meta.modifiedByInfo.firstName + ' ' + widget.meta.modifiedByInfo.lastName"></td>
@@ -193,7 +193,7 @@
               </div>
               <!-- /.box-body -->
               <div class="box-footer text-center">
-                <a href="javascript:void(0)" class="uppercase">View all widgets</a>
+                <a href="{{baseUrl}}widgets" class="uppercase">View all widgets</a>
               </div>
               <!-- /.box-footer -->
             </div>

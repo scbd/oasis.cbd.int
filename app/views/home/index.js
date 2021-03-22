@@ -17,13 +17,12 @@ define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (a
                 $scope.count.projects = result.data.public_repos;
             });        
 
-            var countOptions = { ag : [ { $count    : 'count' } ]};
-            genericService.query('v2017', 'articles', countOptions )
+            genericService.query('v2017', 'articles', { ag : [ { $count    : 'count' } ]} )
             .then(function(result){
                 $scope.count.articles = (result[0]||{}).count||0;
             });
 
-            genericService.query('v2021', 'widgets', countOptions )
+            genericService.query('v2020', 'widgets', { ag : [ { $count    : 'count' } ]} )
             .then(function(result){
                 $scope.count.widgets = (result[0]||{}).count||0;
             });
@@ -71,10 +70,10 @@ define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (a
                     {"$sort":{"meta.modifiedOn":-1}},
                     {"$skip":0},
                     {"$limit":20},
-                    {"$project":{"_id":1,"title.en":1,"meta.modifiedOn":1, 'meta.modifiedBy':1}}
+                    {"$project":{"_id":1,"name":1,"meta.modifiedOn":1, 'meta.modifiedBy':1}}
                 ]
             };
-            genericService.query('v2021', 'widgets', widgetsQuery )
+            genericService.query('v2020', 'widgets', widgetsQuery )
             .then(function(result){
                 $scope.widgets = result;
             });
