@@ -100,10 +100,6 @@
                 .then(function (response) {
                     $scope.articleAdminTags = [];
                     
-                    var hasExactMatch = _.find(response, {title:query})
-                    if(!hasExactMatch)
-                        $scope.articleAdminTags.push({title:query, isTag:true});
-
                     for(var i=0;i<response.length; i++){
                         var tag =  response[i];             
                         if(!_.some($scope.search.adminTags, function(eTag){return eTag == tag._id})){
@@ -165,13 +161,13 @@
                 }
 
                 if(search.tags && search.tags.length>0){
-                   query.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
+                   query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return item._id })}});
                 }
                 if(search.customTags && search.customTags.length>0){
-                    query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
+                    query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return item._id })}});
                 }
                 if(search.adminTags && search.adminTags.length>0){
-                    query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title })}});
+                    query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
                 }
 
                 currentQuery = query;

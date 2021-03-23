@@ -85,7 +85,7 @@
                                 <div class="form-group">
                                     <label> Tags</label>
                                     <ui-select multiple ng-model="article.tags" theme="bootstrap" ng-disabled="disabled">
-                                        <ui-select-match placeholder="tags...">
+                                        <ui-select-match placeholder="tags..." close-on-select="false">
                                             <span ng-if="$item.title">{{($item.title)|lstring}}</span>
                                             <span ng-if="!$item.title && $item._id">{{$item|tagTerm:'article-tags'}}</span>
                                         </ui-select-match>
@@ -100,7 +100,7 @@
                                 <div class="form-group">
                                     <label>Custom Tags</label>
                                     <ui-select multiple tagging="tagCustomTransform" tagging-label="(Custom 'new' tag)" ng-model="article.customTags" theme="bootstrap"
-                                        ng-disabled="disabled">
+                                        ng-disabled="disabled" close-on-select="false">
                                         <ui-select-match placeholder="Custom tags...">
                                             <span>{{getTerm($item)}}</span>
                                         </ui-select-match>
@@ -116,7 +116,7 @@
                                     <label>Admin Tags</label>
                                     <div class="help">Please use lowercase tags and "<b>-</b>" instead of space for eg. abs-procedure. The server will automatically convert space to "<b>-</b>" and uppercase to lowercase.</div>
                                     <ui-select multiple tagging="tagAdminTransform" tagging-label="(Custom 'new' tag)" ng-model="article.adminTags" theme="bootstrap"
-                                        ng-disabled="disabled">
+                                        ng-disabled="disabled" close-on-select="false">
                                         <ui-select-match placeholder="Admin tags...">
                                             <span>{{$item.title}}</span>
                                         </ui-select-match>
