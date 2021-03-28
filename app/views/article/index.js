@@ -1,7 +1,7 @@
 ﻿define(['app', 
 'scbd-angularjs-services/generic-service', 
 'scbd-angularjs-services/authentication', 
-'js/pin-grid', 'angular-ui-select2', 'angulargrid'], function (app) {
+'js/pin-grid', 'angular-ui-select2', 'angulargrid', 'components/scbd-angularjs-controls/form-control-directives/ng-enter'], function (app) {
     
 // 'ngInfiniteScroll',
     return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance',
@@ -11,10 +11,16 @@
             var pageSize=20
             var currentQuery;
 
-            $scope.articletags = [];
-            $scope.articlecustomtags = [];
-            $scope.articleAdminTags = [];
-            $scope.search = {};
+            var query = $location.search();
+            $scope.articletags          = [];
+            $scope.articlecustomtags    = [];
+            $scope.articleAdminTags     = [];
+            $scope.search = {
+                tags        : _.map(query.tags      ||[], function(tag){return {_id:tag}}),
+                customTags  : _.map(query.customTags||[], function(tag){return {_id:tag}}),
+                adminTags   : _.map(query.adminTags ||[], function(tag){return {_id:tag}}),
+                titleContent: query.title||''
+            };
             $scope.layout = 'grid';
 
             //-------------------------------------------------------------------------
@@ -116,7 +122,7 @@
             //-------------------------------------------------------------------------
             $scope.getTerm = function(term, table){
 
-                if(term.title)
+                if(term && term.title)
                     return term.title.en;
 
                 var searchTerm = {
@@ -150,7 +156,7 @@
             //-------------------------------------------------------------------------
             $scope.searchArticles = function(search){
                 // console.log(search);
-
+                updateQS();
                 var query =  { $and : []};
                 if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0 && (search.adminTags||[]).length==0)
                     query=undefined;
@@ -161,10 +167,10 @@
                 }
 
                 if(search.tags && search.tags.length>0){
-                   query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return item._id })}});
+                   query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
                 }
                 if(search.customTags && search.customTags.length>0){
-                    query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return item._id })}});
+                    query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return { "$oid" : item._id} })}});
                 }
                 if(search.adminTags && search.adminTags.length>0){
                     query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
@@ -239,19 +245,44 @@
                         .finally(function(){$scope.isLoading=false;})
             }
 
+            $scope.clearFilters = function(){
+                $scope.search = {}
+                $scope.searchArticles($scope.search);
+            }
 
-            $q.all([authentication.getUser(), genericService.query('v2017', 'articles', {count:1})])
-                .then(function (results) {
-                    var user = results[0];
-                    if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
-                        $scope.isAuthorizedForActions = true;
-                    $scope.articlesCount = articlesCount = results[1].count;
+            function updateQS(){
+                $location.search('title',       $scope.search.titleContent)
+                $location.search('tags',        _.map($scope.search.tags, '_id'))
+                $location.search('customTags',  _.map($scope.search.customTags, '_id'))
+                $location.search('adminTags',   _.map($scope.search.adminTags, '_id'))
+            }
 
-                    $scope.updateScrollPage();
+            function init(){
+
+                if($scope.search.adminTags.length){
+                    var queries = _.map($scope.search.adminTags, function(tag){                
+                                        return $http.get('/api/v2021/article-admin-tags/' + encodeURIComponent(tag._id), {cache: true})
+                                            .then(function(result){
+                                                return result.data
+                                            });
+                                    });
+                    $q.all(queries).then(function(result){
+                        $scope.search.adminTags = result;
+                    })
+                }
+
+                $q.all([authentication.getUser()])
+                    .then(function (results) {
+                        var user = results[0];
+                        if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
+                            $scope.isAuthorizedForActions = true;
+                        // $scope.articlesCount = articlesCount = results[1].count;
+
+                        $scope.searchArticles($scope.search);
                 });;
-            
-                
-           
+            }
+
+           init();
         }
     ]
 });

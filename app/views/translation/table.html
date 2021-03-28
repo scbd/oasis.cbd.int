@@ -38,7 +38,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label> Title / Content</label>
-                                                    <input type="text" class="form-control" ng-model="search.titleContent">
+                                                    <input type="text" class="form-control" ng-model="search.titleContent" ng-enter="searchArticles(search)">
                                                 </div>
                                             </div>
                                             <div class="col-md-4" ng-if="translation.name=='Articles'">

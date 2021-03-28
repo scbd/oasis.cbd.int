@@ -1,5 +1,6 @@
 ﻿define(['app', 'lodash', 'json!views/translation/database-tables.json',
-'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination'],
+'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
+'components/scbd-angularjs-controls/form-control-directives/ng-enter'],
  function (app, _, dbTables) {
     return ['$scope', '$http', '$q', '$routeParams','IGenericService',
     function ($scope, $http, $q, $routeParams, genericService) {
@@ -192,10 +193,10 @@
             }
             
             if(search.tags && search.tags.length>0){
-                query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return item._id })}});
+                query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
              }
              if(search.customTags && search.customTags.length>0){
-                 query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return item._id })}});
+                 query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return { "$oid" :item._id} })}});
              }
              if(search.adminTags && search.adminTags.length>0){
                  query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
