@@ -4,21 +4,22 @@
 'js/pin-grid', 'angular-ui-select2', 'angulargrid', 'components/scbd-angularjs-controls/form-control-directives/ng-enter'], function (app) {
     
 // 'ngInfiniteScroll',
-    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance',
-        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance) {
+    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance', '$rootScope', '$route',
+        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance, $rootScope, $route) {
             var currentPage=0;
             var articlesCount=0;
             var pageSize=20
             var currentQuery;
+            var previousParams;
 
             var query = $location.search();
             $scope.articletags          = [];
             $scope.articlecustomtags    = [];
             $scope.articleAdminTags     = [];
             $scope.search = {
-                tags        : _.map(query.tags      ||[], function(tag){return {_id:tag}}),
-                customTags  : _.map(query.customTags||[], function(tag){return {_id:tag}}),
-                adminTags   : _.map(query.adminTags ||[], function(tag){return {_id:tag}}),
+                tags        : _(typeof query.tags       == 'array'? query.tags       : [query.tags      ]).compact().map(function(tag){return {_id:tag}}).value(),
+                customTags  : _(typeof query.customTags == 'array'? query.customTags : [query.customTags]).compact().map(function(tag){return {_id:tag}}).value(),
+                adminTags   : _(typeof query.adminTags  == 'array'? query.adminTags  : [query.adminTags ]).compact().map(function(tag){return {title:tag}}).value(),
                 titleContent: query.title||''
             };
             $scope.layout = 'grid';
@@ -251,38 +252,36 @@
             }
 
             function updateQS(){
-                $location.search('title',       $scope.search.titleContent)
+                if($scope.search.titleContent == '')
+                    $location.search('title',       undefined);
+                else
+                    $location.search('title',       $scope.search.titleContent)
                 $location.search('tags',        _.map($scope.search.tags, '_id'))
                 $location.search('customTags',  _.map($scope.search.customTags, '_id'))
-                $location.search('adminTags',   _.map($scope.search.adminTags, '_id'))
+                $location.search('adminTags',   _.map($scope.search.adminTags, 'title'))
             }
 
             function init(){
-
-                if($scope.search.adminTags.length){
-                    var queries = _.map($scope.search.adminTags, function(tag){                
-                                        return $http.get('/api/v2021/article-admin-tags/' + encodeURIComponent(tag._id), {cache: true})
-                                            .then(function(result){
-                                                return result.data
-                                            });
-                                    });
-                    $q.all(queries).then(function(result){
-                        $scope.search.adminTags = result;
-                    })
-                }
-
                 $q.all([authentication.getUser()])
                     .then(function (results) {
                         var user = results[0];
                         if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
                             $scope.isAuthorizedForActions = true;
-                        // $scope.articlesCount = articlesCount = results[1].count;
-
                         $scope.searchArticles($scope.search);
                 });;
             }
 
            init();
+
+           // since reloadOnSearch is set to false so the search params can be updated to QS, if the base route /articles is click on the app
+           // there is no trigger, so use routeUpdate to track it.
+            $rootScope.$on('$routeUpdate', function(a,b) {
+                if(!_.isEmpty(previousParams) && _.isEmpty($route.current.params)){
+                    $scope.clearFilters();
+                    $scope.searchArticles($scope.search);
+                }
+                previousParams = $route.current.params;
+            })
         }
     ]
 });

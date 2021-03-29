@@ -143,16 +143,22 @@
                         <h3 class="box-title">Admin tags</h3>
                     </div>
                     <div class="box-body">
-                        <span class="label label-default chip" ng-if="article.adminTags" ng-repeat="tag in article.adminTags">{{tag}}</span>
+                        <span class="label label-default chip" ng-if="article.adminTags" ng-repeat="tag in article.adminTags">
+                            <a ng-href="{{baseUrl}}articles?adminTags={{tag}}">{{tag}}</a>
+                        </span>
                     </div>
                 </div>
-                <div class="box" ng-if="article.adminTags.length">
+                <div class="box" ng-if="article.tags.length || article.customTags.length">
                     <div class="box-header with-border">
                         <h3 class="box-title">Tags</h3>
                     </div>
                     <div class="box-body">
-                        <span class="label label-default chip" ng-if="article.tags" ng-repeat="tag in article.tags"> {{tag|tagTerm:'article-tags'}}</span>
-                        <span class="label label-default chip" ng-if="article.customTags" ng-repeat="tag in article.customTags">{{tag|tagTerm:'article-custom-tags'}}</span>
+                        <span class="label label-default chip" ng-if="article.tags" ng-repeat="tag in article.tags"> 
+                            <a ng-href="{{baseUrl}}articles?tags={{tag._id}}">
+                            {{tag|tagTerm:'article-tags'}}</a></span>
+                        <span class="label label-default chip" ng-if="article.customTags" ng-repeat="tag in article.customTags">
+                            <a ng-href="{{baseUrl}}articles?customTags={{tag._id}}">
+                            {{tag|tagTerm:'article-custom-tags'}}</a></span>
                     </div>
                 </div>
             </div>
