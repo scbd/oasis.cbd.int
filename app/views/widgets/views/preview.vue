@@ -50,6 +50,7 @@
                                 <v-toolbar-title>Preview</v-toolbar-title>
                             </v-toolbar>
                             <v-card-text>
+                                <v-text-field disabled v-model="previewUrl" label="Preview URL" required></v-text-field>
                                 <iframe ref="templatePreview"  width="100%" height="100%" style="border:none display: block;border: none;height: calc(100vh - 30px);width: 100%;"></iframe>
                             </v-card-text>
                          </v-card>
@@ -70,16 +71,18 @@
 <script>
 define([
   "vueFile!views/widgets/components/error.vue",
+  "vueFile!views/widgets/components/params.vue",
   "vueFile!views/widgets/components/param-values.vue",
   "vueFile!views/widgets/components/datasource-values.vue",
   "lodash",
   'axios',
   'views/workflows/vue-base-service',
   "css!/app/css/default-vue.css",
-], function (CError, CParamValues,CDatasourceValues, _, axios) {
+], function (CError, CParam, CParamValues,CDatasourceValues, _, axios) {
   return {
     components: {
       CError:CError,
+      CParam:CParam,
       CParamValues:CParamValues,
       CDatasourceValues:CDatasourceValues
     },
@@ -95,7 +98,8 @@ define([
             timeout:5000,
             show:false,
             color:'success'
-        }
+        },
+        previewUrl:''
       }
     },
     computed: {      
@@ -177,6 +181,7 @@ define([
           
         self.loading = true; 
         self.widgetPreview = '';
+        self.previewUrl    = '';
         var lWidget = Object.assign({}, this.widget);
         var queryString = {};
         var formData = {};
@@ -227,8 +232,9 @@ define([
             axiosPromise = axios.put('/api/v2020/widgets/'+encodeURIComponent(this.widgetId)+'/render',  { data:formData, params: queryString } );          
 
         return axiosPromise.then(function(result){
+          console.log(result);
             self.widgetPreview = result.data;
-            console.log(result);
+            self.previewUrl    = result.request.responseURL;
             self.loading = false;
             self.$nextTick(function(){
               var previewFrame = self.$refs.templatePreview;
