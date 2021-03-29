@@ -18,6 +18,7 @@ define(['app',
 	'./afc-autocomplete',
 	// './km-auto-complete-server-select',
 	'./lonlat',
-	'./km-rich-textbox'
+	'./km-rich-textbox',
 	// './km-address-block'
+	'./ng-enter'
 ], {});

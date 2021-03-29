@@ -1,20 +1,27 @@
 ﻿define(['app', 
 'scbd-angularjs-services/generic-service', 
 'scbd-angularjs-services/authentication', 
-'js/pin-grid', 'angular-ui-select2', 'angulargrid'], function (app) {
+'js/pin-grid', 'angular-ui-select2', 'angulargrid', 'components/scbd-angularjs-controls/form-control-directives/ng-enter'], function (app) {
     
 // 'ngInfiniteScroll',
-    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance',
-        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance) {
+    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance', '$rootScope', '$route',
+        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance, $rootScope, $route) {
             var currentPage=0;
             var articlesCount=0;
             var pageSize=20
             var currentQuery;
+            var previousParams;
 
-            $scope.articletags = [];
-            $scope.articlecustomtags = [];
-            $scope.articleAdminTags = [];
-            $scope.search = {};
+            var query = $location.search();
+            $scope.articletags          = [];
+            $scope.articlecustomtags    = [];
+            $scope.articleAdminTags     = [];
+            $scope.search = {
+                tags        : _(typeof query.tags       == 'array'? query.tags       : [query.tags      ]).compact().map(function(tag){return {_id:tag}}).value(),
+                customTags  : _(typeof query.customTags == 'array'? query.customTags : [query.customTags]).compact().map(function(tag){return {_id:tag}}).value(),
+                adminTags   : _(typeof query.adminTags  == 'array'? query.adminTags  : [query.adminTags ]).compact().map(function(tag){return {title:tag}}).value(),
+                titleContent: query.title||''
+            };
             $scope.layout = 'grid';
 
             //-------------------------------------------------------------------------
@@ -100,10 +107,6 @@
                 .then(function (response) {
                     $scope.articleAdminTags = [];
                     
-                    var hasExactMatch = _.find(response, {title:query})
-                    if(!hasExactMatch)
-                        $scope.articleAdminTags.push({title:query, isTag:true});
-
                     for(var i=0;i<response.length; i++){
                         var tag =  response[i];             
                         if(!_.some($scope.search.adminTags, function(eTag){return eTag == tag._id})){
@@ -120,7 +123,7 @@
             //-------------------------------------------------------------------------
             $scope.getTerm = function(term, table){
 
-                if(term.title)
+                if(term && term.title)
                     return term.title.en;
 
                 var searchTerm = {
@@ -154,7 +157,7 @@
             //-------------------------------------------------------------------------
             $scope.searchArticles = function(search){
                 // console.log(search);
-
+                updateQS();
                 var query =  { $and : []};
                 if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0 && (search.adminTags||[]).length==0)
                     query=undefined;
@@ -165,13 +168,13 @@
                 }
 
                 if(search.tags && search.tags.length>0){
-                   query.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
+                   query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
                 }
                 if(search.customTags && search.customTags.length>0){
-                    query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
+                    query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return { "$oid" : item._id} })}});
                 }
                 if(search.adminTags && search.adminTags.length>0){
-                    query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title })}});
+                    query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
                 }
 
                 currentQuery = query;
@@ -243,19 +246,42 @@
                         .finally(function(){$scope.isLoading=false;})
             }
 
+            $scope.clearFilters = function(){
+                $scope.search = {}
+                $scope.searchArticles($scope.search);
+            }
 
-            $q.all([authentication.getUser(), genericService.query('v2017', 'articles', {count:1})])
-                .then(function (results) {
-                    var user = results[0];
-                    if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
-                        $scope.isAuthorizedForActions = true;
-                    $scope.articlesCount = articlesCount = results[1].count;
+            function updateQS(){
+                if($scope.search.titleContent == '')
+                    $location.search('title',       undefined);
+                else
+                    $location.search('title',       $scope.search.titleContent)
+                $location.search('tags',        _.map($scope.search.tags, '_id'))
+                $location.search('customTags',  _.map($scope.search.customTags, '_id'))
+                $location.search('adminTags',   _.map($scope.search.adminTags, 'title'))
+            }
 
-                    $scope.updateScrollPage();
+            function init(){
+                $q.all([authentication.getUser()])
+                    .then(function (results) {
+                        var user = results[0];
+                        if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
+                            $scope.isAuthorizedForActions = true;
+                        $scope.searchArticles($scope.search);
                 });;
-            
-                
-           
+            }
+
+           init();
+
+           // since reloadOnSearch is set to false so the search params can be updated to QS, if the base route /articles is click on the app
+           // there is no trigger, so use routeUpdate to track it.
+            $rootScope.$on('$routeUpdate', function(a,b) {
+                if(!_.isEmpty(previousParams) && _.isEmpty($route.current.params)){
+                    $scope.clearFilters();
+                    $scope.searchArticles($scope.search);
+                }
+                previousParams = $route.current.params;
+            })
         }
     ]
 });

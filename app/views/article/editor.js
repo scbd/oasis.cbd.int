@@ -12,9 +12,6 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
             $scope.document = {};
             $scope.locales = ['en','ar','es','fr','ru','zh'];
 
-            $scope.articletags = [];
-            $scope.articlecustomtags = [];
-            $scope.articleadmintags = [];
             $scope.loading = true;
             $scope.showTranslationAlert = false;
 
@@ -43,6 +40,33 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         }, 200)
                     });
                 }
+            }
+
+            $scope.asyncTags = function (query) {
+
+                if(!query || query == ''){
+                    return;
+                }
+                var queryParam = {"title.en" : { "$$startsWith" : query }};
+                genericService.query('v2017', 'article-tags', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title.en":1}})
+                .then(function (response) {
+                    $scope.articleTags = [];
+                
+                    var hasExactMatch = _.find(response, function(item){return item.title.en == query});
+                    if(!hasExactMatch)
+                        $scope.articleTags.push({title: { en : query }, isTag:true});
+
+                    for(var i=0;i<response.length; i++){
+                        var tag =  response[i];
+                        if(!_.some($scope.article.tags, function(eTag){return eTag == tag._id})){
+                            $scope.articleTags.push({_id:tag._id, title: tag.title});
+                        }
+                    }
+                },
+                function (err) {
+                    console.log('ERROR!!!', err);
+                }
+              );
             }
 
             $scope.asyncCustomTags = function (query) {
@@ -108,17 +132,20 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         else if(t.isTag)                return t.title;
                     }));
                 }
+                var newDocument             = _.cloneDeep($scope.document)
+                newDocument.tags            = _.map($scope.article.tags, "_id");
+                newDocument.customTags      = pluckTags($scope.article.customTags);
+                newDocument.adminTags       = _($scope.article.adminTags).map('title').compact().uniq().value();
 
-                $scope.document.tags        = _.map($scope.article.tags, "_id");
-                $scope.document.customTags  = pluckTags($scope.article.customTags);
-                $scope.document.adminTags   = _($scope.article.adminTags).map('title').compact().uniq().value();
+                delete newDocument.tagsInfo;
+                delete newDocument.customTagsInfo;
 
                 var operation;
-                if($scope.document && $scope.document._id){
-                    operation = genericService.update('v2017', 'articles',$scope.document._id, $scope.document);
+                if(newDocument && newDocument._id){
+                    operation = genericService.update('v2017', 'articles',newDocument._id, newDocument);
                 }
                 else{
-                    operation = genericService.create('v2017', 'articles', $scope.document);
+                    operation = genericService.create('v2017', 'articles', newDocument);
                 }
                 $q.when(operation)
                 .then(function(result){
