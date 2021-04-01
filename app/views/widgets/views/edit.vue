@@ -15,6 +15,20 @@
               <v-toolbar-title>Widgets</v-toolbar-title>
             </v-toolbar>
             <v-card-text>
+               <v-alert prominent type="error"  v-if="validationErrors.length">
+                  <v-row align="center">
+                    <v-col class="grow">
+                      Errors
+                    </v-col>
+                  </v-row>  
+                  <v-divider class="my-4 info" style="opacity: 0.22"></v-divider>                
+                  <table class="table">
+                      <tr v-for="(error, index) in validationErrors" :key="index"> 
+                          <td>{{error.type}}</td>
+                          <td>{{error.message}}</td>
+                      </tr>
+                  </table>
+              </v-alert>
               <v-form ref="form" v-model="validations.valid" lazy-validation style="width:100%">
                 <v-text-field v-model="widget.name" :counter="30" :rules="validations.widgetNameRules" label="Name" required></v-text-field>
                 <v-row>
@@ -105,7 +119,7 @@ define([
           method: "GET",
           queryString: {},
           formData: {},
-          dataSource: [{}],
+          dataSource: [],
           template: "",
         },
         validations : {
@@ -126,16 +140,17 @@ define([
             timeout:5000,
             show:false,
             color:'success'
-        }
+        },
+        validationErrors:[]
       };
     },
     methods: {
       save (){
+          this.validationErrors = [];
           var self = this;
           var valid = this.$refs.form.validate()
           if(!valid)
             return;
-          console.log(this.widget);
           if(this.widget.template == '')
             return;
 
@@ -144,24 +159,27 @@ define([
               request = axios.put('/api/v2020/widgets/'+encodeURIComponent(this.widget._id), this.widget);
           }
           else{
-              request = axios.post('/api/v2020/widgets', this.widget);
+              request = axios.post('/api/v2020/widgets', this.widget)
           }
-
+          self.loading = true;
           request.then(function(response){
-            self.failedRecords.total = response.data[0].count
+            self.showToast('Widget saved successfully', 'success');
+            if(response.data.id){
+              window.location =  window.baseUrl + 'widgets/'+ response.data.id + '/edit'
+            }
           })
           .catch(function(e){
-            self.showToast('Error loasing widgets', 'error')
-            console.log(err);
-            // self.errors.push(err)
-            // self.showError(err);
+            self.showToast('Error saving widgets', 'error')
+            console.log(e.response);
+            self.validationErrors = e.response.data.error.details;
+            window.scrollTo(0, 0)
           })
           .finally(function(){
-              self.searchCountSource=undefined
+              self.loading = false;
           })
       },
       reset () {
-        this.$refs.form.reset()
+        window.location =  window.baseUrl + 'widgets';
       },
       resetValidation () {
         this.$refs.form.resetValidation()

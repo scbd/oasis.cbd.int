@@ -6,7 +6,7 @@
       :items="widgets"
       class="elevation-1"
       hide-default-footer
-      item-key="name"
+      item-key="index"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -116,14 +116,21 @@ define([
       },
 
       deleteItem(item) {
-        this.editedIndex = this.localDatasource.indexOf(item);
+        this.editedIndex = this.widgets.indexOf(item);
         this.editedItem = Object.assign({}, item);
         this.dialogDelete = true;
       },
 
       deleteItemConfirm() {
-        this.localDatasource.splice(this.editedIndex, 1);
-        this.closeDelete();
+        var self = this;
+         axios.delete('/api/v2020/widgets/' + this.editedItem._id)
+        .then(function(result){
+          self.widgets.splice(self.editedIndex, 1);
+          self.closeDelete();
+        })
+        .catch(function(e){
+          self.showToast('Error deleting widget', 'error')
+        })
       },
 
       close() {
@@ -147,7 +154,6 @@ define([
         axios.get('/api/v2020/widgets', {params:{f:{name:1,contentType:1,method:1,_id:1}}})
         .then(function(result){
             self.widgets = result.data;
-            console.log(self.widgets)
         })
         .catch(function(e){
           self.showToast('Error loasing widgets', 'error')
