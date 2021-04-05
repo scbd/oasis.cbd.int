@@ -196,7 +196,6 @@ define([
           axios.get('/api/v2020/widgets/'+encodeURIComponent(id))
           .then(function(result){
             self.widget = result.data;
-            console.log(self.widget)
           })
           .catch(function(e){
             console.log(e)

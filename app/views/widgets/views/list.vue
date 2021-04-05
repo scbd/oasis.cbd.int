@@ -42,6 +42,9 @@
         <v-icon small class="mr-2" @click="viewItem(item)"> mdi-feature-search </v-icon>
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
+      <template v-slot:item.modifiedOn="{ item }">
+        <span  v-if="item.modifiedOn">{{item.modifiedOn  | formatDate('format','DD MMM YYYY HH:MM')}}</span>
+      </template>
       <template v-slot:no-data>
         <b>No querystring params configured!</b>
       </template>
@@ -75,6 +78,8 @@ define([
             { text: "Method", value: "method", sortable: false },
             { text: "Content type", value: "contentType", sortable: false },
             { text: 'Actions', value: 'actions', sortable: false },
+            { text: 'Updated By', value: 'modifiedBy', sortable: false },
+            { text: 'Updated On', value: 'modifiedOn', sortable: false }, 
         ],
         widgets:[],
         toastMessage : {
@@ -151,9 +156,15 @@ define([
       loadWidgets(){
         var self = this;
         self.loading = true;
-        axios.get('/api/v2020/widgets', {params:{f:{name:1,contentType:1,method:1,_id:1}}})
+        axios.get('/api/v2020/widgets', {params:{f:{name:1,contentType:1,method:1,_id:1, 'meta.modifiedOn':1, 'meta.modifiedBy':1}, s:{'meta.modifiedOn':-1}}})
         .then(function(result){
-            self.widgets = result.data;
+            self.widgets = _.map(result.data, function(row){
+              var modifiedBy = (row.meta||{}).modifiedByInfo||{}
+              return _.extend(row, {
+                modifiedBy : (modifiedBy.firstName||'') + ' ' + (modifiedBy.lastName||''),
+                modifiedOn : (row.meta||{}).modifiedOn
+              });
+            });
         })
         .catch(function(e){
           self.showToast('Error loasing widgets', 'error')
