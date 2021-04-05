@@ -167,7 +167,7 @@ define([
             });
         })
         .catch(function(e){
-          self.showToast('Error loasing widgets', 'error')
+          self.showToast('Error loading widgets', 'error')
         })
         .finally(function(){
             self.loading = false;
