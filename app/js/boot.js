@@ -35,7 +35,7 @@ require.config({
         'angulargrid'               : 'libs/angulargrid/angulargrid',
 
         'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.2.32/dist/vuetify.min',
-        'axios'                     : 'https://cdn.cbd.int/axios@0.19.2/dist/axios.min',
+        'axios'                     : 'https://cdn.cbd.int/axios@0.21.1/dist/axios',
         'angular-vue'               : 'https://cdn.cbd.int/@scbd/angular-vue@2.0.0/dist/angular-vue.min',
         'coreui-vue'                : 'https://cdn.cbd.int/@coreui/vue@3.1.4/dist/coreui-vue.umd',
         'code-editor-vue'           : 'https://cdn.cbd.int/vue-codemirror@4.0.6/dist/vue-codemirror'

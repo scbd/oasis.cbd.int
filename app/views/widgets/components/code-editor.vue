@@ -64,7 +64,7 @@
                     // console.log('the editor is focused!', cm)
                 },
                 onCmCodeChange(newCode) {
-                    console.log('this is new code', newCode)
+                    // console.log('this is new code', newCode)
                     this.code = newCode;  
                     this.$emit('input', newCode)        
                     if(this.preview)
