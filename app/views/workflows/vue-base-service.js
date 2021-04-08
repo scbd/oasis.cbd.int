@@ -10,6 +10,7 @@
 
             setToken: function(token){
                 authorizationToken = token
+                updateAxios();
             },
             getToken: function(){
                 return authorizationToken;
@@ -17,8 +18,10 @@
         }
 
         function init(){
-            console.log('init')
+            updateAxios();
+        }
 
+        function updateAxios(){
             axios.interceptors.request.use(function (config) {
                 // Do something before request is sent
                 config.headers               = config.headers || {};
@@ -30,7 +33,6 @@
                 // Do something with request error
                 return Promise.reject(error);
               });
-            
         }
     }
 

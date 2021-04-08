@@ -27,6 +27,11 @@ define(['app', 'lodash', 'js/extended-route-provider', 'services/app-config-serv
                when('/articles/:id/:title?',        { templateUrl: 'views/article/view.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                
                when('/workflows',                   { templateUrl: 'views/workflows/index.html', label:'Workflow Manager', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisWorkflowManager'], null, true) }}).
+               
+               when('/widgets',                    { templateUrl: 'views/widgets/index.html' , label:'Widgets', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
+               when('/widgets/new',                { templateUrl: 'views/widgets/edit.html'  , label:'New',     resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }, isNew:true }).
+               when('/widgets/:id/edit',           { templateUrl: 'views/widgets/edit.html'  , label:'Edit',    resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+               when('/widgets/:id/view?',          { templateUrl: 'views/widgets/view.html',   label:'Preview', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).
                              
                when('/manage/:schema',              { templateUrl: 'views/tags/index.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).               
                when('/signin',                      { templateUrl: 'views/shared/login.html', label:'Article Editor', resolveController: true, resolveUser : true, resolve : { securized : securize(null,null, true) }}).               
