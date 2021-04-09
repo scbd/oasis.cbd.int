@@ -38,49 +38,46 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label> Title / Content</label>
-                                                    <input type="text" class="form-control" ng-model="search.titleContent">
+                                                    <input type="text" class="form-control" ng-model="search.titleContent" ng-enter="searchArticles(search)">
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4" ng-if="translation.name=='Articles'">
                                                 <div class="form-group">
                                                     <label> Tags</label>
-                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search tags)" ng-model="search.tags" theme="bootstrap" ng-disabled="disabled">
+                                                    <ui-select multiple ng-model="search.tags" theme="bootstrap" ng-disabled="disabled" close-on-select="false">
                                                         <ui-select-match placeholder="tags...">
-                                                            <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                            <span>{{getTerm($item, 'article-tags')}}</span>
                                                         </ui-select-match>
                                                         <ui-select-choices refresh="funcAsync('article-tags', $select.search)" refresh-delay="500" repeat="tag in articletags track by $index">
-                                                            <!-- <div ng-bind-html="tag.title|lstring |unsafe | highlight: $select.search"></div> -->
                                                             {{tag.title|lstring}}
                                                         </ui-select-choices>
                                                     </ui-select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4" ng-if="translation.name=='Articles'">
                                                 <div class="form-group">
                                                     <label>Custom Tags</label>
-                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search custom tags)" ng-model="search.customTags" theme="bootstrap"
+                                                    <ui-select multiple ng-model="search.customTags" theme="bootstrap" close-on-select="false"
                                                         ng-disabled="disabled">
                                                         <ui-select-match placeholder="custom tags...">
                                                             <span>{{getTerm($item, 'article-custom-tags')}}</span>
                                                         </ui-select-match>
-                                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
-                                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
-                                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags  track by $index">
+                                                           <div ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
                                                         </ui-select-choices>
                                                     </ui-select>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-4" ng-if="translation.name=='Articles'">
                                                 <div class="form-group">
                                                     <label>Admin Tags</label>
-                                                    <ui-select multiple tagging="tagTransform" tagging-label="(search admin tags)" ng-model="search.adminTags" theme="bootstrap"
+                                                    <ui-select multiple ng-model="search.adminTags" theme="bootstrap" close-on-select="false"
                                                         ng-disabled="disabled">
                                                         <ui-select-match placeholder="admin tags...">
-                                                            <span>{{getTerm($item, 'article-custom-tags')}}</span>
+                                                            <span>{{$item.title}}</span>
                                                         </ui-select-match>
-                                                        <ui-select-choices refresh="funcAsync('article-custom-tags', $select.search)" refresh-delay="500" repeat="tag in articlecustomtags track by $index">
-                                                            <div ng-if="person.isTag" ng-bind-html="(tag.title | highlight: $select.search) +' (new)'"></div>
-                                                            <div ng-if="!person.isTag" ng-bind-html="tag.title|lstring| highlight: $select.search"></div>
+                                                        <ui-select-choices refresh="asyncAdminTags($select.search)" refresh-delay="500" repeat="tag in articleAdminTags | filter:{title:$select.search} track by $index">
+                                                            <div ng-bind-html="tag.title| highlight: $select.search"></div>
                                                         </ui-select-choices>
                                                     </ui-select>
                                                 </div>

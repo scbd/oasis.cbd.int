@@ -1,5 +1,6 @@
 ﻿define(['app', 'lodash', 'json!views/translation/database-tables.json',
-'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination'],
+'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
+'components/scbd-angularjs-controls/form-control-directives/ng-enter'],
  function (app, _, dbTables) {
     return ['$scope', '$http', '$q', '$routeParams','IGenericService',
     function ($scope, $http, $q, $routeParams, genericService) {
@@ -129,6 +130,29 @@
             );
         }
 
+        $scope.asyncAdminTags = function (query) {
+            if(!query || query == ''){
+                return;
+            }
+            
+            var queryParam = {"title" : { "$$startsWith" : query }};
+            genericService.query('v2021', 'article-admin-tags', {query:queryParam, pageNumber:0, pageLength:100, fields:{"title":1}})
+            .then(function (response) {
+                $scope.articleAdminTags = [];
+                
+                for(var i=0;i<response.length; i++){
+                    var tag =  response[i];             
+                    if(!_.some($scope.search.adminTags, function(eTag){return eTag == tag._id})){
+                        $scope.articleAdminTags.push(tag);
+                    }
+                }
+            },
+            function (err) {
+                console.log('ERROR!!!', err);
+            }
+            );
+        }
+
         //-------------------------------------------------------------------------
         $scope.getTerm = function(term, table){
 
@@ -167,16 +191,17 @@
                 query.$and.push({"$or" : [{"title.en": { "$$contains" : search.titleContent}}, 
                                             {"content.en": { "$$contains" : search.titleContent}}]});
             }
-
+            
             if(search.tags && search.tags.length>0){
-                query.$and.push({"tags.title.en": {$in : _.map(search.tags, function(item){ return item.title.en })}});
-            }
-            if(search.customTags && search.customTags.length>0){
-                query.$and.push({"customTags.title.en": {$in : _.map(search.customTags, function(item){ return item.title.en })}});
-            }
-            if(search.adminTags && search.adminTags.length>0){
-                query.$and.push({"adminTags.title.en": {$in : _.map(search.adminTags, function(item){ return item.title.en })}});
-            }
+                query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
+             }
+             if(search.customTags && search.customTags.length>0){
+                 query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return { "$oid" :item._id} })}});
+             }
+             if(search.adminTags && search.adminTags.length>0){
+                 query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
+             }
+
             $scope.translation.query = query;
             load(0)
         }
