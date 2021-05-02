@@ -43,6 +43,11 @@
             z-index: 1;
             position: relative;
         }
+        .error{
+            color: red;
+            font-size: small;
+            font-weight: 100;
+        }
     </style>
     <!-- <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css"> -->
     <section class="content">
@@ -190,6 +195,47 @@
                                     <ck-editor locales="locales" on-init="onEditorInitialized()" ng-model="document.content"  ng-change="showTranslationMessage()"
                                     on-file-upload="onEditorFileUpload(data)"></ck-editor>
                                     <!-- <editor></editor> -->
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group1">
+                                    <label>Extra data</label>
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td>Type</td>
+                                            <td>Name</td>
+                                            <td>Value</td>
+                                            <td></td>
+                                        </tr>
+                                        <tr ng-repeat="data in article.customProperties">
+                                            <td style="max-width: 50px;">
+                                                <select class="form-control" ng-model="data.type" ng-change="addCustomPropertiesRow()"
+                                                ng-options="option.type as option.val for option in fieldTypes">
+                                                </select>
+                                                <label class="error" ng-if="data.typeMissing">Please select the field type</label>
+                                            </td>
+                                            <td style="max-width: 150px;">
+                                                <input type="text" ng-model="data.field" class="form-control" aria-label="..."
+                                                ng-change="addCustomPropertiesRow()">
+                                                <label class="error" ng-if="data.fieldMissing">Please enter field name</label>
+                                                <label class="error" ng-if="data.fieldNameInvalid">Please enter valid field name, it should begin with alphabet and can contain only alpha numeric</label>
+                                            </td>
+                                            <td>
+                                                <input type="text" ng-model="data.value" class="form-control" aria-label="..."
+                                                ng-change="addCustomPropertiesRow()">
+                                                <label class="error" ng-if="data.valueMissing">Please enter field value</label>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-default btn-xs" ng-if="article.customProperties.length>1 && !$last"
+                                                    ng-click="removeRow(data)">
+                                                    <i class="fa fa-remove"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>

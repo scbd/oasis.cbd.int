@@ -11,14 +11,18 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
             var originalDocument;
             $scope.document = {};
             $scope.locales = ['en','ar','es','fr','ru','zh'];
-
+            $scope.fieldTypes = [
+                {type:'string', val:'String'}, {type:'number', val:'Number'},
+                {type:'boolean', val:'Boolean'}, {type:'datetime', val:'Datetime'} 
+            ]
             $scope.loading = true;
             $scope.showTranslationAlert = false;
 
             $scope.article = {
                 tags        : [],
                 customTags  : [],
-                adminTags   : []
+                adminTags   : [],
+                customProperties   : [{}]
             }
 
 
@@ -34,6 +38,26 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         $scope.article.tags         = _.map(data.tags,      function(t){ return {_id:t}});
                         $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
                         $scope.article.adminTags    = _.map(data.adminTags, function(t){ return {title:t}});
+
+                        if(!_.isEmpty(data.customProperties)){
+                            $scope.article.customProperties = [];
+                            _.forEach(data.customProperties, function(value, key){
+                                var typeofValue = typeof value;                                
+                                var property = {
+                                    field : key,
+                                    value : value,
+                                    type: typeof value
+                                }
+                                if(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d(?:\.\d+)?Z?/.test(property.value))
+                                    property.type = 'datetime';
+                                else if(_.isBoolean(property.value))
+                                    property.type = 'boolean';
+                                else if(_.isNumber(property.value))
+                                    property.type = 'number';
+                                $scope.article.customProperties.push(property)
+                            })
+                            $scope.addCustomPropertiesRow();
+                        }
 
                         $timeout(function(){
                             originalDocument = angular.copy($scope.document);
@@ -132,11 +156,22 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         else if(t.isTag)                return t.title;
                     }));
                 }
+
+                if(!validateCustomProperties())
+                    return
+
                 var newDocument             = _.cloneDeep($scope.document)
                 newDocument.tags            = _.map($scope.article.tags, "_id");
                 newDocument.customTags      = pluckTags($scope.article.customTags);
                 newDocument.adminTags       = _($scope.article.adminTags).map('title').compact().uniq().value();
 
+                newDocument.customProperties= {};
+                _.each($scope.article.customProperties, function(data){
+                    if(data.type && data.field && data.value){
+                        newDocument.customProperties[data.field] = data.value
+                    }
+                });
+                
                 delete newDocument.tagsInfo;
                 delete newDocument.customTagsInfo;
 
@@ -268,6 +303,54 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
 
             }
 
+            $scope.addCustomPropertiesRow = function(){
+                var customProperties = $scope.article.customProperties;
+                var lastRow = customProperties[customProperties.length-1]
+                if(!customProperties){
+                    $scope.article.customProperties = [{}];
+                }
+
+                if(lastRow.type || lastRow.field || lastRow.value)
+                    $scope.article.customProperties.push({});
+
+                validateCustomProperties();
+            }
+
+            $scope.removeRow = function(data){
+                var index = $scope.article.customProperties.indexOf(data);
+                $scope.article.customProperties.splice(index, 1);
+            }
+
+            function validateCustomProperties(){
+                var isValid = true;
+                var customProperties = $scope.article.customProperties;
+                var lastRow = customProperties[customProperties.length-1];
+                _.each(customProperties, function(data){
+
+                    if(data == lastRow && (!lastRow.type && !lastRow.field && !lastRow.value))
+                       return;
+
+                    data.typeMissing = !data.type;
+                    data.typeMissing = data.typeMissing || undefined;
+
+                    data.fieldMissing = !data.field;
+                    data.fieldMissing = data.fieldMissing || undefined;
+
+                    if(!data.fieldMissing){
+                        if(!/^[a-z][a-z0-9]{0,31}$/i.test(data.field)){
+                            data.fieldNameInvalid = true
+                        }
+                        else data.fieldNameInvalid = undefined;
+                    }
+
+                    data.valueMissing = !data.value;
+                    data.valueMissing = data.valueMissing || undefined;
+
+                    isValid = isValid || data.typeMissing || data.fieldMissing || data.fieldNameInvalid ||
+                              data.valueMissing
+                })
+                return isValid;
+            }
             function hasLangString(element){
                 return element && (element.hasOwnProperty('ar') ||
                         element.hasOwnProperty('fr') || element.hasOwnProperty('es') || 
