@@ -17,9 +17,9 @@
             $scope.articlecustomtags    = [];
             $scope.articleAdminTags     = [];
             $scope.search = {
-                tags        : _(typeof query.tags       == 'array'? query.tags       : [query.tags      ]).compact().map(function(tag){return {_id:tag}}).value(),
-                customTags  : _(typeof query.customTags == 'array'? query.customTags : [query.customTags]).compact().map(function(tag){return {_id:tag}}).value(),
-                adminTags   : _(typeof query.adminTags  == 'array'? query.adminTags  : [query.adminTags ]).compact().map(function(tag){return {title:tag}}).value(),
+                tags        : _(_.isArray(query.tags      ) ? query.tags       : (query.tags      ||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
+                customTags  : _(_.isArray(query.customTags) ? query.customTags : (query.customTags||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
+                adminTags   : _(_.isArray(query.adminTags ) ? query.adminTags  : (query.adminTags ||'').split(',')).compact().map(function(tag){return {title:tag}}).value(),
                 titleContent: query.title||''
             };
             $scope.layout = 'grid';
@@ -168,13 +168,13 @@
                 }
 
                 if(search.tags && search.tags.length>0){
-                   query.$and.push({"tags": {$in : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
+                   query.$and.push({"tags": {$all : _.map(search.tags, function(item){ return { "$oid" :item._id} })}});
                 }
                 if(search.customTags && search.customTags.length>0){
-                    query.$and.push({"customTags": {$in : _.map(search.customTags, function(item){ return { "$oid" : item._id} })}});
+                    query.$and.push({"customTags": {$all : _.map(search.customTags, function(item){ return { "$oid" : item._id} })}});
                 }
                 if(search.adminTags && search.adminTags.length>0){
-                    query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
+                    query.$and.push({"adminTags": {$all : _.map(search.adminTags, function(item){ return item.title })}});
                 }
 
                 currentQuery = query;
@@ -250,7 +250,7 @@
                 $scope.search = {}
                 $scope.searchArticles($scope.search);
             }
-
+            
             function updateQS(){
                 if($scope.search.titleContent == '')
                     $location.search('title',       undefined);

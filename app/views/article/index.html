@@ -167,7 +167,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label> Tags</label>
-                                                <ui-select multiple ng-model="search.tags" theme="bootstrap" ng-disabled="disabled" close-on-select="false">
+                                                <ui-select multiple ng-model="search.tags" theme="bootstrap" ng-disabled="disabled" close-on-select="false"  ng-change="searchArticles(search)">
                                                     <ui-select-match placeholder="tags...">
                                                         <span ng-if="$item.title">{{($item.title)|lstring}}</span>
                                                         <span ng-if="!$item.title && $item._id">{{$item|tagTerm:'article-tags'}}</span>
@@ -182,7 +182,7 @@
                                             <div class="form-group">
                                                 <label>Custom Tags</label>
                                                 <ui-select multiple ng-model="search.customTags" theme="bootstrap" close-on-select="false"
-                                                    ng-disabled="disabled">
+                                                    ng-disabled="disabled" ng-change="searchArticles(search)">
                                                     <ui-select-match placeholder="custom tags...">
                                                         <span ng-if="$item.title">{{($item.title)|lstring}}</span>
                                                         <span ng-if="!$item.title && $item._id">{{$item|tagTerm:'article-custom-tags'}}</span>
@@ -197,7 +197,7 @@
                                             <div class="form-group">
                                                 <label>Admin Tags</label>
                                                 <ui-select multiple ng-model="search.adminTags" theme="bootstrap" close-on-select="false"
-                                                    ng-disabled="disabled">
+                                                    ng-disabled="disabled" ng-change="searchArticles(search)">
                                                     <ui-select-match placeholder="admin tags...">
                                                         <span>{{$item.title}}</span>
                                                     </ui-select-match>
