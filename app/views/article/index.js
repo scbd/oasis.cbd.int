@@ -252,9 +252,9 @@
                 var params = ''
                 if(fromTags){
                     var qs = $location.search()
-                    params = '?tags='+qs.tags+
-                         '&customTags='+qs.customTags+
-                         '&adminTags='+qs.adminTags
+                    params = '?tags='+_.map(qs.tags||[], encodeURIComponent)+
+                         '&customTags='+_.map(qs.customTags||[], encodeURIComponent)+
+                         '&adminTags='+_.map(qs.adminTags||[], encodeURIComponent)
                 }
                 $location.url($scope.baseUrl + 'articles/new' + params)
             }
