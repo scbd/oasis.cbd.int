@@ -4,6 +4,7 @@ window.name = 'NG_DEFER_BOOTSTRAP!';
 
 var appVersion = document.documentElement.attributes['app-version'].value;
 var ckeditorVersion = '24.0.0'
+var cdnHost = 'https://cdn.cbd.int/'
 require.config({
     baseUrl : 'app/',
     'paths': {
@@ -27,19 +28,21 @@ require.config({
         'angular-flex'              : 'libs/angular-flex/angular-flex',
         'ngAria'                    : 'libs/angular-aria/angular-aria.min',
         'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
-        'ck-editor'                 : 'https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor',        
+        'ck-editor'                 : cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor',        
         'select2'                   : 'libs/select2/dist/js/select2.min',
         'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
         'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
         'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
         'angulargrid'               : 'libs/angulargrid/angulargrid',
 
-        'vuetify'                   : 'https://cdn.cbd.int/vuetify@2.2.32/dist/vuetify.min',
-        'axios'                     : 'https://cdn.cbd.int/axios@0.21.1/dist/axios',
-        'angular-vue'               : 'https://cdn.cbd.int/@scbd/angular-vue@2.0.0/dist/angular-vue.min',
-        'coreui-vue'                : 'https://cdn.cbd.int/@coreui/vue@3.1.4/dist/coreui-vue.umd',
-        'code-editor-vue'           : 'https://cdn.cbd.int/vue-codemirror@4.0.6/dist/vue-codemirror'
+        'vuetify'                   : cdnHost + 'vuetify@2.2.32/dist/vuetify.min',
+        'axios'                     : cdnHost + 'axios@0.21.1/dist/axios',
+        'angular-vue'               : cdnHost + '@scbd/angular-vue@2.0.0/dist/angular-vue.min',
+        'coreui-vue'                : cdnHost + '@coreui/vue@3.1.4/dist/coreui-vue.umd',
+        'code-editor-vue'           : cdnHost + 'vue-codemirror@4.0.6/dist/vue-codemirror',
 
+        'ngStorage'                 : cdnHost + 'ngstorage@0.3.11/ngStorage.min',
+        'toastr'                    : cdnHost + 'angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
         
     },
     'shim': {
@@ -57,6 +60,9 @@ require.config({
         'ngAria'                        : { 'deps': ['angular'] },
         'select2'                       : { 'deps': ['angular', 'jquery'] },
         'angular-ui-select2'            : { 'deps': ['angular', 'select2']},
+
+        'toastr'                        : { 'deps': ['angular', 'angular-animate'] },
+        'ngStorage'                     : { 'deps': ['angular'] },
 
         'angulargrid'                   : { 'deps': ['angular']},
         'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',

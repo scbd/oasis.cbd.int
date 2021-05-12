@@ -1,18 +1,19 @@
-define(['app', 'jquery', 'lodash', 'toastr', 'ngStorage'],
- function (app, $, _) { 'use strict';
+define(['app', 'lodash', 'ngStorage'],
+ function (app, _) { 'use strict';
 
-	app.factory('localStorageService',  ["$http","$location", "$rootScope","toastr",
-    "$sessionStorage",//"$localStorage",
-	 function($http,$location, $rootScope, toastr, $localStorage) {
+	app.factory('localStorageService',  ["$http","$location", "$rootScope", "$sessionStorage","$localStorage",
+	 function($http,$location, $rootScope, $sessionStorage, $localStorage) {
+
+        var $browserStorage = $localStorage
 
 		return new function(){
 
             this.get = function(key){
                 
-                if(!$localStorage.$supported)
+                if(!$browserStorage.$supported)
                     return;
 
-                var existing = angular.copy($localStorage[key]);
+                var existing = angular.copy($browserStorage[key]);
 
                 if(!existing)
                     return;
@@ -27,27 +28,27 @@ define(['app', 'jquery', 'lodash', 'toastr', 'ngStorage'],
                 return;
             };
 
-            this.set = function(key, data){
-                if(!$localStorage.$supported)
+            this.set = function(key, data, expireInDays){
+                if(!$browserStorage.$supported)
                     return;
                     
                 var ldata = {};
 
                 var expiryDate = new Date();
-                expiryDate.setDate(expiryDate.getDate() + 2);
+                expiryDate.setDate(expiryDate.getDate() + (expireInDays||2));
 
                 ldata.expiry = expiryDate;
                 ldata.data   = data;
 
-                $localStorage[key] = ldata;
+                $browserStorage[key] = ldata;
             };
 
             this.remove = function(key){
-                delete $localStorage[key];
+                delete $browserStorage[key];
             };
 
             this.removeAll = function(){
-                $localStorage.$reset();
+                $browserStorage.$reset();
             };
 
             this.hasStorageExpired = function(key, expiryDate){
