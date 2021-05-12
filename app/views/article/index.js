@@ -1,28 +1,25 @@
 ﻿define(['app', 
 'scbd-angularjs-services/generic-service', 
 'scbd-angularjs-services/authentication', 
-'js/pin-grid', 'angular-ui-select2', 'angulargrid', 'components/scbd-angularjs-controls/form-control-directives/ng-enter'], function (app) {
+'js/pin-grid', 'angular-ui-select2', 'angulargrid', 'components/scbd-angularjs-controls/form-control-directives/ng-enter',
+'services/local-storage-service'], function (app) {
     
 // 'ngInfiniteScroll',
-    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance', '$rootScope', '$route',
-        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance, $rootScope, $route) {
+    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance', '$rootScope', '$route','localStorageService', 
+        function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance, $rootScope, $route, localStorageService) {
             var currentPage=0;
             var articlesCount=0;
             var pageSize=20
             var currentQuery;
             var previousParams;
 
-            var query = $location.search();
+            
             $scope.articletags          = [];
             $scope.articlecustomtags    = [];
             $scope.articleAdminTags     = [];
-            $scope.search = {
-                tags        : _(_.isArray(query.tags      ) ? query.tags       : (query.tags      ||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
-                customTags  : _(_.isArray(query.customTags) ? query.customTags : (query.customTags||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
-                adminTags   : _(_.isArray(query.adminTags ) ? query.adminTags  : (query.adminTags ||'').split(',')).compact().map(function(tag){return {title:tag}}).value(),
-                titleContent: query.title||''
-            };
             $scope.layout = 'grid';
+            $scope.baseUrl = window.baseUrl;
+            setSearchFilters();
 
             //-------------------------------------------------------------------------
              $scope.showArticle = function(tile){ 
@@ -250,15 +247,53 @@
                 $scope.search = {}
                 $scope.searchArticles($scope.search);
             }
-            
+
+            $scope.newArticle = function(fromTags){
+                var params = ''
+                if(fromTags){
+                    var qs = $location.search()
+                    params = '?tags='+qs.tags+
+                         '&customTags='+qs.customTags+
+                         '&adminTags='+qs.adminTags
+                }
+                $location.url($scope.baseUrl + 'articles/new' + params)
+            }
+
             function updateQS(){
                 if($scope.search.titleContent == '')
                     $location.search('title',       undefined);
                 else
-                    $location.search('title',       $scope.search.titleContent)
+                    $location.search('title',       $scope.search.titleContent);
+
                 $location.search('tags',        _.map($scope.search.tags, '_id'))
                 $location.search('customTags',  _.map($scope.search.customTags, '_id'))
                 $location.search('adminTags',   _.map($scope.search.adminTags, 'title'))
+
+                localStorageService.set('title',        $scope.search.titleContent              , 10);
+                localStorageService.set('tags',         _.map($scope.search.tags, '_id')   , 10);
+                localStorageService.set('customTags',   _.map($scope.search.customTags, '_id')  , 10);
+                localStorageService.set('adminTags',    _.map($scope.search.adminTags, 'title')       , 10);
+            }
+
+            function getSearchFilters(){
+                var query = $location.search();
+                
+                query.tags          = (query.tags      ||[]).length ? query.tags       : (localStorageService.get('tags')||[]);
+                query.customTags    = (query.customTags||[]).length ? query.customTags : (localStorageService.get('customTags')||[]);
+                query.adminTags     = (query.adminTags ||[]).length ? query.adminTags  : (localStorageService.get('adminTags')||[]);
+                query.title         = (query.title     ||[]).length ? query.title      : (localStorageService.get('title'));
+             
+                return query;
+            }
+
+            function setSearchFilters(){
+                var query = getSearchFilters();
+                $scope.search = {
+                    tags        : _(_.isArray(query.tags      ) ? query.tags       : (query.tags      ||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
+                    customTags  : _(_.isArray(query.customTags) ? query.customTags : (query.customTags||'').split(',')).compact().map(function(tag){return {_id:tag}}).value(),
+                    adminTags   : _(_.isArray(query.adminTags ) ? query.adminTags  : (query.adminTags ||'').split(',')).compact().map(function(tag){return {title:tag}}).value(),
+                    titleContent: query.title||''
+                };
             }
 
             function init(){
@@ -277,7 +312,8 @@
            // there is no trigger, so use routeUpdate to track it.
             $rootScope.$on('$routeUpdate', function(a,b) {
                 if(!_.isEmpty(previousParams) && _.isEmpty($route.current.params)){
-                    $scope.clearFilters();
+                    // $scope.clearFilters();
+                    setSearchFilters()
                     $scope.searchArticles($scope.search);
                 }
                 previousParams = $route.current.params;
