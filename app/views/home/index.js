@@ -36,7 +36,7 @@ define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (a
         function loadRecords(){
 
             var allArticlesQuery = {
-                pageNumber:1,
+                pageNumber:0,
                 pageLength:20,
                 sort:{"meta.modifiedOn":-1},
                 fields:{"_id":1,"title.en":1, 'meta.modifiedOn':1, 'meta.modifiedBy':1}
