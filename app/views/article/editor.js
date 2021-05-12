@@ -30,6 +30,10 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 if($route.current.$$route && $route.current.$$route.isNew){
                     $scope.document = {};
                     originalDocument = {};
+                    var query = $location.search();
+                    $scope.article.tags = readQsTags(query.tags).map(function(tag){return {_id:tag}});
+                    $scope.article.customTags = readQsTags(query.customTags).map(function(tag){return {_id:tag}});
+                    $scope.article.adminTags = readQsTags(query.adminTags).map(function(tag){return {title:tag}});
                 }
                 else{                    
                     return $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
@@ -147,7 +151,7 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
               );
             }
 
-            $scope.submit = function () {
+            $scope.submit = function (close) {
 
                 function pluckTags(tags){
                     return _.compact(_.map(tags, function(t){
@@ -182,13 +186,26 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 else{
                     operation = genericService.create('v2017', 'articles', newDocument);
                 }
+
+                $scope.errors = undefined;
+                $scope.loading = true;
+                $scope.loadingText = 'saving'
                 $q.when(operation)
                 .then(function(result){
-                    var search = $location.search()
-                    if(search.returnUrl)
-                        $window.location = search.returnUrl;
-                    else    
-                        $location.path('/articles')
+                    if(close){
+                        var search = $location.search()
+                        if(search.returnUrl)
+                            $window.location = search.returnUrl;
+                        else    
+                            $location.path('/articles')
+                    }
+                })
+                .catch(function(e){
+                    $scope.errors = e.data||e
+                })
+                .finally(function(){
+                    $scope.loading = false;
+                    $scope.loadingText = '';
                 })
                 // 
             }
@@ -355,6 +372,10 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 return element && (element.hasOwnProperty('ar') ||
                         element.hasOwnProperty('fr') || element.hasOwnProperty('es') || 
                         element.hasOwnProperty('ru') || element.hasOwnProperty('zh'));
+            }
+
+            function readQsTags(qsValue){
+               return _(_.isArray(qsValue) ? qsValue       : (qsValue      ||'').split(',')).compact().value()
             }
     }]
 });

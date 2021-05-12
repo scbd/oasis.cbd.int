@@ -65,10 +65,20 @@
                             <h4><i class="icon fa fa-ban"></i> Alert!</h4>
                             Changing the English version will clear the translation and will have to go through the translation workflow to get the latest trasnlation online.
                         </div>
+                        <div class="alert alert-danger alert-dismissible" ng-if="errors">                            
+                            <h4><i class="icon fa fa-ban"></i> Errors!</h4>
+                            <table class="table">
+                                <tr ng-repeat="error in errors.errors">
+                                    <td>{{error.code}}</td>
+                                    <td>{{error.message}}</td>
+                                    <td>{{error.params.join(', ')}}</td>
+                                </tr>
+                            </table>
+                        </div>
                         <div class="blockRegion" ng-if="loading">
                             <div class="inverted dimmer active">
                                 <div class="center">
-                                    <div class="medium loader"><i class="fa fa-spin fa-cog" /> loading...</div>					
+                                    <div class="medium loader"><i class="fa fa-spin fa-cog" /> {{loadingText||'loading'}}...</div>					
                                 </div>
                             </div>
                         </div>
@@ -282,9 +292,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="alert alert-danger alert-dismissible" ng-if="errors">                            
+                            <h4><i class="icon fa fa-ban"></i> Errors!</h4>
+                            <table class="table">
+                                <tr ng-repeat="error in errors.errors">
+                                    <td>{{error.code}}</td>
+                                    <td>{{error.message}}</td>
+                                    <td>{{error.params.join(', ')}}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-primary" ng-click="submit()">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submit()">Save</button>
+                        <button type="submit" class="btn btn-primary" ng-click="submit(true)">Save and Close</button>
                         <!-- <button type="submit" class="btn btn-primary" ng-click="getTags()">Get Tags</button> -->
                     </div>
                 </div>
