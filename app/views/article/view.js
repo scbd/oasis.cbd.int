@@ -1,8 +1,8 @@
 define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-css'],
  function (app) {
     
-    return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http',
-        function ($scope, genericService, $q, $route, $rootScope, $timeout, $http) {
+    return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
+        function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
             $scope.baseUrl = window.baseUrl;
             $scope.locales = ['en','ar','es','fr','ru','zh'];
             $scope.activeLocale = 'en';
@@ -64,6 +64,14 @@ define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-css'],
                 return url && url
                 .replace(/attachments.cbd.int\//, '$&'+size+'/')
                 .replace(/\.s3-website-us-east-1\.amazonaws\.com\//, '$&'+size+'/')
+            }
+
+            $scope.close = function(){
+                var search = $location.search()
+                if(search.returnUrl)
+                    $window.location = search.returnUrl;
+                else    
+                    $location.path('/articles')
             }
         }
     ]
