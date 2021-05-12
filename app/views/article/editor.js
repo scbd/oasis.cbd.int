@@ -193,11 +193,7 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 $q.when(operation)
                 .then(function(result){
                     if(close){
-                        var search = $location.search()
-                        if(search.returnUrl)
-                            $window.location = search.returnUrl;
-                        else    
-                            $location.path('/articles')
+                        $scope.close();
                     }
                 })
                 .catch(function(e){
@@ -336,6 +332,14 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
             $scope.removeRow = function(data){
                 var index = $scope.article.customProperties.indexOf(data);
                 $scope.article.customProperties.splice(index, 1);
+            }
+
+            $scope.close = function(){
+                var search = $location.search()
+                if(search.returnUrl)
+                    $window.location = search.returnUrl;
+                else    
+                    $location.path('/articles')
             }
 
             function validateCustomProperties(){
