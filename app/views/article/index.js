@@ -256,7 +256,7 @@
                          '&customTags='+_.map(qs.customTags||[], encodeURIComponent)+
                          '&adminTags='+_.map(qs.adminTags||[], encodeURIComponent)
                 }
-                $location.url($scope.baseUrl + 'articles/new' + params)
+                $location.url('/articles/new' + params)
             }
 
             function updateQS(){
