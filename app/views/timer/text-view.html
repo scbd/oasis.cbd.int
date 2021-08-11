@@ -1,0 +1,92 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+        crossorigin="anonymous">
+    <link href="./fonts/stylesheet.css" rel="stylesheet">
+    <style>
+        body {
+            position: relative;
+            padding: 0px;
+            margin: 0px;
+            background-color: #202020;
+            height: 100%;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        #timer {
+            text-align: center;
+            color: white;
+            font-size: 55vh;
+            padding-top: 5vh;
+        }
+
+        #timer.negative {
+            color: red;
+        }
+
+        .logo {
+            position: absolute;
+            bottom: 40px;
+            left: 192px;
+        }
+
+        .logo>img {
+            height: 25vh;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            font-size: 10vh;
+        }
+
+        a.control {
+            display: inline-block;
+            margin: 10px;
+            margin-right: 10px;
+        }
+
+        .dimmed {
+            color: #1c1c1c !important
+        }
+
+        input.item {
+            font-family: "AlternateGotNo3D";
+            background-color: #00000000;
+            color: #009b48;
+            font-size: 10vh;
+            /* width: 50%; */
+            position: absolute;
+            /* bottom: 16vh; */
+            /* right:0px; */
+            border: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        input.item:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="app">
+        <div class="controls">
+             <a class="control dimmed" href="https://www.cbd.int/management/app/views/timer/timer.html"><i class="fas fa-clock"></i></a>
+        </div>
+        <br><br>
+        <input type="text" class="item"><br>
+        <input type="text" class="item" style="color: white; font-size: 35vh; top: 17vh; padding-top: 5vh;">
+        <div class="logo"><img src="https://www.cbd.int/themes/custom/bootstrap_sass/images/CBD_logo_green.png"></div>
+    </div>
+
+
+
+</body>
+
+</html>
