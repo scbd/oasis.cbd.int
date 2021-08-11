@@ -227,12 +227,12 @@
                                     <ul class="pagination pagination-sm no-margin pull-right">
                                     <li>
                                         <a href="#" ng-click="changeLayout('grid')">
-                                            <i class="fa fa-align-center" />
+                                            <i class="fa fa-align-center"></i>
                                         </a>
                                     </li>
                                     <li>
                                         <a href="#" ng-click="changeLayout('list')">
-                                            <i class="fa fa-list-alt" />
+                                            <i class="fa fa-list-alt"></i>
                                         </a>
                                     </li>
                                 </ul> -->
@@ -253,11 +253,11 @@
                                     <div ng-if="isAuthorizedForActions" style="border-top: 1px solid #eee">
                                         <div>&nbsp; updated on {{article.meta.modifiedOn|formatDate}}</div>
                                         <div class="btn-group pull-right">
-                                            <a class="btn" href="#" ng-click="delete(article)">
-                                                <i class="fa fa-remove" />
+                                            <a class="btn" href="#" ng-click="delete($event, article)">
+                                                <i class="fa fa-remove"></i>
                                             </a>
                                             <a class="btn" href="articles/{{article._id}}/edit">
-                                                <i class="fa fa-edit" />
+                                                <i class="fa fa-edit"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -280,10 +280,10 @@
                                                 <td ng-if="isAuthorizedForActions">
                                                     <div class="btn-group pull-right">
                                                         <a class="btn" href="#" ng-click="delete(article)">
-                                                            <i class="fa fa-remove" />
+                                                            <i class="fa fa-remove"></i>
                                                         </a>
                                                         <a class="btn" href="articles/{{article._id}}/edit">
-                                                            <i class="fa fa-edit" />
+                                                            <i class="fa fa-edit"></i>
                                                         </a>
                                                     </div>
                                                 </td>
@@ -294,7 +294,7 @@
                             </div>
 
                             <div ng-show='isLoading' class="loading-more-indicator">
-                                <i class="fa fa-spin fa-spinner fa-3x" /> Loading data...</div>
+                                <i class="fa fa-spin fa-spinner fa-3x"></i> Loading data...</div>
                             <hr>
                         </div>
 

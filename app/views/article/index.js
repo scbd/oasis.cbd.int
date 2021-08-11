@@ -29,18 +29,19 @@
             //-------------------------------------------------------------------------
             $scope.delete = function($evt, article){
 
-                if(window.confirm("Are you sure you want to delete this record?")){
+                if(window.confirm("Are you sure you want to delete this record?")){                    
                     $q.when(genericService.delete('v2017', 'articles', article._id))
                     .then(function(data){
                         var index = $scope.articles.indexOf(article)
                         $scope.articles.splice(index, 1);
-                    })
+                        $scope.articlesCount = articlesCount = $scope.articles.length;
+                    });
                 }
-                else{
+                
                     $evt.stopPropagation();
-                    return false;
-                }
-
+                    $evt.preventDefault();
+                    // return false;
+                
             }
 
             $scope.edit = function($event, article) {
