@@ -204,8 +204,17 @@ function(app,classicEditor, template, _) {
 						
 						if(!$scope.binding){
 							$q.when($scope.onInit()).then(function(content){
-								if(content)
+
+								$scope.binding = $scope.binding || {};
+
+								if(content) {
+
+									Object.keys(content).forEach(function(l) {
+										$scope.binding[l] = content[l];
+									})
+									
 									$scope.editors[lang].setData(content[lang]||'');
+								}
 							});
 						}
 						else
