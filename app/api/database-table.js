@@ -109,7 +109,7 @@ function databaseTable(options){
                 
                 article[`title_${titleHash}`]   = (document.title||{}).en
                 article[`content_${contentHash}`] = (document.content||{}).en 
-                let title = ((document.title||{}).en||'').replace(/\s|\//g, '_')
+                let title = ((document.title||{}).en||'').replace(/[^-a-z0-9]/gi, '_').substr(0,200); //max filename 255
                 let filePath = `${now}/${title}#${document._id}.json`
                 
                 await writeFile(`${basePath}${filePath}`,  JSON.stringify(article));
