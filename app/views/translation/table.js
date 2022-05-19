@@ -1,12 +1,12 @@
 ﻿define(['app', 'lodash', 'json!views/translation/database-tables.json',
 'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
-'components/scbd-angularjs-controls/form-control-directives/ng-enter'],
+'components/scbd-angularjs-controls/form-control-directives/ng-enter','services/local-storage-service'],
  function (app, _, dbTables) {
-    return ['$scope', '$http', '$q', '$routeParams','IGenericService',
-    function ($scope, $http, $q, $routeParams, genericService) {
+    return ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
+    function ($scope, $http, $q, $routeParams, genericService, localStorageService) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
         $scope.baseUrl  = window.baseUrl;
-        
+        $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
         $scope.articletags = [];
         $scope.articlecustomtags = [];
         $scope.articleadmintags = [];
@@ -68,7 +68,7 @@
             var translation = $scope.translation;
 
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
-            var filesForTranslation = _.map(_.filter($scope.translation.rows, {translate:true}), '_id');
+            var filesForTranslation = _.map(_.filter($scope.articlesToDownload, {translate:true}), '_id');
 
             if(filesForTranslation.length > 0){
                 $scope.gettingSignedUrl = true;
@@ -88,6 +88,12 @@
             })
         }
 
+        $scope.addToDownload = function(row){
+            let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
+            index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
+            localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
+            $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
+        }
         $scope.onPageChange = function(page){
             load(page)
         }
