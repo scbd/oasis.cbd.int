@@ -52,7 +52,17 @@
 
             $q.all([$http.get($scope.translation.api, {params: { ag : JSON.stringify(ag)}}),rowCountQuery])
             .then(function(result){
+                const articleTD = (localStorageService.get('articlesToDownload')||[]);
                 $scope.translation.rows          = result[0].data;
+                _.each($scope.translation.rows, function(row){
+                    //_.set(_.find(row, articleTD), row.translate, true);
+                    let index = articleTD.findIndex(x => x._id==row._id);
+                    if(index === -1){
+                        row.translate = false;
+                    } else {
+                        row.translate = true;
+                    }
+                })
                 $scope.translation.rowCount      = result[1];
                 $scope.translation.pageCount     = Math.ceil($scope.translation.rowCount / $scope.translation.itemsPerPage);
                 $scope.translation.currentPage   = page;
@@ -68,7 +78,7 @@
             var translation = $scope.translation;
 
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
-            var filesForTranslation = _.map(_.filter($scope.articlesToDownload, {translate:true}), '_id');
+            var filesForTranslation = _.map(($scope.articlesToDownload, {translate:true}), '_id');
 
             if(filesForTranslation.length > 0){
                 $scope.gettingSignedUrl = true;
@@ -85,15 +95,34 @@
         $scope.checkAll = function(selectAll){
             _.each($scope.translation.rows, function(row){
                 row.translate = selectAll;
-            })
+                if(selectAll) {
+                    let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
+                    if(index === -1){
+                      $scope.articlesToDownload.push(row);
+                    }
+                    localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
+                }
+                 else {
+                    $scope.articlesToDownload = [];
+                    localStorageService.set('articlesToDownload', []);
+                }
+            });
         }
-
         $scope.addToDownload = function(row){
             let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
             index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
         }
+
+        $scope.clearDownload = function(){
+            localStorageService.set('articlesToDownload', []);
+            $scope.articlesToDownload = [];
+            _.each($scope.translation.rows, function(row){
+                row.translate = false;
+            });
+        }
+
         $scope.onPageChange = function(page){
             load(page)
         }
