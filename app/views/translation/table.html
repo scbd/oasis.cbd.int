@@ -89,7 +89,7 @@
                                         <button class="btn btn-sm btn-primary" ng-click="searchArticles(search)">Search</button>
                                          
                                         <div class="btn-group pull-right" ng-if="articlesToDownload.length > 0">
-                                            
+
                                             <button type="button" class="btn btn-primary">Added for download <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span></button>
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                               <span class="caret"></span>
@@ -104,6 +104,9 @@
 
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
                                                 <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
+                                            </button>
+                                            <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="clearDownload()" ng-disabled="gettingSignedUrl">
+                                                <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Clear All
                                             </button>
                                         </div>
                                     </div>
