@@ -87,23 +87,28 @@
                                     </div>
                                     <div class="box-footer">
                                         <button class="btn btn-sm btn-primary" ng-click="searchArticles(search)">Search</button>
+                                        <button class="btn btn-sm btn-primary" ng-click="clearFilters(search)">Clear Filters</button>
                                          
                                         <div class="btn-group pull-right" ng-if="articlesToDownload.length > 0">
 
-                                            <button type="button" class="btn btn-primary">Added for download <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span></button>
+                                            <button type="button" class="btn btn-primary">
+                                                <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span> Selected for download
+                                            </button>
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                               <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li ng-repeat="row in articlesToDownload">
-                                                    <a target="_blank" ng-href="{{baseUrl}}articles/{{row._id}}">
-                                                      <span ng-bind="row.title|lstring"></span>
+                                            <ul class="dropdown-menu" role="menu" style="max-width: 500px;overflow: scroll;height: 500px;border: 1px solid #3d8dbc;">
+                                                <li ng-repeat="row in articlesToDownload" style="border-bottom: 1px solid #eee;">                                                   
+                                                    {{$index+1}}.
+                                                    <button type="checkbox" class="btn btn-danger btn-xs" ng-click="addToDownload(row, $event)" ng-model="row.translate">x</button>
+                                                    <a target="_blank" ng-href="{{baseUrl}}articles/{{row._id}}" style="display: contents;">
+                                                        <span ng-bind="row.title|lstring"></span>
                                                     </a>
                                                 </li> 
                                             </ul>
 
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
-                                                <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download
+                                                <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span>
                                             </button>
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="clearDownload()" ng-disabled="gettingSignedUrl">
                                                 <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Clear All
@@ -126,7 +131,8 @@
                                         <table class="table table-hover table-stripped table-bordered">
                                             <tr>
                                                 <th rowspan="2" >
-                                                    <input type="checkbox" ng-model="translation.selectAllFiles" ng-change="checkAll(translation.selectAllFiles)"> 
+                                                    <!-- <input type="checkbox" ng-model="translation.selectAllFiles" ng-change="checkAll(translation.selectAllFiles)">  -->
+                                                    <button class="btn btn-primary btn-xs" ng-click="checkAll(true)">select all</button>
                                                     <!-- <label>Select All</label> -->
                                                 </th>
                                                 <th rowspan="2" style="text-align:center">Title</th>

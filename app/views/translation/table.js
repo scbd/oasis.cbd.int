@@ -30,6 +30,7 @@
         })
 
         function load(page){
+                           
             var ag = [{ $sort   : $scope.translation.sort || {"meta.modifiedOn":-1}},
                     { $skip     : (page||0)*$scope.translation.itemsPerPage },
                     { $limit    : $scope.translation.itemsPerPage           },
@@ -74,11 +75,11 @@
 
         $scope.dowloadFiles = function(){
 
-
+console.log('j')
             var translation = $scope.translation;
 
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
-            var filesForTranslation = _.map(($scope.articlesToDownload, {translate:true}), '_id');
+            var filesForTranslation = _.map($scope.articlesToDownload,'_id');
 
             if(filesForTranslation.length > 0){
                 $scope.gettingSignedUrl = true;
@@ -102,13 +103,15 @@
                     }
                     localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
                 }
-                 else {
-                    $scope.articlesToDownload = [];
-                    localStorageService.set('articlesToDownload', []);
-                }
+                //  else {
+                //     $scope.articlesToDownload = [];
+                //     localStorageService.set('articlesToDownload', []);
+                // }
             });
         }
-        $scope.addToDownload = function(row){
+        $scope.addToDownload = function(row, $event){
+            console.log($event)
+            $event.stopPropagation();
             let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
             index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
@@ -239,6 +242,11 @@
 
             $scope.translation.query = query;
             load(0)
+        }
+
+        $scope.clearFilters = function(){
+            $scope.search = {};
+            $scope.searchArticles({})
         }
 
         $scope.searchArticles({})
