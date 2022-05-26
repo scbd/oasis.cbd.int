@@ -9,7 +9,9 @@
             var latestReleaseQuery  = $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases/latest');
 
             $scope.translation = {
-                ignoreFiles : "bower.json, package.json,.bower.json,.awsbox.json",
+                ignoreFolder: 'i18n, app/app-data/bch/report-analyzer/mapping, app/app-data/abs/report-analyzer/mapping',
+                ignoreFiles : `bower.json, package.json,.bower.json,.awsbox.json,realm-configuration.json, offline-formats.json
+                                help-guides.json, help-videos.json`,
                 allowedExtensions : ".html, .json"
             };
 
@@ -30,6 +32,7 @@
                     var params = {
                         branch              : $scope.latestRelease.tag_name,
                         date                : $scope.translation.previousRelease.created_at,
+                        ignoreFolder        : $scope.translation.ignoreFolder,
                         ignoreFiles         : $scope.translation.ignoreFiles,
                         allowedExtensions   : $scope.translation.allowedExtensions
                     }
@@ -55,6 +58,7 @@
                     var params = {
                         branch              : $scope.latestRelease.tag_name,
                         date                : $scope.translation.previousRelease.created_at,
+                        ignoreFolder        : $scope.translation.ignoreFolder,
                         ignoreFiles         : $scope.translation.ignoreFiles,
                         allowedExtensions  : $scope.translation.allowedExtensions
                     }
