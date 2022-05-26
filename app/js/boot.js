@@ -3,7 +3,7 @@
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
 var appVersion = document.documentElement.attributes['app-version'].value;
-var ckeditorVersion = '24.0.0'
+var ckeditorVersion = '34.0.0'
 var cdnHost = 'https://cdn.cbd.int/'
 require.config({
     baseUrl : 'app/',
