@@ -172,7 +172,47 @@ function(app,classicEditor, template, _) {
 						},
 						mediaEmbed:{
 							previewsInData: false,
+							removeProviders :['youtube'],
 							extraProviders: [
+							{
+								name: 'youtubePlaylist',
+								url: [
+									/^youtube\.com\/embed\/videoseries\?list=([\w-]+)/,
+								],
+								html: match => {
+									const id = match[ 1 ];
+
+									return (
+										'<div style="position: relative; padding-bottom: 100%; height: 0; padding-bottom: 56.2493%;">' +
+											`<iframe src="https://www.youtube.com/embed/videoseries?list=${ id }" ` +
+												'style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;" ' +
+												'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+											'</iframe>' +
+										'</div>'
+									);
+								}
+							},
+							{
+								name: 'youtube',
+								url: [
+									/^(?:m\.)?youtube\.com\/watch\?v=([\w-]+)/,
+									/^(?:m\.)?youtube\.com\/v\/([\w-]+)/,
+									/^youtube\.com\/embed\/([\w-]+)/,
+									/^youtu\.be\/([\w-]+)/
+								],
+								html: match => {
+									const id = match[ 1 ];
+
+									return (
+										'<div style="position: relative; padding-bottom: 100%; height: 0; padding-bottom: 56.2493%;">' +
+											`<iframe src="https://www.youtube.com/embed/${ id }" ` +
+												'style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;" ' +
+												'frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>' +
+											'</iframe>' +
+										'</div>'
+									);
+								}
+							},
 							{
 								name: 'customEmbed',
 								url: [
@@ -181,25 +221,26 @@ function(app,classicEditor, template, _) {
 									/cdn\.knightlab\.com\/libs\/juxtapose\/.*/,
 									/uploads\.knightlab\.com\/scenevr\/.*/,
 									/cdn\.knightlab\.com\/libs\/storyline\/.*/,
-									/theydrawit\.mucollective\.co\/vis\/.*/
+									/theydrawit\.mucollective\.co\/vis\/.*/,
+									/youtube\.com\/embed\/videoseries.*/
 								],
 								html: function(id){
 									return '<figure class="media">' +
 										   '	<oembed url="' + id.input + '">' + 
-										   			'<a href="' + id.input + '">' + id.input + '</a>'
+										   			'<a href="' + id.input + '">' + id.input + '</a>' +
 										   '	</oembed>' +
 											'</figure>'
 								}
 							}]
 						}
 					}
-					if(lang=='ar')
-						$element.find('#snippet-inline-editor_ar').attr('dir', 'rtl');
 					
 					classicEditor.create($element.find('#km-inline-editor_'+lang)[0], editorOptions)
 					.then(function(ed){
 						// console.log(Array.from( ed.ui.componentFactory.names()))
-						
+						if(lang=='ar'){
+							$element.find('#snippet-inline-editor_ar .ck-editor__editable').attr('dir', 'rtl');
+						}
 						$scope.editors[lang] = ed;
 						
 						if(!$scope.binding){
