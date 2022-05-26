@@ -1,4 +1,4 @@
-﻿define(['app', 'lodash', 'json!views/translation/database-tables.json',
+define(['app', 'lodash', 'json!views/translation/database-tables.json',
 'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
 'components/scbd-angularjs-controls/form-control-directives/ng-enter','services/local-storage-service'],
  function (app, _, dbTables) {

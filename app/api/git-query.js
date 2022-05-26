@@ -28,7 +28,7 @@ function gitQuery(options){
             let q = req.query;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolder);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders);
 
             res.status(200).send(files);
         }
@@ -44,7 +44,7 @@ function gitQuery(options){
             let q = req.decryptedInfo;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolder);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders);
 
             if(files && files.length > 0){
                 let compressedFiles = await zipFile(repositoryName, files, q.branch);
@@ -77,7 +77,7 @@ function gitQuery(options){
     }
 
     async function getUpdatesFiles(repositoryName, baseBranch, date, 
-        ignoreFiles, allowedExtensions, ignoreFolder) {
+        ignoreFiles, allowedExtensions, ignoreFolders) {
 
         try{
             
@@ -127,17 +127,17 @@ function gitQuery(options){
 
             allowedExtensions   = (allowedExtensions||".html,.json").replace(/\s/g, '').split(',');
             ignoreFiles         = (ignoreFiles || "bower.json, package.json,.bower.json,.awsbox.json").replace(/\s/g, '').split(',');
-            ignoreFolder        = (ignoreFolder || 'i18n').replace(/\s/g, '').split(',');
+            ignoreFolders        = (ignoreFolders || 'i18n').replace(/\s/g, '').split(',');
             
             if(modifieldfiles.all){
                 _.each(modifieldfiles.all, function(file){
                     if(file.hash){                                
-                        modifiedFileInBranch.push(getFilesFromString(file.hash, allowedExtensions, ignoreFiles, ignoreFolder));
+                        modifiedFileInBranch.push(getFilesFromString(file.hash, allowedExtensions, ignoreFiles, ignoreFolders));
                     }
                 })
             }
             else if(_.isString(modifieldfiles)){                
-                modifiedFileInBranch.push(getFilesFromString(modifieldfiles, allowedExtensions, ignoreFiles, ignoreFolder));
+                modifiedFileInBranch.push(getFilesFromString(modifieldfiles, allowedExtensions, ignoreFiles, ignoreFolders));
             }            
 
             return _.map(_.uniq(_.flatten(modifiedFileInBranch)), function(file){
@@ -172,15 +172,19 @@ function gitQuery(options){
         return files;
     }
 
-    function getFilesFromString(hash, allowedExtensions, ignoreFiles, ignoreFolder){
+    function getFilesFromString(hash, allowedExtensions, ignoreFiles, ignoreFolders){
         let r = hash.replace(/\'/g, '')
             .replace(/\n/g, ';')
             .split(';');
         return _.uniq(r).filter(function (name) {
             let ext = path.extname(name);
+            const dirPath = path.dirname(name).replace(/\//g, '_',)
             return _.indexOf(allowedExtensions, ext) >= 0 
                    && _.indexOf(ignoreFiles, path.basename(name)) < 0
-                   && !ignoreFolder.filter(e=>path.dirname(name).indexOf(e)).length;
+                   && !ignoreFolders.filter(e=> {
+                        const replaceFolderPath = dirPath.replace(e.replace(/\/$/, '').replace(/\//g, '_'), '_');
+                        return replaceFolderPath == '_' || /__(.*)?/.test(replaceFolderPath);
+                      }).length;
         });
     }
 }
