@@ -10,7 +10,7 @@ define(['app', 'lodash', './app-config-service'], function (app, _) { 'use stric
 				if (!$rootScope.user)
 					return false;
 
-				return _.contains($rootScope.user.roles, role);
+				return _.includes($rootScope.user.roles, role);
 			};
 			
 			this.isUserInRoles = function(roles) {
