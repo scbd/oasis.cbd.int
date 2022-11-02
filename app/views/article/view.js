@@ -1,4 +1,4 @@
-define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-css'],
+define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css'],
  function (app) {
     
     return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
