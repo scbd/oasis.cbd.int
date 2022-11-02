@@ -3,7 +3,7 @@
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
 var appVersion = document.documentElement.attributes['app-version'].value;
-var ckeditorVersion = '34.0.0'
+var ckeditorVersion = '35.0.0'
 var cdnHost = 'https://cdn.cbd.int/'
 require.config({
     baseUrl : 'app/',
@@ -84,7 +84,8 @@ require.config({
     urlArgs: 'v=' + appVersion
 });
 //
-define('ck-editor-css', ['css!https://cdn.cbd.int/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
+define('ck-editor-css', ['css!' + cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
+define('ck-editor-content-css', ['css!' + cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/content-style.css']);
 
 define('vue', ['Vue'],                              function(Vue){ return Vue; });
 define('Vue', ['https://cdn.cbd.int/vue@2.6.12/dist/vue'], function(Vue){

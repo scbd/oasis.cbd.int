@@ -72,7 +72,7 @@ function(app,classicEditor, template, _) {
 							'highlight', 'insertTable', '|', 
 							'imageInsert', 'mediaEmbed', '|', 
 							'horizontalLine', '|',
-							'removeFormat', 'undo', 'redo',
+							'removeFormat', 'undo', 'redo', '|', 'pageBreak', 'brBreak'
 						],
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
