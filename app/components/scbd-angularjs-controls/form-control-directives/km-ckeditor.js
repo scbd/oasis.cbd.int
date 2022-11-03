@@ -65,7 +65,7 @@ function(app,classicEditor, template, _) {
 					var editorOptions = {
 						
 						toolbar: [ 	
-							'heading',  'fontColor', '|', 
+							'heading','fontSize', 'fontColor', '|', 
 							'bold', 'italic', 'link', '|', 
 							'indent', 'outdent','alignment', '|',
 							'bulletedList', 'numberedList', 'blockQuote', '|', 
@@ -120,15 +120,35 @@ function(app,classicEditor, template, _) {
 								}
 							]
 						},
+						list: {
+							properties: {
+								styles: true,
+								startIndex: true,
+								reversed: true
+							}
+						},
 						image: {
+							styles: [
+								'alignCenter',
+								'alignLeft',
+								'alignRight'
+							],
 							resizeOptions: [
 								{ name: 'imageResize:original', label: 'Original', value: null },
 								{ name: 'imageResize:25', label: '25%', value: '25' },
 								{ name: 'imageResize:50', label: '50%', value: '50' },
 								{ name: 'imageResize:75', label: '75%', value: '75' }
 							],
-							toolbar : [	'imageStyle:alignLeft', 'imageStyle:full', 'imageStyle:alignRight', '|', 'imageTextAlternative', 'linkImage', '|', 'imageResize'],
-							styles  : ['full', 'side', 'alignLeft', 'alignCenter', 'alignRight']
+							toolbar: [
+								'imageTextAlternative', 'toggleImageCaption', '|',
+								'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText', 'imageStyle:side', '|',
+								'resizeImage'
+							],
+							insert: {
+								integrations: [
+									'insertImageViaUrl'
+								]
+							}
 						},
 						heading: {
 							options: [
@@ -138,15 +158,20 @@ function(app,classicEditor, template, _) {
 								{ model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
 							]
 						},
+						fontSize: {
+							options: [8, 10, 12, 14, 'default', 18, 20, 22 ],
+							supportAllValues: true
+						},
 						table: {
 							contentToolbar: [
 								'tableColumn', 'tableRow', 'mergeTableCells',
-								'tableProperties', 'tableCellProperties'
+								'tableProperties', 'tableCellProperties', 'toggleTableCaption'
 							],
 				
 						},
 						link: {
 							addTargetToExternalLinks: false,
+							defaultProtocol: 'https://',
 							decorators: [
 								{
 									mode: 'manual',
