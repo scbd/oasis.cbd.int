@@ -195,6 +195,11 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                     if(close){
                         $scope.close();
                     }
+                    if(!newDocument._id && result.id){
+                        $location.path('articles/'+result.id+'/edit')  
+                        var returnUrl = $location.search().returnUrl                        
+                        $location.search('returnUrl', returnUrl);
+                    }
                 })
                 .catch(function(e){
                     $scope.errors = e.data||e
