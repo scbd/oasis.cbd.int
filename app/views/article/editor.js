@@ -1,4 +1,4 @@
-﻿
+
 define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
  'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
@@ -178,7 +178,7 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                 
                 delete newDocument.tagsInfo;
                 delete newDocument.customTagsInfo;
-
+                newDocument = sanitizeDocument(newDocument); 
                 var operation;
                 if(newDocument && newDocument._id){
                     operation = genericService.update('v2017', 'articles',newDocument._id, newDocument);
@@ -380,6 +380,52 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
 
             function readQsTags(qsValue){
                return _(_.isArray(qsValue) ? qsValue       : (qsValue      ||'').split(',')).compact().value()
+            }
+
+
+            function sanitizeDocument(document){
+
+                if(!document) return;
+        
+                document = sanitize(document);
+
+                return document;
+        
+                function sanitize(doc){
+                    _.forEach(doc, function(fieldValue, key){
+                        
+                        if(_.isString(fieldValue) && _.trim(fieldValue||'') == ''){
+                        fieldValue = undefined;
+                        }
+                        else if(_.isArray(fieldValue)){
+                            fieldValue = sanitize(fieldValue);
+                            fieldValue = _.compact(fieldValue);
+                        
+                        if(_.isEmpty(fieldValue))
+                            fieldValue = undefined;
+                        }
+                        else if(_.isPlainObject(fieldValue)){
+                            fieldValue = sanitize(fieldValue);
+                            fieldValue = _.omitBy(fieldValue, isNullOrUndefinedOrEmpty);
+                        }
+                        if(!fieldValue)
+                            delete doc[key]
+                        else
+                            doc[key] = fieldValue;
+            
+                    });
+                
+                    if(_.isArray(doc))
+                        doc = _.compact(doc)
+                    else if(_.isPlainObject(doc))
+                        doc = _.omitBy(doc, isNullOrUndefinedOrEmpty);
+                    
+                    return doc;
+                }
+                
+            }
+            function isNullOrUndefinedOrEmpty(v){
+                return v === undefined || v === null || (_.isObject(v) && _.isEmpty(v));
             }
     }]
 });
