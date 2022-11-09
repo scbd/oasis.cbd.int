@@ -1,4 +1,4 @@
-
+﻿
 define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
  'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
@@ -350,32 +350,36 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
             }
 
             function validateCustomProperties(){
-                var isValid = true;
+                var isValid = false;
                 var customProperties = $scope.article.customProperties;
                 var lastRow = customProperties[customProperties.length-1];
+
+                if(customProperties.length == 1){
+                    if(lastRow && (!lastRow.type && !lastRow.field && !lastRow.value))
+                        isValid = true;
+                }
                 _.each(customProperties, function(data){
 
                     if(data == lastRow && (!lastRow.type && !lastRow.field && !lastRow.value))
                        return;
 
                     data.typeMissing = !data.type;
-                    data.typeMissing = data.typeMissing || undefined;
+                    // data.typeMissing = data.typeMissing || undefined;
 
                     data.fieldMissing = !data.field;
-                    data.fieldMissing = data.fieldMissing || undefined;
+                    // data.fieldMissing = data.fieldMissing || undefined;
 
                     if(!data.fieldMissing){
                         if(!/^[a-z][a-z0-9]{0,31}$/i.test(data.field)){
                             data.fieldNameInvalid = true
                         }
-                        else data.fieldNameInvalid = undefined;
+                        // else data.fieldNameInvalid = undefined;
                     }
 
                     data.valueMissing = !data.value;
-                    data.valueMissing = data.valueMissing || undefined;
+                    // data.valueMissing = data.valueMissing || undefined;
 
-                    isValid = isValid || data.typeMissing || data.fieldMissing || data.fieldNameInvalid ||
-                              data.valueMissing
+                    isValid = (!data.typeMissing && !data.fieldMissing && !data.fieldNameInvalid && !data.valueMissing)
                 })
                 return isValid;
             }
