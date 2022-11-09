@@ -200,6 +200,8 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                         var returnUrl = $location.search().returnUrl                        
                         $location.search('returnUrl', returnUrl);
                     }
+                    
+                    return $scope.loadArticle();
                 })
                 .catch(function(e){
                     $scope.errors = e.data||e
