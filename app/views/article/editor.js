@@ -1,10 +1,10 @@
-﻿
-define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
+﻿define(['app', 'lodash', 'services/css.escape',
+ 'angular-ui-select2', 'scbd-angularjs-services/locale',
  'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
  'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
  'components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml',
  'scbd-angularjs-services/storage', 'scbd-angularjs-filters', 'ng-file-upload'], 
- function (app, _) {
+ function (app, _, cssEscape) {
     
     return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
         function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
@@ -14,6 +14,19 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
             $scope.fieldTypes = [
                 {type:'string', val:'String'}, {type:'number', val:'Number'},
                 {type:'boolean', val:'Boolean'}, {type:'datetime', val:'Datetime'} 
+            ]
+            $scope.coverImagePositions = [
+                {type:'center', val:'Center'}, 
+                {type:'bottom', val:'Bottom'}, 
+                {type:'left', val:'Left'}, 
+                {type:'right', val:'Right'}, 
+                {type:'top', val:'Top'},
+                {type:'none', val:'None'}
+            ]
+            $scope.coverImageSize = [
+                {type:'contain', val:'Contain'}, 
+                {type:'cover', val:'Cover'}, 
+                {type:'none', val:'None'}
             ]
             $scope.loading = true;
             $scope.showTranslationAlert = false;
@@ -278,6 +291,9 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                                         $scope.document.coverImage = {};
                                     $scope.document.coverImage.url = undefined;
                                     $scope.document.coverImage.url = resp.data.default;
+
+                                    $scope.document.coverImage.position = $scope.document.coverImage.position || 'center';
+                                    $scope.document.coverImage.size = $scope.document.coverImage.size || 'cover';
                                     $scope.coverImageProgress = undefined;
                                     $scope.onEditorFileUpload(resp.data)
                                 });
@@ -347,6 +363,14 @@ define(['app', 'lodash', 'angular-ui-select2', 'scbd-angularjs-services/locale',
                     $window.location = search.returnUrl;
                 else    
                     $location.path('/articles')
+            }
+
+            $scope.cssEscape = function(val){
+                return cssEscape(val)
+            }
+
+            $scope.removeCoverImage = function(){
+                $scope.document.coverImage = undefined;
             }
 
             function validateCustomProperties(){
