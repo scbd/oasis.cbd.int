@@ -370,9 +370,7 @@
                     $location.path('/articles')
             }
 
-            $scope.cssEscape = function(val){
-                return cssEscape(val)
-            }
+            $scope.cssEscape = cssEscape;
 
             $scope.removeCoverImage = function(){
                 $scope.document.coverImage = undefined;

@@ -1,5 +1,5 @@
 ﻿<div style="border:none">    
-    <!-- class="ck-editor__editable"  -->
+    <link rel="stylesheet" href="app/css/article-cover-image.css"/>
     <style>
         
         .tags {
@@ -26,34 +26,7 @@
             color: #000;
         }
 
-        .image-credit-wrapper img {
-            width: 100% !important;
-        }
-
-        .image-credit-wrapper {
-            overflow: hidden;
-            position: relative;
-            max-height: 375px;
-        }
-
-        .image-credit-wrapper .image-credit {
-            position: absolute;
-            right: 0px;
-            bottom: 4px;
-        }
-
-        .image-credit {
-            background: rgba(0, 0, 0, .7);
-            color: #ccc;
-            display: inline-block;
-            font-size: 11px;
-            font-family: helvetica;
-            font-weight: 300;
-            padding: 5px 8px;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-        }
+        
         .chip {
             display: inline-block;
             padding: 5px;
@@ -80,10 +53,11 @@
                                 ng-repeat="locale in locales" ng-bind="locale|uppercase" ng-click="changeLocale(locale)"></button>
                             </div>
                             <br><br>
-                        </div>  
-                        <div class="image-credit-wrapper">
+                        </div>                         
+                        <div class="image-credit-wrapper"  ng-if="article.coverImage.url" >
                             <span class="image-credit" ng-if="article.coverImage.credits">{{article.coverImage.credits}}</span>
-                            <img class="img-responsive" ng-src="{{::getSizedImage(article.coverImage.url,'1200x800')}}">
+                            <div class="img cover-image cover-image-position-{{article.coverImage.position||'none'}} cover-image-size-{{article.coverImage.size||'none'}}"  
+                            style="background-image: url({{::cssEscape(getSizedImage(article.coverImage.url,'1200x800'))}});"></div>
                         </div>
                         <br/>
                         <br/>
