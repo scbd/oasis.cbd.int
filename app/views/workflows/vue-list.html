@@ -15,11 +15,11 @@
                     :server-items-length="failedRecords.total" :options.sync="failedRecords.options" >     
                         <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
                         <template v-slot:item.failedExecution.failDate="{ item }">
-                            {{item.failedExecution.failDate  | formatDate('format','DD MMM YYYY HH:MM')}}
+                            {{item.failedExecution.failDate  | formatDate('format','DD MMM YYYY HH:mm')}}
                         </template>
                         <template v-slot:item.failureProcessed="{ item }">
                             <div v-if="item.failureProcessed">
-                                Failure Processed on {{item.failureProcessed.processedOn  | formatDate('format','DD MMM YYYY HH:MM')}}<br/>
+                                Failure Processed on {{item.failureProcessed.processedOn  | formatDate('format','DD MMM YYYY HH:mm')}}<br/>
                                 ({{item.failureProcessed.processedBy}}) :- {{item.failureProcessed.action}}
                             </div>
                         </template>

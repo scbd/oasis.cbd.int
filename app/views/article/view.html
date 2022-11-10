@@ -93,7 +93,7 @@
                         </h2>
                         <br/>
                         <br/>
-                        <div id="editor" class="article-content1 ck ck-content ck-rounded-corners ck-blurred">
+                        <div id="editor" class="ck-content">
                             <div ng-bind-html="article.content|lstring:activeLocale|unsafe"></div>
                         </div>
                     </div>
@@ -120,7 +120,7 @@
                                 <tr>
                                     <td>Created on</td>
                                     <td>
-                                        {{article.meta.createdOn|formatDate:'DD MMM YYYY HH:MM'}}
+                                        {{article.meta.createdOn|formatDate:'DD MMM YYYY HH:mm'}}
                                     </td>
                                 </tr>
 
@@ -132,7 +132,7 @@
                                 </tr>
                                 <tr>
                                     <td>Modified on</td>
-                                    <td>{{article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:MM'}}</td>
+                                    <td>{{article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:mm'}}</td>
                                 </tr>
                             </table>
                         </div>

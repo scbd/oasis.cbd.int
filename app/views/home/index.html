@@ -105,7 +105,7 @@
                             </a>
                           </td>
                           <td ng-bind="article.meta.modifiedByInfo.firstName + ' ' + article.meta.modifiedByInfo.lastName"></td>
-                          <td ng-bind="article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:MM'"></td>
+                          <td ng-bind="article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:mm'"></td>
                           <td>
                             <a ng-href="articles/{{article._id}}/edit">
                               <i class="fa fa-edit" />
@@ -138,7 +138,7 @@
                             </a>
                           </td>
                           <td ng-bind="article.meta.modifiedByInfo.firstName + ' ' + article.meta.modifiedByInfo.lastName"></td>
-                          <td ng-bind="article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:MM'"></td>
+                          <td ng-bind="article.meta.modifiedOn|formatDate:'DD MMM YYYY HH:mm'"></td>
                           <td>
                             <a ng-href="articles/{{article._id}}/edit">
                               <i class="fa fa-edit" />
@@ -180,7 +180,7 @@
                           </a>
                         </td>
                         <td ng-bind="widget.meta.modifiedByInfo.firstName + ' ' + widget.meta.modifiedByInfo.lastName"></td>
-                        <td ng-bind="widget.meta.modifiedOn|formatDate:'DD MMM YYYY HH:MM'"></td>
+                        <td ng-bind="widget.meta.modifiedOn|formatDate:'DD MMM YYYY HH:mm'"></td>
                         <td>
                           <a ng-href="widgets/{{widget._id}}/edit">
                             <i class="fa fa-edit" />
