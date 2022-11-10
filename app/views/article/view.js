@@ -1,5 +1,5 @@
-define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css'],
- function (app) {
+define(['app', 'services/css.escape', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css'],
+ function (app, cssEscape) {
     
     return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
         function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
@@ -73,6 +73,7 @@ define(['app', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css
                 else    
                     $location.path('/articles')
             }
+            $scope.cssEscape = cssEscape
         }
     ]
 });
