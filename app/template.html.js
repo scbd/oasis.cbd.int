@@ -18,6 +18,13 @@ define(['app',  'js/filters', 'scbd-angularjs-services/authentication'], functio
             })  
           }
 
+          $rootScope.$on('signOut', function(){
+            $scope.user = undefined;
+          });
+
+          $rootScope.$on('signIn', function($evt, user){
+             $scope.user = user
+          });
 
         }
     ]);
