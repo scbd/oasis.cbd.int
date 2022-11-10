@@ -43,7 +43,7 @@
         <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
       </template>
       <template v-slot:item.modifiedOn="{ item }">
-        <span  v-if="item.modifiedOn">{{item.modifiedOn  | formatDate('format','DD MMM YYYY HH:MM')}}</span>
+        <span  v-if="item.modifiedOn">{{item.modifiedOn  | formatDate('format','DD MMM YYYY HH:mm')}}</span>
       </template>
       <template v-slot:no-data>
         <b>No querystring params configured!</b>
