@@ -56,6 +56,9 @@
                         $scope.article.customTags   = _.map(data.customTags,function(t){ return t});
                         $scope.article.adminTags    = _.map(data.adminTags, function(t){ return {title:t}});
 
+                        if($scope.document.coverImage && $scope.document.coverImage.url)
+                            $scope.coverImage_1200      = $scope.document.coverImage.url.replace(/attachments\.cbd\.int\//, '$&1200x600/');
+                        
                         if(!_.isEmpty(data.customProperties)){
                             $scope.article.customProperties = [];
                             _.forEach(data.customProperties, function(value, key){
@@ -287,11 +290,13 @@
                                 }
                             }).then(function (resp) {
                                 $timeout(function() {
+
                                     if(!$scope.document.coverImage)
                                         $scope.document.coverImage = {};
                                     $scope.document.coverImage.url = undefined;
                                     $scope.document.coverImage.url = resp.data.default;
 
+                                    $scope.coverImage_1200  = $scope.document.coverImage.url.replace(/attachments\.cbd\.int\//, '$&1200x600/')
                                     $scope.document.coverImage.position = $scope.document.coverImage.position || 'center';
                                     $scope.document.coverImage.size = $scope.document.coverImage.size || 'cover';
                                     $scope.coverImageProgress = undefined;
