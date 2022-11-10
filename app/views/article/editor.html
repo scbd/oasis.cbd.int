@@ -1,5 +1,6 @@
 <div>
     <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
+    <link rel="stylesheet" href="app/css/article-cover-image.css"/>
     <style type="text/css">
         .button {
             -moz-appearance: button;
@@ -173,22 +174,45 @@
                                                     </div> -->
                                     </div>
                                     <div class="col-md-3">
-                                        <img ng-if="document.coverImage.url" style="max-height:200px;max-width:200px" ng-src="{{getSizedImage(document.coverImage.url, '200x200')}}"/>
-                                        <div style="padding:5px;margin-left:20%" ng-if="document.coverImage.url">
-                                            <button class="btn btn-primary btn-xs" ng-click="document.coverImage.url=undefined"><i class="fa fa-remove" /></button>
+                                         <div ng-if="document.coverImage.url">
+                                            <button class="btn btn-primary btn-xs" ng-click="removeCoverImage()"><i class="fa fa-remove" /> Remove cover image</button>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- </div>
-                                </div> -->
-
-
                             </div>
                             
-                            <div class="col-md-12"><br/>
+                            <div class="col-md-6" ng-show="document.coverImage.url"><br/>
+                                <div class="form-group">
+                                    <label>Image position</label>
+                                    <select class="form-control" ng-model="document.coverImage.position"
+                                        ng-options="option.type as option.val for option in coverImagePositions" ng-disabled="!document.coverImage.url">
+                                        </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6" ng-show="document.coverImage.url"><br/>
+                                <div class="form-group">
+                                    <label>Image size</label>
+                                    <select class="form-control" ng-model="document.coverImage.size"
+                                        ng-options="option.type as option.val for option in coverImageSize" ng-disabled="!document.coverImage.url">
+                                        </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" ng-show="document.coverImage.url"><br/>
                                 <div class="form-group">
                                     <label>Image credits</label>
                                     <input type="text" class="form-control" ng-model="document.coverImage.credits">
+                                </div>
+                            </div>
+
+                            <div class="col-md-12" ng-if="document.coverImage.url">
+                                <div class="alert alert-info">                            
+                                    This is a sample representation of the Cover-Image
+                                </div>                               
+                                <div class="image-credit-wrapper"  ng-show="document.coverImage.url" >
+                                    <span class="image-credit" ng-if="document.coverImage.credits">{{document.coverImage.credits}}</span>
+                                    <div class="img cover-image cover-image-position-{{document.coverImage.position||'none'}} cover-image-size-{{document.coverImage.size||'none'}}"  
+                                    style="background-image: url({{::cssEscape(document.coverImage.url)}});"></div>
                                 </div>
                             </div>
                         </div>
