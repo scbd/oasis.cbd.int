@@ -2,7 +2,7 @@ define(['app',
 	'scbd-angularjs-services/authentication'
 ], function (app, moment) {
 
-	return ["$scope", "$location", "authentication", function ($scope, $location, authentication) {
+	return ["$scope", "$location", "authentication", '$rootScope', function ($scope, $location, authentication, $rootScope) {
 
 		$scope.email = null;
 		$scope.password = null;
@@ -20,6 +20,7 @@ define(['app',
 				.then(function (user) {
 
 					$scope.user = user;
+					$rootScope.$broadcast('signIn', user);
 					if ($location.search().returnUrl)
 						$location.url($location.search().returnUrl);
 					else

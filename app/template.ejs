@@ -130,9 +130,9 @@ class="hold-transition skin-blue sidebar-mini">
     </script>
     <header class="main-header">
       <!-- Logo -->
-      <a href="index2.html" class="logo">
+      <a href="https://www.cbd.int" class="logo">
         <!-- mini logo for sidebar mini 50x50 pixels -->
-        <span class="logo-mini">
+        <span class="logo-mini" ng-if="user.isAuthenticated">
           <img src="https://avatars2.githubusercontent.com/u/{{user.email}}?v=4" />
         </span>
         <!-- logo for regular state and mobile devices -->
@@ -147,7 +147,7 @@ class="hold-transition skin-blue sidebar-mini">
           <span class="sr-only">Toggle navigation</span>
         </a>
 
-        <div class="navbar-custom-menu">
+        <div class="navbar-custom-menu" ng-if="user.isAuthenticated">
           <ul class="nav navbar-nav">
             <li class="dropdown user user-menu">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -178,7 +178,7 @@ class="hold-transition skin-blue sidebar-mini">
       </nav>
     </header>
     <!-- Left side column. contains the logo and sidebar -->
-    <aside class="main-sidebar">
+    <aside class="main-sidebar" ng-if="user.isAuthenticated">
       <!-- sidebar: style can be found in sidebar.less -->
       <section class="sidebar">
         <!-- Sidebar user panel -->

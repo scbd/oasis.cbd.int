@@ -1,16 +1,17 @@
 ﻿<div class="login-box">
-    <div class="login-logo">
-     <style>
-      .has-feedback .form-control-feedback{
-        top:1px;
+  <div class="login-logo">
+    <style>
+      .has-feedback .form-control-feedback {
+        top: 1px;
       }
-     </style>
-    </div>
-    <!-- /.login-logo -->
-    <div class="login-box-body">
-      <p class="login-box-msg">Sign in to start your session</p>
-      <div class="alert alert-info" ng-show="sessionExpiredAlert">
-        <strong>Session Expired.</strong> Your session has expired, please log-in to continue.
+    </style>
+  </div>
+  <!-- /.login-logo -->
+  <div class="login-box-body block-region-parent">
+   
+    <p class="login-box-msg">Sign in to start your session</p>
+    <div class="alert alert-info" ng-show="sessionExpiredAlert">
+      <strong>Session Expired.</strong> Your session has expired, please log-in to continue.
     </div>
     <div class="alert alert-danger" ng-show="errorInvalid">
       <strong>Login failed.</strong> The email address and password combination you entered is incorrect.
@@ -19,33 +20,40 @@
     <div class="alert alert-danger" ng-show="errorTimeout">
       <strong>Operation failed.</strong> The service is not available. Please try again later.
     </div>
-        <div class="form-group has-feedback">
-          <input type="email" class="form-control" placeholder="Email" ng-model="email">
-          <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
-        </div>
-        <div class="form-group has-feedback">
-          <input type="password" class="form-control" placeholder="Password" ng-model="password">
-          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-        </div>
-        <div class="row">
-          <div class="col-xs-8">
-            <div class="checkbox icheck">
-              <label>
-                <input type="checkbox"> Remember Me
-              </label>
-            </div>
-          </div>
-          <!-- /.col -->
-          <div class="col-xs-4">
-            <button type="submit" class="btn btn-primary btn-block btn-flat" ng-click="signIn()">Sign In</button>
-          </div>
-          <!-- /.col -->
-        </div>
-  
-  
-      <a href="#">I forgot my password</a><br>
-      <a href="#" class="text-center">Register a new membership</a>
-  
+    <div class="form-group has-feedback">
+      <input type="email" class="form-control" placeholder="Email" ng-model="email">
+      <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
     </div>
-    <!-- /.login-box-body -->
+    <div class="form-group has-feedback">
+      <input type="password" class="form-control" placeholder="Password" ng-model="password">
+      <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+    </div>
+    <div class="row">
+      <div class="col-xs-8">
+        <div class="checkbox icheck">
+          <label>
+            <input type="checkbox"> Remember Me
+          </label>
+        </div>
+      </div>
+      <!-- /.col -->
+      <div class="col-xs-4">
+        <button type="submit" ng-disabled="waiting" class="btn btn-primary btn-block btn-flat" ng-click="signIn()">Sign
+          In</button>
+      </div>
+      <!-- /.col -->
+    </div>
+    <div class="blockRegion" ng-if="waiting">
+      <div class="inverted dimmer active">
+          <div class="center">
+              <div class="medium loader"><i class="fa fa-spin fa-cog" /> {{'verifying credentials'}}...</div>					
+          </div>
+      </div>
   </div>
+
+    <a href="#">I forgot my password</a><br>
+    <a href="#" class="text-center">Register a new membership</a>
+
+  </div>
+  <!-- /.login-box-body -->
+</div>
