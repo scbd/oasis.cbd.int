@@ -196,15 +196,15 @@ function(app,classicEditor, template, _) {
 							}
 						},
 						mediaEmbed:{
-							previewsInData: false,
-							removeProviders :['youtube'],
-							extraProviders: [
+							// previewsInData: false,
+							// removeProviders :['youtube'],
+							providers: [
 							{
 								name: 'youtubePlaylist',
 								url: [
 									/^youtube\.com\/embed\/videoseries\?list=([\w-]+)/,
 								],
-								html: match => {
+								html: function(match){
 									const id = match[ 1 ];
 
 									return (
@@ -225,7 +225,7 @@ function(app,classicEditor, template, _) {
 									/^youtube\.com\/embed\/([\w-]+)/,
 									/^youtu\.be\/([\w-]+)/
 								],
-								html: match => {
+								html: function(match){
 									const id = match[ 1 ];
 
 									return (
@@ -294,7 +294,7 @@ function(app,classicEditor, template, _) {
 						
 						
 						ed.editing.view.document.on('paste', function(eventInfo, data){
-							// console.log('paste', eventInfo, data)
+							console.log('paste', eventInfo, data)
 						});
 
 						ed.editing.view.document.on('drop', function(eventInfo, data){
