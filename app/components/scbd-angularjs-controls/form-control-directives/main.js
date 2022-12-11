@@ -1,3 +1,2 @@
-define([], function(){
-    return null;
-});
+
+    export default null;

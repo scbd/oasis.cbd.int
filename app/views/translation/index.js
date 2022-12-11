@@ -1,6 +1,7 @@
-﻿define(['app', 'lodash'], function (app, _) {
-    return ['$scope', function ($scope,) {
+﻿import app from 'app';
+import _ from 'lodash';
+    export default ['$scope', function ($scope,) {
             
         $scope.baseUrl = window.baseUrl;
     }];
-});
+

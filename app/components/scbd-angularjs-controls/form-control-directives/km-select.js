@@ -1,6 +1,10 @@
-define(['app', 'angular', 'jquery', 'lodash', 'text!./km-select.html','scbd-angularjs-filters',
-       'scbd-angularjs-services/locale'], 
-function(app, angular, $, _, template) {
+import app from 'app';
+import angular from 'angular';
+import $ from 'jquery';
+import _ from 'lodash';
+import template from 'text!./km-select.html';
+import 'scbd-angularjs-filters';
+import 'scbd-angularjs-services/locale';
   //============================================================
   //
   //
@@ -422,4 +426,4 @@ function(app, angular, $, _, template) {
       }]
     };
   });
-});
+

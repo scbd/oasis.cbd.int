@@ -1,8 +1,11 @@
-define(['app', 'lodash', 'json!views/translation/database-tables.json',
-'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
-'components/scbd-angularjs-controls/form-control-directives/ng-enter','services/local-storage-service'],
- function (app, _, dbTables) {
-    return ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
+import app from 'app';
+import _ from 'lodash';
+import dbTables from 'json!views/translation/database-tables.json';
+import 'scbd-angularjs-services/generic-service';
+import 'views/translation/directives/pagination';
+import 'components/scbd-angularjs-controls/form-control-directives/ng-enter';
+import 'services/local-storage-service';
+    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
     function ($scope, $http, $q, $routeParams, genericService, localStorageService) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
         $scope.baseUrl  = window.baseUrl;
@@ -252,4 +255,4 @@ console.log('j')
         $scope.searchArticles({})
 
     }];
-});
+

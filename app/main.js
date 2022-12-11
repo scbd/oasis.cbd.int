@@ -1,5 +1,7 @@
-'use strict';
 
-define(['app', 'js/app_routes', 'template.html'], function () {});
+
+import 'app';
+import 'js/app_routes';
+// import 'template.html';
 
 //, 'search2'

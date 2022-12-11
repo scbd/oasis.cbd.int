@@ -1,5 +1,6 @@
-﻿define(['app', 'lodash'], function (app, _) {
-    return ['$scope', '$http', '$q', '$routeParams',
+﻿import app from 'app';
+import _ from 'lodash';
+    export default ['$scope', '$http', '$q', '$routeParams',
     function ($scope, $http, $q, $routeParams) {
             var baseUrl = $scope.baseUrl = window.baseUrl;
 
@@ -76,4 +77,4 @@
                 }
             }
     }];
-});
+

@@ -1,5 +1,8 @@
-define(['app', 'text!./string.html', 'jquery', 'angular-localizer'], function(app, template, $) {
-  'use strict';
+import app from 'app';
+import template from 'text!./string.html';
+import $ from 'jquery';
+import 'angular-localizer';
+  
   app.directive('afcInput', function() {
     return {
       restrict: 'EAC',
@@ -21,4 +24,3 @@ define(['app', 'text!./string.html', 'jquery', 'angular-localizer'], function(ap
       },
     };
   });
-});

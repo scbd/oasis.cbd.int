@@ -1,4 +1,6 @@
-define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,angular) {
+import app from 'app';
+import template from 'text!./km-inputtext-ml.html';
+import angular from 'angular';
   //============================================================
   //
   //
@@ -85,4 +87,4 @@ define(['app','text!./km-inputtext-ml.html','angular'], function(app,template,an
       }
     };
   });
-});
+

@@ -1,5 +1,8 @@
-define(['app',  'js/filters', 'scbd-angularjs-services/authentication'], function(app, _) {
-    'use strict';
+import app from 'app';
+import 'js/app_routes';
+import _ from 'js/filters';
+import 'scbd-angularjs-services/authentication';
+    
 
     app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q',
         function($scope, $rootScope, authentication, $q
@@ -55,4 +58,4 @@ define(['app',  'js/filters', 'scbd-angularjs-services/authentication'], functio
                 }
             }
         );
-});
+

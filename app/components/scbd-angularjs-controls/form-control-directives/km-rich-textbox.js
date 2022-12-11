@@ -1,7 +1,9 @@
-define(['app','text!./km-rich-textbox.html','angular','textAngular',
-'css!/app/directives/forms/km-control.css', 
-'css!/app/libs/textAngular/dist/textAngular.css'], 
-function(app,template,angular) {
+import app from 'app';
+import template from 'text!./km-rich-textbox.html';
+import angular from 'angular';
+import 'textAngular';
+import 'css!/app/directives/forms/km-control.css';
+import 'css!/app/libs/textAngular/dist/textAngular.css';
 	//============================================================
 	//
 	//
@@ -167,4 +169,4 @@ function(app,template,angular) {
 					}
 			};
 	}]);
-});
+

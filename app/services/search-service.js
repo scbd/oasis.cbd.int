@@ -1,4 +1,7 @@
-define(['app', 'lodash', './local-storage-service', './app-config-service'], function(app, _) {
+import app from 'app';
+import _ from 'lodash';
+import './local-storage-service';
+import './app-config-service';
 
     app.factory('searchService', ['$http', '$q', 'realm', 'localStorageService', 'appConfigService',
         function($http, $q, realm, localStorageService, appConfigService) {
@@ -198,4 +201,4 @@ define(['app', 'lodash', './local-storage-service', './app-config-service'], fun
             }
         }
     ]);
-});
+

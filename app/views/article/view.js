@@ -1,7 +1,9 @@
-define(['app', 'services/css.escape', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css'],
- function (app, cssEscape) {
+import app from 'app';
+import cssEscape from 'services/css.escape';
+import 'scbd-angularjs-services/generic-service';
+import 'ck-editor-content-css';
     
-    return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
+    export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
         function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
             $scope.baseUrl = window.baseUrl;
             $scope.locales = ['en','ar','es','fr','ru','zh'];
@@ -76,4 +78,4 @@ define(['app', 'services/css.escape', 'scbd-angularjs-services/generic-service',
             $scope.cssEscape = cssEscape
         }
     ]
-});
+

@@ -1,4 +1,6 @@
-define(['app', './apiUrl', './locale'], function(app) {
+import app from 'app';
+import './apiUrl';
+import './locale';
 
     app.factory('apiToken', ["$q", "$rootScope", "$window", "$document", "apiUrl", function($q, $rootScope, $window, $document, apiUrl) {
 
@@ -422,4 +424,4 @@ define(['app', './apiUrl', './locale'], function(app) {
         $httpProvider.interceptors.push('genericIntercepter');
     }]);
 
-});
+

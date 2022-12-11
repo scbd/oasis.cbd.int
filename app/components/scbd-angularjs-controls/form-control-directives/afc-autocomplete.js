@@ -1,4 +1,9 @@
-define(['app', 'text!./afc-autocomplete.html','jquery','lodash','angular-localizer', 'scbd-angularjs-services/locale'], function(app,template,$,_) { 'use strict';
+import app from 'app';
+import template from 'text!./afc-autocomplete.html';
+import $ from 'jquery';
+import _ from 'lodash';
+import 'angular-localizer';
+import 'scbd-angularjs-services/locale'; 
     app.directive('afcAutocomplete', function() {
         return {
             restrict: 'AEC',
@@ -388,4 +393,4 @@ define(['app', 'text!./afc-autocomplete.html','jquery','lodash','angular-localiz
             },
         };
     });
-});
+

@@ -1,5 +1,8 @@
-define(['app', 'moment', 'json!./schema-name.json', 'json!./schema-short-name.json', 'lodash',], 
-function (app, moment, schemaName, schemaShortName, _) {
+import app from 'app';
+import moment from 'moment';
+import schemaName from 'json!./schema-name.json';
+import schemaShortName from 'json!./schema-short-name.json';
+import _ from 'lodash';
 
 
   app.directive("translationUrl", ['$browser', function($browser){
@@ -444,4 +447,4 @@ function (app, moment, schemaName, schemaShortName, _) {
 		};
 	}]);
 
-});
+

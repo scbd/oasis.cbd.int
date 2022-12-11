@@ -1,8 +1,8 @@
-﻿define(['app', 'ck-editor', 
-'scbd-angularjs-services/generic-service'],
- function (app, classicEditor) {
+﻿import app from 'app';
+import classicEditor from 'ck-editor';
+import 'scbd-angularjs-services/generic-service';
    
-    return ['$scope', '$http', 'IGenericService', '$q', '$route', '$timeout', '$location',
+    export default ['$scope', '$http', 'IGenericService', '$q', '$route', '$timeout', '$location',
         function ($scope, $http, genericService, $q, $route, $timeout, $location) {
             
             var editor;
@@ -51,4 +51,4 @@
             }
         }
     ]
-});
+

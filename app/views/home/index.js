@@ -1,4 +1,6 @@
-define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (app, _) {
+import app from 'app';
+import _ from 'lodash';
+import 'scbd-angularjs-services/generic-service';
 
     app.controller('IndexController', ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
             
@@ -82,4 +84,4 @@ define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (a
         loadCounts();
         loadRecords();
     }]);
-});
+

@@ -1,4 +1,8 @@
-define(['./authentication' , './storage', './user-notifications', './utilities', './workflows', './apiUrl'
-], function(){
-    return null;
-});
+import './authentication';
+import './storage';
+import './user-notifications';
+import './utilities';
+import './workflows';
+import './apiUrl';
+    export default null;
+

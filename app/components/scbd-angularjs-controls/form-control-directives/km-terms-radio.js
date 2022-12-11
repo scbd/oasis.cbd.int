@@ -1,4 +1,9 @@
-define(['app', 'angular', 'jquery','text!./km-terms-radio.html','linqjs','scbd-angularjs-services/utilities'], function(app,  angular, $, template,Enumerable) { 'use strict';
+import app from 'app';
+import angular from 'angular';
+import $ from 'jquery';
+import template from 'text!./km-terms-radio.html';
+import Enumerable from 'linqjs';
+import 'scbd-angularjs-services/utilities'; 
 //need Enumerable
     //============================================================
     //
@@ -153,4 +158,4 @@ define(['app', 'angular', 'jquery','text!./km-terms-radio.html','linqjs','scbd-a
             }]
         };
     });
-});
+

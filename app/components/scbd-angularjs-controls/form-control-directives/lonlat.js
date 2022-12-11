@@ -1,5 +1,8 @@
-define(['app', 'text!./lonlat.html', 'jquery','angular-localizer'], function(app, template, $) {
-  'use strict';
+import app from 'app';
+import template from 'text!./lonlat.html';
+import $ from 'jquery';
+import 'angular-localizer';
+  
   app.directive('lonlatInput', function() {
     return {
       restrict: 'AEC',
@@ -71,4 +74,3 @@ define(['app', 'text!./lonlat.html', 'jquery','angular-localizer'], function(app
       },
     };
   });
-});

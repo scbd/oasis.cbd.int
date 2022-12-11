@@ -1,8 +1,9 @@
-﻿define(['app', 
-'scbd-angularjs-services/generic-service', 'js/pin-grid'], function (app) {
+﻿import app from 'app';
+import 'scbd-angularjs-services/generic-service';
+import 'js/pin-grid';
     
 
-    return ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', '$route',
+    export default ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', '$route',
         function ($scope, $http, genericService, $q, $location, $timeout, $route) {
         
             $q.when(genericService.query('v2017', $route.current.params.schema, {pageNumber:0, pageLength:100, fields:{"title.en":1}}))
@@ -28,4 +29,4 @@
             }
         }
     ]
-});
+

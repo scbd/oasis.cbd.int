@@ -1,4 +1,4 @@
-define(['app'], function(app){
+import app from 'app';
     app.directive('ngEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {
@@ -12,4 +12,3 @@ define(['app'], function(app){
             });
         };
     });
-})

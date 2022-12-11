@@ -1,4 +1,6 @@
-﻿define(['app', 'views/workflows/vue-wrapper', 'views/workflows/vue-list'], function(app){
-    return ['$scope', function($scope){        
+﻿import app from 'app';
+import 'views/workflows/vue-wrapper';
+import 'views/workflows/vue-list';
+    export default ['$scope', function($scope){        
     }]
-})
+

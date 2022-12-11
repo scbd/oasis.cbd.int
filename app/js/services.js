@@ -1,5 +1,8 @@
 ﻿
-define(['app', 'lodash', 'linqjs','bootbox'], function (app, _) {
+import app from 'app';
+import _ from 'lodash';
+import 'linqjs';
+import 'bootbox';
 
 	app.factory("htmlUtility", function() {
 		return {
@@ -18,4 +21,4 @@ define(['app', 'lodash', 'linqjs','bootbox'], function (app, _) {
 		return _;
 	}])
 	
-});
+

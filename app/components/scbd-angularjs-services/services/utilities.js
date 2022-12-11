@@ -1,5 +1,5 @@
-define(['app'], function(app) {
-    'use strict';
+import app from 'app';
+    
 
     app.factory('Thesaurus', ['linqjs', function(Enumerable) {
         return {
@@ -51,4 +51,4 @@ define(['app'], function(app) {
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4()).toUpperCase();
         }
     });
-});
+

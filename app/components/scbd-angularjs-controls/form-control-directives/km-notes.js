@@ -1,4 +1,6 @@
-define(['app','text!./km-notes.html','angular'], function(app,template,angular) {
+import app from 'app';
+import template from 'text!./km-notes.html';
+import angular from 'angular';
 
     //============================================================
     //
@@ -96,4 +98,4 @@ define(['app','text!./km-notes.html','angular'], function(app,template,angular) 
             }]
         };
     });
-});
+

@@ -1,5 +1,5 @@
 ﻿
-define(["app"], function (app) {
+import app from "app";
 
 	app.filter('unsafe', function ($sce) {
         return $sce.trustAsHtml;
@@ -35,4 +35,4 @@ define(["app"], function (app) {
 		    return "" + number + end;
 		};
 	});
-});
+

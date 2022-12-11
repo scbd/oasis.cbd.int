@@ -1,4 +1,5 @@
-define(['app', 'lodash'], function(app, _) {
+import app from 'app';
+import _ from 'lodash';
     app.directive('mailboxMessageList', function() {
         return {
             restrict: 'EAC',
@@ -128,4 +129,4 @@ define(['app', 'lodash'], function(app, _) {
 
         };
     });
-});
+
