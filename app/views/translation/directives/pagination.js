@@ -1,5 +1,5 @@
-﻿import template from 'text!./pagination.html';
-import app from 'app';
+﻿import template from './pagination.html';
+import app from '~/app';
     
 
     app.directive('pagination', function () {

@@ -1,8 +1,8 @@
-﻿import app from 'app';
+﻿import app from '~/app';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import vueBaseService from './vue-base-service';
-import 'scbd-angularjs-services/authentication';
+import '~/components/scbd-angularjs-services/main';
     // Create angular module + directive wrapper
     app.directive('vueWrapper', ['apiToken', '$q', function(apiToken, $q) {
         return {

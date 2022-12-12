@@ -1,4 +1,4 @@
-import app from 'app';
+import app from '~/app';
     app.directive('ngEnter', function () {
         return function (scope, element, attrs) {
             element.bind("keydown keypress", function (event) {

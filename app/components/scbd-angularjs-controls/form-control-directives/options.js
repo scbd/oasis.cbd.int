@@ -1,7 +1,6 @@
-import app from 'app';
-import template from 'text!./options.html';
+import app from '~/app';
+import template from './options.html';
 import $ from 'jquery';
-import 'angular-localizer'; 
 app.directive('afcOptions', function() {
 				return {
 						restrict: 'AEC',

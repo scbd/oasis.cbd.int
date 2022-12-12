@@ -2,7 +2,7 @@ import '~/app'
 import 'jquery'
 import 'angular-route'
 import '~/components/scbd-angularjs-services/main'
-import 'ngDialog'
+// import 'ngDialog'
 import 'angular-cookies'
 import _ from 'lodash'
 

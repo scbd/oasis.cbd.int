@@ -1,4 +1,4 @@
-import app from 'app';
+import app from '~/app';
   app.directive('scbdCompile', directive);
   app.directive('compile', directive);
 

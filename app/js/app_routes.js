@@ -1,9 +1,9 @@
 
-import app from 'app';
+import app from '~/app';
 import _ from 'lodash';
 // import 'js/extended-route-provider';
-import 'services/app-config-service';
-import 'scbd-angularjs-filters';
+import '~/services/app-config-service';
+import '~/components/scbd-angularjs-services/main';
 
 import { securize, resolveLiteral, mapView, currentUser, importQ, injectRouteParams } from './mixin';
 import * as angularViewWrapper from '~/views/shared/angular-view-wrapper'
@@ -18,7 +18,7 @@ const routeTemplates = {
     views_translation_database: { component: ()=>import('~/views/translation/database-tables') },
     views_translation_table   : { component: ()=>import('~/views/translation/table') },
     views_article_index       : { component: ()=>import('~/views/article/index') },
-    views_article_editor      : { component: ()=>import('~/views/article/editor') },
+    // views_article_editor      : { component: ()=>import('~/views/article/editor') },
     views_article_view        : { component: ()=>import('~/views/article/view') },
     views_workflows_index     : { component: ()=>import('~/views/workflows/index') },
     views_widgets_index       : { component: ()=>import('~/views/widgets/index') },

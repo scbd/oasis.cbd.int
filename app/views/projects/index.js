@@ -1,4 +1,5 @@
-﻿import app from 'app';
+﻿import app from '~/app';
+export { default as template } from './index.html';
     export default ['$scope', '$http', '$q',
     function ($scope, $http, $q) {
 

@@ -1,7 +1,8 @@
-import app from 'app';
+import app from '~/app';
 import _ from 'lodash';
-import 'scbd-angularjs-services/generic-service';
+import '~/components/scbd-angularjs-services/main';
 
+export { default as template } from './index.html';
     app.controller('IndexController', ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
             
         

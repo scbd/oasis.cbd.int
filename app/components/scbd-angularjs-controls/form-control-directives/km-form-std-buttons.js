@@ -1,6 +1,6 @@
-import app from 'app';
+import app from '~/app';
 import angular from 'angular';
-import template from 'text!./km-form-std-buttons.html';
+import template from './km-form-std-buttons.html';
 import $ from 'jquery';
   
   //============================================================

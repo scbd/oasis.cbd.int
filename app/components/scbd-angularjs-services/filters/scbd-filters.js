@@ -1,7 +1,7 @@
-import app from 'app';
+import app from '~/app';
 import moment from 'moment';
-import schemaName from 'json!./schema-name.json';
-import schemaShortName from 'json!./schema-short-name.json';
+import schemaName from './schema-name.json';
+import schemaShortName from './schema-short-name.json';
 import _ from 'lodash';
 
 
@@ -448,3 +448,28 @@ import _ from 'lodash';
 	}]);
 
 
+
+
+  app.factory('Localizer', function($cookies) {
+    var dictionary = {};
+    return {
+      setDictionary: function(aDictionary) {
+        dictionary = aDictionary;
+      },
+      phrase: function(phrase) {
+      if(!$cookies.language)
+        return phrase;
+        var language = $cookies.language.split('-')[0];
+        if(dictionary[phrase])
+          return dictionary[phrase][language] || phrase;
+        else
+          return phrase;
+      },
+    };
+  });
+  
+  app.filter('localize', function(Localizer) {
+    return function(input) {
+      return Localizer.phrase(input);
+    };
+  });

@@ -1,4 +1,4 @@
-import app from 'app';
+import app from '~/app';
 import _ from 'lodash';
     app.directive('mailboxMessageList', function() {
         return {

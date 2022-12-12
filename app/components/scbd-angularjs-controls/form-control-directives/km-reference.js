@@ -1,8 +1,8 @@
-import app from 'app';
+import app from '~/app';
 import angular from 'angular';
 import _ from 'lodash';
 import $ from 'jquery';
-import template from 'text!./km-reference.html';
+import template from './km-reference.html';
 import 'angular-sanitize'; 
     //============================================================
     //

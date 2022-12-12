@@ -1,6 +1,5 @@
-﻿import app from 'app';
-import 'scbd-angularjs-services/generic-service';
-import 'scbd-angularjs-services/authentication';
+﻿import app from '~/app';
+import '~/components/scbd-angularjs-services/main';
 import 'js/pin-grid';
 import 'angular-ui-select2';
 import 'angulargrid';
@@ -8,6 +7,7 @@ import 'components/scbd-angularjs-controls/form-control-directives/ng-enter';
 import 'services/local-storage-service';
     
 // 'ngInfiniteScroll',
+export { default as template } from './index.html';
     export default ['$scope', '$http', 'IGenericService', '$q', '$location', '$timeout', 'authentication', 'angularGridInstance', '$rootScope', '$route','localStorageService', 
         function ($scope, $http, genericService, $q, $location, $timeout, authentication, angularGridInstance, $rootScope, $route, localStorageService) {
             var currentPage=0;

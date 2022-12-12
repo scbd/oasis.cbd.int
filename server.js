@@ -10,7 +10,7 @@ var app = express();
 var proxy   = require('http-proxy').createProxyServer({});
 let config = require('./app/api/config.js');
 
-const { bundleUrls, cdnUrl } = require('./app/boot.js');
+const { bundleUrls, cdnHost } = require('./app/boot.js');
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -37,7 +37,7 @@ console.info(`info: API address: ${config.api.url}`);
 // app.use('(/:lang(ar|en|es|fr|ru|zh))?/app/libs',     express.static(__dirname + '/node_modules/@bower_components', { setHeaders: cacheControl.setCustomCacheControl }));
 // app.use('/ar',                                       express.static(`${__dirname}/dist/ar`, { setHeaders: cacheControl.setCustomCacheControl }));
 
-app.use('/app',           express.static(__dirname + '/dist/en/app', { setHeaders: setCustomCacheControl }));
+app.use('/app',           express.static(__dirname + '/dist/app', { setHeaders: setCustomCacheControl }));
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
 
 
@@ -53,7 +53,7 @@ app.get('/*',            function(req, res) {
         baseUrl: req.headers.base_url || '/',
         appVersion: appVersion,
 
-        cdnUrl             : cdnUrl,
+        cdnHost             : cdnHost,
         angularBundle      : bundleUrls.angularBundle,
         initialCss         : bundleUrls.initialCss,
     }); 

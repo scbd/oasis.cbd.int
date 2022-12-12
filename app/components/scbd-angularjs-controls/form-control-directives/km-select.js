@@ -1,10 +1,9 @@
-import app from 'app';
+import app from '~/app';
 import angular from 'angular';
 import $ from 'jquery';
 import _ from 'lodash';
-import template from 'text!./km-select.html';
-import 'scbd-angularjs-filters';
-import 'scbd-angularjs-services/locale';
+import template from './km-select.html';
+import '~/components/scbd-angularjs-services/main';
   //============================================================
   //
   //

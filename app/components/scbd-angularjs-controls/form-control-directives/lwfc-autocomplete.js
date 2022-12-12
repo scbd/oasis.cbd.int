@@ -1,6 +1,5 @@
-import app from 'app';
-import template from 'text!./lwfc-autocomplete.html';
-import 'angular-localizer';
+import app from '~/app';
+import template from './lwfc-autocomplete.html';
   app.directive('lwfcAutocomplete', function() {
       return {
           restrict: 'AEC',

@@ -1,6 +1,7 @@
-import app from 'app';
-import moment from 'scbd-angularjs-services/authentication';
+import app from '~/app';
+import '~/components/scbd-angularjs-services/main';
 
+export { default as template } from './login.html';
 	export default ["$scope", "$location", "authentication", '$rootScope', function ($scope, $location, authentication, $rootScope) {
 
 		$scope.email = null;

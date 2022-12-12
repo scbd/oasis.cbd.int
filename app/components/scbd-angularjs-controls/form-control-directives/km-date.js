@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-date.html';
+import app from '~/app';
+import template from './km-date.html';
 import 'bootstrap-datepicker';
   
   //============================================================

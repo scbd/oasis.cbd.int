@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./string.html';
+import app from '~/app';
+import template from './string.html';
 import $ from 'jquery'; 
 app.directive('afcInput', function() {
 		return {

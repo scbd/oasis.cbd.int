@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-inputtext-ml.html';
+import app from '~/app';
+import template from './km-inputtext-ml.html';
 import angular from 'angular';
   //============================================================
   //

@@ -1,9 +1,10 @@
 ﻿import Vue from 'vue';
-import template from 'text!./vue-list.html';
+import template from './vue-list.html';
 import axios from 'axios';
 import vueBaseService from './vue-base-service';
 import 'views/workflows/vue-wrapper';
 
+export { default as template } from './vue-list.html';
     Vue.component('failed-workflows', {
         props: ['vueValue'],
         template: template,

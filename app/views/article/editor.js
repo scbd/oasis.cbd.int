@@ -1,15 +1,13 @@
-﻿import app from 'app';
+﻿import app from '~/app';
 import _ from 'lodash';
 import cssEscape from 'services/css.escape';
 import 'angular-ui-select2';
-import 'scbd-angularjs-services/locale';
-import 'scbd-angularjs-services/generic-service';
-import 'scbd-angularjs-services/authentication';
-import 'components/scbd-angularjs-controls/form-control-directives/km-ckeditor';
-import 'components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml';
-import 'scbd-angularjs-services/storage';
-import 'scbd-angularjs-filters';
+import '~/components/scbd-angularjs-services/main';
+import '~/components/scbd-angularjs-controls/form-control-directives/km-ckeditor';
+import '~/components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml';
 import 'ng-file-upload';
+    
+    export { default as template } from './export.html';
     
     export default ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
         function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {

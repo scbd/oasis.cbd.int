@@ -8,12 +8,10 @@
   <title>SCBD | Manage</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-  <!-- Bootstrap 3.3.6 -->
-  <!-- <link rel="stylesheet" href="app/libs/bootstrap/dist/css/bootstrap.min.css"> -->
-  <!-- Font Awesome -->
-  <!-- <link rel="stylesheet" href="app/libs/font-awesome/css/font-awesome.min.css"> -->
-  <!-- Ionicons -->
-  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css"> -->
+  
+  <link rel="stylesheet" type="text/css" href="<%=cdnHost%>combine/<%=initialCss%>" />
+  <link rel="stylesheet" type="text/css" href="<%=cdnHost%>npm/font-awesome@4.4.0/css/font-awesome.min.css">
+  
   <!-- Theme style -->
   <link rel="stylesheet" href="app/dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -319,9 +317,9 @@ class="hold-transition skin-blue sidebar-mini">
   </script>
   <!-- <script src="app/libs/requirejs/require.js?v=<%=appVersion%>" data-main="app/js/boot.js?v=<%=appVersion%>"></script> -->
 
-  <script src="<%=cdnUrl%>npm/regenerator-runtime@0.13.7/runtime.js"></script>
-  <script src="<%=cdnUrl%>combine/<%=angularBundle%>"></script>
-  
+  <script src="<%=cdnHost%>npm/regenerator-runtime@0.13.7/runtime.js"></script>
+  <script src="<%=cdnHost%>combine/<%=angularBundle%>"></script>
+
   <script>
     require.config({ baseUrl : "<%=baseUrl%>app/" });
 

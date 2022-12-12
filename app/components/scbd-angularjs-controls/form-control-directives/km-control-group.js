@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-control-group.html';
+import app from '~/app';
+import template from './km-control-group.html';
 import $ from 'jquery';
 import _ from 'lodash'; 
 

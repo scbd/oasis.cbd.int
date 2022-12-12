@@ -1,9 +1,8 @@
-import app from 'app';
-import template from 'text!./afc-autocomplete.html';
+import app from '~/app';
+import template from './afc-autocomplete.html';
 import $ from 'jquery';
 import _ from 'lodash';
-import 'angular-localizer';
-import 'scbd-angularjs-services/locale'; 
+import '~/components/scbd-angularjs-services/main'; 
     app.directive('afcAutocomplete', function() {
         return {
             restrict: 'AEC',

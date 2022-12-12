@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-rich-textbox.html';
+import app from '~/app';
+import template from './km-rich-textbox.html';
 import angular from 'angular';
 import 'textAngular';
 import 'css!/app/directives/forms/km-control.css';

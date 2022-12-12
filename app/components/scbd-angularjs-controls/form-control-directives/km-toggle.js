@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-toggle.html';
+import app from '~/app';
+import template from './km-toggle.html';
 //============================================================
 //
 //

@@ -1,9 +1,11 @@
-﻿import app from 'app';
+﻿import app from '~/app';
 import editComponent from 'vueFile!views/widgets/views/edit.vue';
 import Vuetify from 'vuetify';
 import vueBaseService from 'views/workflows/vue-base-service';
-import 'scbd-angularjs-services/authentication';
+import '~/components/scbd-angularjs-services/main';
 import 'angular-vue';
+
+export { default as template } from './edit.html';
     export default ['$scope', 'apiToken', '$routeParams', function($scope, apiToken, $routeParams){        
 
         apiToken.get().then(function(token){

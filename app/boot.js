@@ -4,7 +4,7 @@
 
 var ckeditorVersion = '35.0.0'
 
-export const cdnUrl = 'https://cdn.jsdelivr.net/'
+export const cdnHost = 'https://cdn.jsdelivr.net/'
 
 export const bundleUrls = {
     angularBundle : [ 
@@ -15,6 +15,7 @@ export const bundleUrls = {
         'npm/angular-cookies@1.7.4/angular-cookies.min.js',
         'npm/angular-sanitize@1.7.4/angular-sanitize.min.js',
         'npm/angular-animate@1.7.4/angular-animate.min.js',
+        'npm/angular-aria@1.7.4/angular-aria.min.js',
         'npm/angular-cache@4.6.0/dist/angular-cache.min.js',
         'npm/jqueryui@1.11.1/jquery-ui.min.js',
         'npm/lodash@4.17.15/lodash.min.js',
@@ -23,13 +24,10 @@ export const bundleUrls = {
     ].join(','),
     angularDependencies: [
         'npm/ngSmoothScroll@2.0.1/dist/angular-smooth-scroll.min.js',
-        'npm/angular-breadcrumbs@0.5.3/dist/ng-breadcrumbs.min.js',
-        'npm/angular-trix@1.0.2/dist/angular-trix.min.js',
-        'npm/trix@0.12.0/dist/trix.js',
-        'npm/angular-joyride@1.0.2/dist/joyride.min.js',
     ].join(','),
     initialCss: [
-        'npm/bootstrap/dist/css/bootstrap.min.css',      
+        'npm/bootstrap@3.3.6/dist/css/bootstrap.min.css',     
+        // 'npm/font-awesome@4.4.0/css/font-awesome.min.css' 
     ].join(','),
 }
 export default function bootApp(window, require, defineX) {
@@ -40,58 +38,42 @@ export default function bootApp(window, require, defineX) {
     if((document||{}).documentElement)
         appVersion = (((document||{}).documentElement||{}).attributes['app-version']||{}).value;
 
-    const cdnHost = cdnUrl+'npm/';
-    const templateName = ((window||{}).scbdApp||{}).template;
-
-
-        require.config({
+    require.config({
         baseUrl : 'app/',
         'paths': {
-            'css'                       : 'libs/require-css/css.min',
-            'text'                      : 'libs/requirejs-text/text',
-            'json'                      : 'libs/requirejs-plugins/src/json',
-            'vueFile'                   : 'https://cdn.cbd.int/requirejs-vue@1.1.5/requirejs-vue',
-            'shim'                      : 'libs/require-shim/src/shim',
-            'angular-localizer'         : 'libs/ngLocalizer/localizer',
-            'async'                     : 'libs/requirejs-plugins/src/async',
-            'domReady'                  : 'libs/requirejs-domready/domReady',
-            'jquery'                    : 'libs/jquery/dist/jquery.min',
-            'lodash'                    : 'libs/lodash/dist/lodash.min',
-            'moment'                    : 'libs/momentjs/min/moment-with-langs.min',
-            'angular-animate'           : 'libs/angular-animate/angular-animate.min',
-            'angular-flex'              : 'libs/angular-flex/angular-flex',
-            'ngAria'                    : 'libs/angular-aria/angular-aria.min',
-            'angular-ckeditor'          : 'libs/angular-ckeditor/angular-ckeditor',
-            'ck-editor'                 : cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor',        
-            'select2'                   : 'libs/select2/dist/js/select2.min',
-            'angular-ui-select2'        : 'libs/angular-ui-select/dist/select',
-            'ng-file-upload-shim'       : 'libs/ng-file-upload-shim/ng-file-upload-shim',
-            'ng-file-upload'            : 'libs/ng-file-upload/ng-file-upload-all',
-            'angulargrid'               : 'libs/angulargrid/angulargrid',
+            'css'                       : cdnHost + 'npm/require-css@0.1.8/css.min',
+            'text'                      : cdnHost + 'npm/requirejs-text@2.0.15/text',
+            'json'                      : cdnHost + 'npm/requirejs-plugins@1.0.2/src/json',
+            'async'                     : cdnHost + 'npm/requirejs-text@1.0.2/lib/async',
+            'domReady'                  : cdnHost + 'npm/requirejs-domready@2.0.1/domReady',
 
-            'vuetify'                   : cdnHost + 'vuetify@2.2.32/dist/vuetify.min',
-            'axios'                     : cdnHost + 'axios@0.21.1/dist/axios',
-            'angular-vue'               : cdnHost + '@scbd/angular-vue@2.0.0/dist/angular-vue.min',
-            'coreui-vue'                : cdnHost + '@coreui/vue@3.1.4/dist/coreui-vue.umd',
-            'code-editor-vue'           : cdnHost + 'vue-codemirror@4.0.6/dist/vue-codemirror',
+            'vueFile'                   : cdnHost + 'npm/requirejs-vue@1.1.5',
+            'shim'                      : cdnHost + 'gh/zetlen/require-shim@master/src/shim',
 
-            'ngStorage'                 : cdnHost + 'ngstorage@0.3.11/ngStorage.min',
-            'toastr'                    : cdnHost + 'angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
+            'ck-editor'                 : cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor',        
+            'select2'                   : cdnHost + 'npm/select2@4.0.4/dist/js/select2.min',
+            'angular-ui-select2'        : cdnHost + 'npm/angular-ui-select2@0.0.5/src/select2',
+            'ng-file-upload-shim'       : cdnHost + 'gh/danialfarid/ng-file-upload-shim-bower@12.2.13/ng-file-upload-shim',
+            'ng-file-upload'            : cdnHost + 'gh/danialfarid/ng-file-upload-shim-bower@12.2.13/ng-file-upload-all',
+            
+            'angulargrid'               : cdnHost + 'npm/angulargrid@0.6.5/angulargrid.min',
+
+            'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
+            'axios'                     : cdnHost + 'npm/axios@0.21.1/dist/axios',
+            'angular-vue'               : cdnHost + 'npm/@scbd/angular-vue@2.0.0/dist/angular-vue.min',
+            'coreui-vue'                : cdnHost + 'npm/@coreui/vue@3.1.4/dist/coreui-vue.umd',
+            'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
+
+            'ngStorage'                 : cdnHost + 'npm/ngstorage@0.3.11/ngStorage.min',
+            'toastr'                    : cdnHost + 'npm/angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
             
         },
         'shim': {
-            'angular-localizer'             : { 'deps':['angular']},
             'angular-flex'                  : { 'deps': ['angular'] },
-            'scbd-angularjs-services'       : { 'deps': ['angular']},
-            'scbd-angularjs-filters'        : { 'deps': ['angular']},
-            'scbd-angularjs-controls'       : { 'deps': ['angular', 'angular-sanitize', 'angular-localizer']},
-            'ngAria'                        : { 'deps': ['angular'] },
-            'select2'                       : { 'deps': ['angular', 'jquery'] },
+            'select2'                       : { 'deps': ['angular'] },
             'angular-ui-select2'            : { 'deps': ['angular', 'select2']},
-
             'toastr'                        : { 'deps': ['angular', 'angular-animate'] },
             'ngStorage'                     : { 'deps': ['angular'] },
-
             'angulargrid'                   : { 'deps': ['angular']},
             'vuetify'                       : { 'deps': ['vue', 'css!https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css',
                                                             'css!https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css',
@@ -103,12 +85,6 @@ export default function bootApp(window, require, defineX) {
             'code-editor-vue'               : { 'deps': ['vue', 'codemirror' ]},
             
         },
-        packages: [
-            { name: 'scbd-branding'          , location : 'components/scbd-branding' },
-            { name: 'scbd-angularjs-controls', location : 'components/scbd-angularjs-controls/form-control-directives', main : 'all-controls.js' },
-            { name: 'scbd-angularjs-services', location : 'components/scbd-angularjs-services/services' },
-            { name: 'scbd-angularjs-filters',  location : 'components/scbd-angularjs-services/filters' }
-        ],
         urlArgs: 'v=' + appVersion
     });
     //
@@ -124,7 +100,7 @@ export default function bootApp(window, require, defineX) {
     defineX('angular-animate'      , ['angular'], (ng)=>{ warnImport(); return ng; });
     defineX('angular-cache'        , ['angular'], (ng)=>{ warnImport(); });
     
-    defineX('angular-dependencies' , ['angular', `${cdnUrl}combine/${bundleUrls.angularDependencies}`], (ng)=>{ warnImport(); });
+    defineX('angular-dependencies' , ['angular', `${cdnHost}combine/${bundleUrls.angularDependencies}`], (ng)=>{ warnImport(); });
     defineX('ng-breadcrumbs'       , ['angular-dependencies'], ()=>{ warnImport(); });
     defineX('ngSmoothScroll'       , ['angular-dependencies'], ()=>{ warnImport(); });
     defineX('jquery-ui'       , ['angular-dependencies'], ()=>{ warnImport(); });
@@ -133,15 +109,15 @@ export default function bootApp(window, require, defineX) {
                 
     
     defineX('lodash',   [], ()=>window._);
-    defineX('bootstrap',[cdnHost + 'bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js'], (boostrap)=>{ return boostrap;});
+    defineX('bootstrap',[cdnHost + 'npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js'], (boostrap)=>{ return boostrap;});
     defineX('moment',   [],()=>window.moment);
     defineX('jquery',   [],()=>window.$);
     
     defineX('externalCss', [], ()=>warnImport)
     
     
-    defineX('ck-editor-css', ['css!' + cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
-    defineX('ck-editor-content-css', ['css!' + cdnHost + '@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/content-style.css']);
+    defineX('ck-editor-css', ['css!' + cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor.css']);
+    defineX('ck-editor-content-css', ['css!' + cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/content-style.css']);
 
     defineX('vue', ['Vue'],                              function(Vue){ return Vue; });
     defineX('Vue', ['https://cdn.cbd.int/vue@2.6.12/dist/vue'], function(Vue){
@@ -155,12 +131,20 @@ export default function bootApp(window, require, defineX) {
         return codemirror;
     });
 
-    // if(templateName){
-        import(`./template.js`);
-    // }
-    // else {
-    //     window.alert('Unable to load files from server: ' + `./template.js`);
-    // }
+    if(document) { // BOOT App
+        const deps = [
+          import('angular'),
+          import('./app'),
+          import('./template'),
+          import(`./js/app_routes.js`)
+        ];
+    
+        Promise.all(deps).then(([ng, { default: app }]) => {
+          ng.element(document).ready(function () {
+            ng.bootstrap(document, [app.name]);
+          });
+        }).catch((e)=>{ console.error('Error bootstrapping the app:', e) });
+      } 
 
 
 }

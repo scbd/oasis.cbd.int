@@ -1,7 +1,8 @@
-﻿import app from 'app';
+﻿import app from '~/app';
 import classicEditor from 'ck-editor';
-import 'scbd-angularjs-services/generic-service';
+import '~/components/scbd-angularjs-services/main';
    
+export { default as template } from './view.html';
     export default ['$scope', '$http', 'IGenericService', '$q', '$route', '$timeout', '$location',
         function ($scope, $http, genericService, $q, $route, $timeout, $location) {
             

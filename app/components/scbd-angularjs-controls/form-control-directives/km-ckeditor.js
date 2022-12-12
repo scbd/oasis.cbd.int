@@ -1,9 +1,8 @@
-import app from 'app';
+import app from '~/app';
 import classicEditor from 'ck-editor';
-import template from 'text!./km-ckeditor.html';
+import template from './km-ckeditor.html';
 import _ from 'lodash';
-import 'scbd-angularjs-services/authentication';
-import 'scbd-angularjs-services/storage';
+import '~/components/scbd-angularjs-services/main';
 
 	app.directive('ckEditor', ['$q', 'apiToken', '$http', 'IStorage', '$timeout',  function($q, apiToken, $http, storage, $timeout){
         

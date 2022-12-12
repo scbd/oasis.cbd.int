@@ -1,7 +1,7 @@
-import app from 'app';
+import app from '~/app';
 import _ from 'lodash';
 import angular from 'angular';
-import template from 'text!./km-terms.html';
+import template from './km-terms.html';
 
 	    //============================================================
 	    //

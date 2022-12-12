@@ -1,5 +1,6 @@
-import app from 'app';
-import moment from 'scbd-angularjs-services/locale';
+import app from '~/app';
+import '~/components/scbd-angularjs-services/main';
+export { default as template } from './lang.html';
     export default ["$scope", "$location", "locale","$timeout", "$window", "$routeParams", "$cookies",
 		function ($scope, $location, locale, $timeout, $window, $routeParams, $cookies){
 			    var lang = 'en';

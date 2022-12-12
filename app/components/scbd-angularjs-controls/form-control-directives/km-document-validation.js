@@ -1,5 +1,5 @@
-import app from 'app';
-import template from 'text!./km-document-validation.html';
+import app from '~/app';
+import template from './km-document-validation.html';
 import $ from 'jquery'; 
 
     //============================================================

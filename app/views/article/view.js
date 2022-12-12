@@ -1,8 +1,9 @@
-import app from 'app';
+import app from '~/app';
 import cssEscape from 'services/css.escape';
-import 'scbd-angularjs-services/generic-service';
+import '~/components/scbd-angularjs-services/main';
 import 'ck-editor-content-css';
     
+export { default as template } from './view.html';
     export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
         function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
             $scope.baseUrl = window.baseUrl;

@@ -1,7 +1,6 @@
-import app from 'app';
-import 'js/app_routes';
-import _ from 'js/filters';
-import 'scbd-angularjs-services/authentication';
+import app from '~/app';
+import './js/filters.js';
+import '~/components/scbd-angularjs-services/main';
     
 
     app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q',

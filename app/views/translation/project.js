@@ -1,5 +1,8 @@
-﻿import app from 'app';
+﻿import app from '~/app';
 import _ from 'lodash';
+
+
+export { default as template } from './project.html';
     export default ['$scope', '$http', '$q', '$routeParams',
     function ($scope, $http, $q, $routeParams) {
             var baseUrl = $scope.baseUrl = window.baseUrl;

@@ -10,7 +10,7 @@ import vue                      from 'rollup-plugin-vue'
 import copy                     from 'rollup-plugin-copy'
 import { string }               from "rollup-plugin-string";
 import { terser }               from 'rollup-plugin-terser';
-import bootWebApp, { cdnUrl }   from './app/boot.js';
+import bootWebApp, { cdnHost }   from './app/boot.js';
 import injectCssToDom           from './rollup/inject-css-to-dom';
 import resolveLocalized         from './rollup/resolve-localized';
 import stripBom                 from './rollup/strip-bom';
@@ -20,23 +20,30 @@ const outputDir = 'dist';
 
 let externals = [
   'require', 
+  'app/api/authentication.js',
+  'app/api/config.js',
+  'app/api/database-table.js',
+  'app/api/encryption.js',
+  'app/api/git-query.js',
+  'app/api/import.js',
+  'app/api/signed-url.js',
 ];
 
 export default async function(){
   
   externals = [...externals, ...await loadExternals()];
 
-  const locales = ['en'];
+  // const locales = ['en'];
   
   return[
-          ...locales.map(locale => bundle('boot.js', locale))
+          bundle('boot.js')
         ];
 }
 
-function bundle(entryPoint, locale, baseDir='app') {
+function bundle(entryPoint, baseDir='app') {
 
   const entryPointPath = path.join(baseDir||'', entryPoint);
-  const targetDir      = path.join(`${outputDir}/${locale}/${baseDir}`, path.dirname(entryPoint));
+  const targetDir      = path.join(`${outputDir}/${baseDir}`, path.dirname(entryPoint));
 
   return {
     input : entryPointPath,
@@ -53,7 +60,7 @@ function bundle(entryPoint, locale, baseDir='app') {
         { find: /^~\/(.*)/,   replacement:`${process.cwd()}/${baseDir}/$1` },
         { find: /^json!(.*)/, replacement:`$1` },
         { find: /^text!(.*)/, replacement:`$1` },
-        { find: /^cdn!(.*)/,  replacement:`${cdnUrl}$1` },
+        { find: /^cdn!(.*)/,  replacement:`${cdnHost}$1` },
       ]}),
       stripBom(),
       copy({
@@ -100,7 +107,7 @@ async function loadExternals() {
     scbdApp  : { host: '' },
     alert    : () => {}
   }; 
-  
+
 
   const defineJs   = (module) => { if(typeof(module)==='string') externals.push(module) };
   const requireJs  = ( )      => { };
