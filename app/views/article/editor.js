@@ -1,6 +1,6 @@
 ﻿import app from '~/app';
 import _ from 'lodash';
-import cssEscape from 'services/css.escape';
+import {cssEscape} from '~/services/css.escape';
 import 'angular-ui-select2';
 import '~/components/scbd-angularjs-services/main';
 import '~/components/scbd-angularjs-controls/form-control-directives/km-ckeditor';

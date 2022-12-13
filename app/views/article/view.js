@@ -1,5 +1,5 @@
 import app from '~/app';
-import cssEscape from 'services/css.escape';
+import { cssEscape } from '~/services/css.escape';
 import '~/components/scbd-angularjs-services/main';
 import 'ck-editor-content-css';
     
@@ -10,7 +10,7 @@ export { default as template } from './view.html';
             $scope.locales = ['en','ar','es','fr','ru','zh'];
             $scope.activeLocale = 'en';
 
-            user = $rootScope.user;
+            const user = $rootScope.user;
             $scope.canEdit = ~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor');
             var editor;
             $q.when(genericService.get('v2017', 'articles', $route.current.params.id))

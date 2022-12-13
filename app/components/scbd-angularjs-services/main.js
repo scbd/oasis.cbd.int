@@ -8,6 +8,5 @@ import './services/authentication';
 import './services/utilities';
 import './services/storage';
 import './services/locale';
-import './services/extended-route';
 import './services/apiUrl';
 export {default as scbdSchemas} from './filters/schema-name.json'

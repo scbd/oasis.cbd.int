@@ -1,5 +1,5 @@
 ﻿import app from '~/app';
-import dbTables from 'views/translation/database-tables.json';
+import dbTables from '~/views/translation/database-tables.json';
 export { default as template } from './database-tables.html';
     export default ['$scope', function ($scope) {
             

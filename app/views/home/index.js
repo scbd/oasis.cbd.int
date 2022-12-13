@@ -3,7 +3,7 @@ import _ from 'lodash';
 import '~/components/scbd-angularjs-services/main';
 
 export { default as template } from './index.html';
-    app.controller('IndexController', ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
+    export default ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
             
         
         $scope.baseUrl  = window.baseUrl;
@@ -84,5 +84,5 @@ export { default as template } from './index.html';
 
         loadCounts();
         loadRecords();
-    }]);
+    }];
 

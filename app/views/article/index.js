@@ -3,8 +3,8 @@ import '~/components/scbd-angularjs-services/main';
 import 'js/pin-grid';
 import 'angular-ui-select2';
 import 'angulargrid';
-import 'components/scbd-angularjs-controls/form-control-directives/ng-enter';
-import 'services/local-storage-service';
+import '~/components/scbd-angularjs-controls/form-control-directives/ng-enter';
+import '~/services/local-storage-service';
     
 // 'ngInfiniteScroll',
 export { default as template } from './index.html';

@@ -1,10 +1,10 @@
 import app from '~/app';
 import _ from 'lodash';
-import dbTables from 'views/translation/database-tables.json';
+import dbTables from '~/views/translation/database-tables.json';
 import '~/components/scbd-angularjs-services/main';
-import 'views/translation/directives/pagination';
-import 'components/scbd-angularjs-controls/form-control-directives/ng-enter';
-import 'services/local-storage-service';
+import './directives/pagination';
+import '~/components/scbd-angularjs-controls/main';
+import '~/services/local-storage-service';
 
 export { default as template } from './table.html';
     export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
