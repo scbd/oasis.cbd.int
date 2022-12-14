@@ -1,7 +1,7 @@
 ﻿import app from '~/app';
-import listComponent from 'vueFile!views/widgets/views/list.vue';
+import listComponent from './views/list.vue';
 import Vuetify from 'vuetify';
-import vueBaseService from 'views/workflows/vue-base-service';
+import vueBaseService from '~/views/workflows/vue-base-service';
 import '~/components/scbd-angularjs-services/main';
 import 'angular-vue';
 

@@ -59,18 +59,17 @@
 </template>
 
 <script>
-define([
-  "vueFile!views/widgets/components/error.vue",
-  "lodash",
-  'axios',
-  'views/workflows/vue-base-service',
-  "css!/app/css/default-vue.css",
-], function (CError, _, axios) {
-  return {
+
+ import CError from  "../components/error.vue";
+import _ from  "lodash";
+import axios from  'axios';
+import '~/views/workflows/vue-base-service';
+// import "css!/app/css/default-vue.css"
+  
+export default {
     components: {
       CError:CError
     },
-    template: template,
     data: () => ({
         dialogDelete: false,
         headers: [
@@ -181,5 +180,4 @@ define([
       }
     },
   };
-});
 </script>

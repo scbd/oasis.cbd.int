@@ -106,19 +106,18 @@
 </template>
 
 <script>
-define([
-  "vueFile!views/widgets/components/error.vue",
-  "vueFile!views/widgets/components/params.vue",
-  "vueFile!views/widgets/components/param-values.vue",
-  "lodash",
-], function (CError, cParam, CParamValues, _) {
-  return {
+
+import CError from "./error.vue"
+import cParam from "./params.vue"
+import CParamValues from "./param-values.vue"
+import _ from "lodash"
+
+export default {
     components: {
       CError:CError,
       cParam:cParam,
       CParamValues:CParamValues
     },
-    template: template,
     props: ["value", "placeholder"],
     data: function() { 
       return {
@@ -231,5 +230,4 @@ define([
       },
     },
   };
-});
 </script>

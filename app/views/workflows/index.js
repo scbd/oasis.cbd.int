@@ -1,6 +1,6 @@
 ﻿import app from '~/app';
-import 'views/workflows/vue-wrapper';
-import 'views/workflows/vue-list';
+import './vue-wrapper';
+import './vue-list';
 
 
 export { default as template } from './index.html';

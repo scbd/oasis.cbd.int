@@ -92,22 +92,21 @@
 </template>
 
 <script>
-define([
-  'Vue',
-  'vueFile!views/widgets/components/code-editor.vue',
-  'vueFile!views/widgets/components/params.vue',
-  'vueFile!views/widgets/components/datasource.vue',
-  'axios',
-  'views/workflows/vue-base-service',
-  "css!/app/css/default-vue.css",
-], function (Vue, codeEditor, cParam, cDatasource, axios) {
-  return {
+
+  import   Vue from 'Vue';
+  import   codeEditor from '../components/code-editor.vue';
+  import   cParam from '../components/params.vue';
+  import   cDatasource from '../components/datasource.vue';
+  import   axios from 'axios';
+  import '~/views/workflows/vue-base-service';
+  // import "css!/app/css/default-vue.css";
+
+export default {
     components: {
       codeEditor: codeEditor,
       cParam: cParam,
       cDatasource:cDatasource
     },
-    template: template,
     props: ['widgetId'],
     data() {
       return {
@@ -225,6 +224,6 @@ define([
       }
     }
   };
-});
+
 </script>
 

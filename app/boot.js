@@ -47,7 +47,7 @@ export default function bootApp(window, require, defineX) {
             'async'                     : cdnHost + 'npm/requirejs-text@1.0.2/lib/async',
             'domReady'                  : cdnHost + 'npm/requirejs-domready@2.0.1/domReady',
 
-            'vueFile'                   : cdnHost + 'npm/requirejs-vue@1.1.5',
+            'vueFile'                   : cdnHost + 'npm/requirejs-vue@1.1.5/requirejs-vue',
             'shim'                      : cdnHost + 'gh/zetlen/require-shim@master/src/shim',
 
             'ck-editor'                 : cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/ckeditor',        
@@ -82,10 +82,21 @@ export default function bootApp(window, require, defineX) {
             'angular-vue'                   : { 'deps': ['angular', 'vue']},
             'vueFile'                       : { 'deps': ['vue']},
             'coreui-vue'                    : { 'deps': ['vue', `css!${cdnHost}npm/@coreui/coreui@3.4.0/dist/css/coreui.css` ]},
-            'code-editor-vue'               : { 'deps': ['vue', 'codemirror' ]},
+            'code-editor-vue'               : { 'deps': ['vue', 'codemirror']},
             
         },
-        urlArgs: 'v=' + appVersion
+        // urlArgs: 'v=' + appVersion
+        urlArgs: function(id, url) {
+
+            // console.log(id)
+            const hasHash  = (o)=> /-[a-f0-9]{8}$/i.test(o);
+        
+            if(hasHash(id))   return '';
+            if(id.startsWith('http')) return '';
+        
+            const sep = url.indexOf('?') === -1 ? '?' : '&';
+            return `${sep}v=${encodeURIComponent(appVersion)}`;
+        }
     });
     //
 
@@ -120,14 +131,16 @@ export default function bootApp(window, require, defineX) {
     defineX('ck-editor-content-css', ['css!' + cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/content-style.css']);
 
     defineX('vue', ['Vue'],                              function(Vue){ return Vue; });
-    defineX('Vue', ['https://cdn.cbd.int/vue@2.6.12/dist/vue'], function(Vue){
+    defineX('Vue', [cdnHost+'npm/vue@2.6.12/dist/vue.min.js'], function(Vue){
         window.Vue = Vue;
         return Vue;
     })
 
-    defineX('codemirror', [ 'https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror',
-                    "css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css", 
+    defineX('codemirror', [ 
+        `${cdnHost}npm/codemirror@5.58.3/lib/codemirror.js`,
+        `css!${cdnHost}npm/codemirror@5.58.3/lib/codemirror.css`
     ], function(codemirror) { 
+        console.log(codemirror)
         return codemirror;
     });
 

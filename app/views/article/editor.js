@@ -7,10 +7,10 @@ import '~/components/scbd-angularjs-controls/form-control-directives/km-ckeditor
 import '~/components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml';
 import 'ng-file-upload';
     
-    export { default as template } from './export.html';
+    export { default as template } from './editor.html';
     
-    export default ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
-        function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
+    export default ['$scope', '$http', 'IGenericService', '$q', '$route', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
+        function ($scope, $http, genericService, $q, $route, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
             var originalDocument;
             $scope.document = {};
             $scope.locales = ['en','ar','es','fr','ru','zh'];
@@ -213,6 +213,7 @@ import 'ng-file-upload';
                 .then(function(result){
                     if(close){
                         $scope.close();
+                        return;
                     }
                     if(!newDocument._id && result.id){
                         $location.path('articles/'+result.id+'/edit')  

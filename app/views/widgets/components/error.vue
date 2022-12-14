@@ -12,13 +12,10 @@
 </template>
 <script>
 
-    define(['Vue',], function(Vue) {
-        
-        return{
-            template:template,
-            props:["errorMessage"],
-        }
-        
-    });
+import Vue from 'Vue'
+
+export default {
+    props:["errorMessage"],
+}
 
 </script>
