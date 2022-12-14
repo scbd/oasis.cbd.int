@@ -3,7 +3,6 @@ import _ from 'lodash';
 import dbTables from '~/views/translation/database-tables.json';
 import '~/components/scbd-angularjs-services/main';
 import './directives/pagination';
-import '~/components/scbd-angularjs-controls/main';
 import '~/services/local-storage-service';
 
 export { default as template } from './table.html';
