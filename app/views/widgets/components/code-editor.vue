@@ -17,7 +17,6 @@
         
 <script>
 
-import vue from 'Vue';
 import codemirror from 'code-editor-vue'
 
 import 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml';

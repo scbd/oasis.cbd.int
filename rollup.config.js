@@ -20,24 +20,26 @@ const outputDir = 'dist';
 
 let externals = [
   'require', 
-  'app/api/authentication.js',
-  'app/api/config.js',
-  'app/api/database-table.js',
-  'app/api/encryption.js',
-  'app/api/git-query.js',
-  'app/api/import.js',
-  'app/api/signed-url.js',
+  'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml',
+  'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars',
+  'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed',
+  'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript',
+  'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line',
+  'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag',
+  'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets',
+  'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js',
+  'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js',
 ];
 
-export default async function(){
-  
+export default async function () {
+
   externals = [...externals, ...await loadExternals()];
 
   // const locales = ['en'];
-  
-  return[
-          bundle('boot.js')
-        ];
+
+  return [
+    bundle('boot.js'),
+  ];
 }
 
 function bundle(entryPoint, baseDir='app') {
@@ -58,9 +60,6 @@ function bundle(entryPoint, baseDir='app') {
     plugins : [
       alias({ entries : [
         { find: /^~\/(.*)/,   replacement:`${process.cwd()}/${baseDir}/$1` },
-        { find: /^json!(.*)/, replacement:`$1` },
-        { find: /^text!(.*)/, replacement:`$1` },
-        { find: /^cdn!(.*)/,  replacement:`${cdnHost}$1` },
       ]}),
       stripBom(),
       copy({

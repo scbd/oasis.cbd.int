@@ -70,14 +70,14 @@
 
 <script>
 
-import CError from "../widgets/components/error.vue"
-import CParam from "../widgets/components/params.vue"
-import CParamValues from "../widgets/components/param-values.vue"
-import CDatasourceValues from "../widgets/components/datasource-values.vue"
+import CError from "../../widgets/components/error.vue"
+import CParam from "../../widgets/components/params.vue"
+import CParamValues from "../../widgets/components/param-values.vue"
+import CDatasourceValues from "../../widgets/components/datasource-values.vue"
 import _ from "lodash"
 import axios from 'axios'
 import '~/views/workflows/vue-base-service'
-import "css!/app/css/default-vue.css"
+import "css!~/css/default-vue.css"
 
 export default {
     components: {

@@ -93,7 +93,6 @@
 
 <script>
 
-  import   Vue from 'Vue';
   import   codeEditor from '../components/code-editor.vue';
   import   cParam from '../components/params.vue';
   import   cDatasource from '../components/datasource.vue';

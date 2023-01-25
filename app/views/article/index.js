@@ -1,6 +1,6 @@
 ﻿import app from '~/app';
 import '~/components/scbd-angularjs-services/main';
-import 'js/pin-grid';
+import '~/js/pin-grid';
 import 'angular-ui-select2';
 import 'angulargrid';
 import '~/components/scbd-angularjs-controls/form-control-directives/ng-enter';

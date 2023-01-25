@@ -116,7 +116,7 @@
 <script>
 
 import codeEditor from "./code-editor.vue"
-import CError from "./views/widgets/components/error.vue"
+import CError from "./error.vue"
 import _ from "lodash"
 
 export default {

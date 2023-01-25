@@ -1,5 +1,5 @@
 ﻿import app from '~/app';
-import previewComponent from 'views/widgets/views/preview.vue';
+import previewComponent from '~/views/widgets/views/preview.vue';
 import Vuetify from 'vuetify';
 import vueBaseService from '~/views/workflows/vue-base-service';
 import '~/components/scbd-angularjs-services/main';

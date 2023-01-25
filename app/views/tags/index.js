@@ -1,6 +1,6 @@
 ﻿import app from '~/app';
 import '~/components/scbd-angularjs-services/main';
-import 'js/pin-grid';
+import '~/js/pin-grid';
     
 
 export { default as template } from './index.html';
