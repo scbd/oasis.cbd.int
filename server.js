@@ -34,9 +34,6 @@ console.info(`info: Git commit:  ${gitVersion}`);
 console.info(`info: App version: ${appVersion}`);
 console.info(`info: API address: ${config.api.url}`);
 
-// app.use('(/:lang(ar|en|es|fr|ru|zh))?/app/libs',     express.static(__dirname + '/node_modules/@bower_components', { setHeaders: cacheControl.setCustomCacheControl }));
-// app.use('/ar',                                       express.static(`${__dirname}/dist/ar`, { setHeaders: cacheControl.setCustomCacheControl }));
-
 app.use('/app',           express.static(__dirname + '/dist/app', { setHeaders: setCustomCacheControl }));
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
 

@@ -3,7 +3,6 @@
   "description": "Oasis",
   "dependencies": {
     "@buxlabs/amd-to-es6": "^0.16.3",
-    "bower": "1.8.8",
     "cheerio": "^1.0.0-rc.10",
     "cjs-to-es6": "^2.0.1",
     "easy-zip": "0.0.4",
@@ -38,7 +37,6 @@
   "engine": "node >= 14.0",
   "private": true,
   "scripts": {
-    "postinstall": "./node_modules/.bin/bower install --allow-root -q",
     "server": "node server",
     "start": "node server.js",
     "build": "rm -rf ./dist && rm -rf ./i18n-build && npx rollup -c",
