@@ -120,7 +120,7 @@ export default function bootApp(window, require, defineX) {
                 
     
     defineX('lodash',   [], ()=>window._);
-    defineX('bootstrap',[cdnHost + 'npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js'], (boostrap)=>{ return boostrap;});
+    defineX('bootstrap',[cdnHost + 'npm/bootstrap@3.3.6/dist/js/bootstrap.js'], (boostrap)=>{ return boostrap;});
     defineX('moment',   [],()=>window.moment);
     defineX('jquery',   [],()=>window.$);
     

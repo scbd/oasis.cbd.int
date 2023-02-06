@@ -79,7 +79,6 @@ export { default as template } from './table.html';
 
         $scope.dowloadFiles = function(){
 
-console.log('j')
             var translation = $scope.translation;
 
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
@@ -114,9 +113,11 @@ console.log('j')
             });
         }
         $scope.addToDownload = function(row, $event){
-            console.log($event)
-            $event.stopPropagation();
-            let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
+
+            if($event)
+                $event.stopPropagation();
+
+            let index = $scope.articlesToDownload?.findIndex(x => x._id==row._id);
             index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
