@@ -83,7 +83,10 @@ function databaseTable(options){
     }
 
     async function getUpdatesFiles(databaseTable, q) {
-            
+            if(q){
+                if(typeof q.ids == 'string')
+                    q.ids = [q.ids];
+            }
             let now = new Date().getTime();
             if(!(await fileExists(`${basePath}`)))
                 await mkdir(`${basePath}`);

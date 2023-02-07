@@ -1,4 +1,4 @@
-define(['app'], function(app) { 'use strict';
+import app from '~/app'; 
 
     app.provider('locale', [function() {
 
@@ -32,4 +32,4 @@ define(['app'], function(app) { 'use strict';
                 return false;
         };
     }]);
-});
+

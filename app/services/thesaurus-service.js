@@ -1,4 +1,5 @@
-define(['app', 'lodash'], function (app, _) {
+import app from '~/app';
+import _ from 'lodash';
 
     app.factory('thesaurusService', ['$http', '$q', function ($http, $q) {
         return new function () {
@@ -63,4 +64,4 @@ define(['app', 'lodash'], function (app, _) {
             }
         }
     }]);
-});
+

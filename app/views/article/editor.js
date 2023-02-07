@@ -1,13 +1,16 @@
-﻿define(['app', 'lodash', 'services/css.escape',
- 'angular-ui-select2', 'scbd-angularjs-services/locale',
- 'scbd-angularjs-services/generic-service', 'scbd-angularjs-services/authentication', 
- 'components/scbd-angularjs-controls/form-control-directives/km-ckeditor', 
- 'components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml',
- 'scbd-angularjs-services/storage', 'scbd-angularjs-filters', 'ng-file-upload'], 
- function (app, _, cssEscape) {
+﻿import app from '~/app';
+import _ from 'lodash';
+import {cssEscape} from '~/services/css.escape';
+import 'angular-ui-select2';
+import '~/components/scbd-angularjs-services/main';
+import '~/components/scbd-angularjs-controls/form-control-directives/km-ckeditor';
+import '~/components/scbd-angularjs-controls/form-control-directives/km-inputtext-ml';
+import 'ng-file-upload';
     
-    return ['$scope', '$http', 'IGenericService', '$q', '$route', '$http', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
-        function ($scope, $http, genericService, $q, $route, $http, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
+    export { default as template } from './editor.html';
+    
+    export default ['$scope', '$http', 'IGenericService', '$q', '$route', 'apiToken',  '$location', 'locale', '$filter', 'Upload', '$timeout', '$window',
+        function ($scope, $http, genericService, $q, $route, apiToken, $location, locale, $filter, Upload, $timeout, $window) {
             var originalDocument;
             $scope.document = {};
             $scope.locales = ['en','ar','es','fr','ru','zh'];
@@ -210,6 +213,7 @@
                 .then(function(result){
                     if(close){
                         $scope.close();
+                        return;
                     }
                     if(!newDocument._id && result.id){
                         $location.path('articles/'+result.id+'/edit')  
@@ -466,4 +470,4 @@
                 return v === undefined || v === null || (_.isObject(v) && _.isEmpty(v));
             }
     }]
-});
+

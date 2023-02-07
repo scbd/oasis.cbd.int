@@ -1,4 +1,6 @@
-﻿define(['vue', 'axios', 'moment'], function(Vue, axios, moment){
+﻿import Vue from 'vue';
+import axios from 'axios';
+import moment from 'moment';
 
     function utils(){
         
@@ -40,6 +42,6 @@
             return moment.utc(datetime)[method](arg1, arg2, arg3);
     })
 
-    return  new utils();
+    export default  new utils();
 
-})
+

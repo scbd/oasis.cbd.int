@@ -69,24 +69,23 @@
 </template>
 
 <script>
-define([
-  "vueFile!views/widgets/components/error.vue",
-  "vueFile!views/widgets/components/params.vue",
-  "vueFile!views/widgets/components/param-values.vue",
-  "vueFile!views/widgets/components/datasource-values.vue",
-  "lodash",
-  'axios',
-  'views/workflows/vue-base-service',
-  "css!/app/css/default-vue.css",
-], function (CError, CParam, CParamValues,CDatasourceValues, _, axios) {
-  return {
+
+import CError from "../../widgets/components/error.vue"
+import CParam from "../../widgets/components/params.vue"
+import CParamValues from "../../widgets/components/param-values.vue"
+import CDatasourceValues from "../../widgets/components/datasource-values.vue"
+import _ from "lodash"
+import axios from 'axios'
+import '~/views/workflows/vue-base-service'
+import "css!~/css/default-vue.css"
+
+export default {
     components: {
       CError:CError,
       CParam:CParam,
       CParamValues:CParamValues,
       CDatasourceValues:CDatasourceValues
     },
-    template: template,
     props: ['widgetId'],
     data: function() { 
       return {
@@ -259,5 +258,4 @@ define([
       }
     },
   };
-});
 </script>

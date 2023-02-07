@@ -1,4 +1,7 @@
-define(['require', 'app', 'angular', 'angular-route'], function(require, app, angular) { 'use strict';
+import require from 'require';
+import app from '~/app';
+import angular from 'angular';
+import 'angular-route'; 
 
     var baseUrl = require.toUrl('');
 
@@ -98,4 +101,4 @@ define(['require', 'app', 'angular', 'angular-route'], function(require, app, an
 
         return angular.extend($routeProvider, { when: new_when });
     }]);
-});
+

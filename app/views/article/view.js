@@ -1,13 +1,16 @@
-define(['app', 'services/css.escape', 'scbd-angularjs-services/generic-service', 'ck-editor-content-css'],
- function (app, cssEscape) {
+import app from '~/app';
+import { cssEscape } from '~/services/css.escape';
+import '~/components/scbd-angularjs-services/main';
+import 'ck-editor-content-css';
     
-    return ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
+export { default as template } from './view.html';
+    export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
         function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
             $scope.baseUrl = window.baseUrl;
             $scope.locales = ['en','ar','es','fr','ru','zh'];
             $scope.activeLocale = 'en';
 
-            user = $rootScope.user;
+            const user = $rootScope.user;
             $scope.canEdit = ~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor');
             var editor;
             $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
@@ -76,4 +79,4 @@ define(['app', 'services/css.escape', 'scbd-angularjs-services/generic-service',
             $scope.cssEscape = cssEscape
         }
     ]
-});
+

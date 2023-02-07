@@ -1,7 +1,9 @@
-﻿define(['app','json!views/translation/database-tables.json'], function (app, dbTables) {
-    return ['$scope', function ($scope) {
+﻿import app from '~/app';
+import dbTables from '~/views/translation/database-tables.json';
+export { default as template } from './database-tables.html';
+    export default ['$scope', function ($scope) {
             
         $scope.baseUrl  = window.baseUrl;
         $scope.dbTables = dbTables;
     }];
-});
+

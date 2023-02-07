@@ -1,9 +1,12 @@
-define(['app',
-'app/views/mailbox/message-directive.html.js',
-'app/views/mailbox/compose-directive.html.js',
-'app/views/mailbox/mailbox-menu-directive.html.js',
-'app/views/mailbox/message-list-directive.html.js',], function(app) {
-    return["$scope", "$rootScope",
+import app from '~/app';
+import 'app/views/mailbox/message-directive.html.js';
+import 'app/views/mailbox/compose-directive.html.js';
+import 'app/views/mailbox/mailbox-menu-directive.html.js';
+import 'app/views/mailbox/message-list-directive.html.js';
+
+
+export { default as template } from './inbox.html';
+    export default["$scope", "$rootScope",
         function($scope, $rootScope) {
 
 
@@ -62,4 +65,4 @@ define(['app',
            }
 
         }];
-});
+

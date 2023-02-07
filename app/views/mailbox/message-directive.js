@@ -1,4 +1,4 @@
-define(['app'], function(app, _) {
+import app from '~/app';
     app.directive('mailboxMessage', function() {
         return {
             restrict: 'EAC',
@@ -70,4 +70,4 @@ define(['app'], function(app, _) {
 
         };
     });
-});
+

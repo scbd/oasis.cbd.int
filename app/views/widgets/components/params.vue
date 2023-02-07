@@ -124,17 +124,16 @@
 </template>
 
 <script>
-define([
-  "vueFile!views/widgets/components/code-editor.vue",
-  "vueFile!views/widgets/components/error.vue",
-  "lodash",
-], function (codeEditor, CError, _) {
-  return {
+
+import codeEditor from "./code-editor.vue"
+import CError from "./error.vue"
+import _ from "lodash"
+
+export default {
     components: {
       codeEditor: codeEditor,
       CError:CError
     },
-    template: template,
     props: ["value", "placeholder"],
     data: function() { 
       return {
@@ -332,5 +331,4 @@ define([
       },
     },
   };
-});
 </script>

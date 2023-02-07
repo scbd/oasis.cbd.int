@@ -1,4 +1,4 @@
-define(['app'], function(app) {
+import app from '~/app';
   app.directive('scbdCompile', directive);
   app.directive('compile', directive);
 
@@ -27,4 +27,3 @@ define(['app'], function(app) {
           },
       };
   };
-});

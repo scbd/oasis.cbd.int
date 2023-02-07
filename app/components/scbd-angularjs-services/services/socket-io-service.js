@@ -1,4 +1,7 @@
-define(['app', 'socket.io', './authentication', './apiUrl'], function (app, io) {
+import app from '~/app';
+import io from 'socket.io';
+import './authentication';
+import './apiUrl';
 
     app.factory('socketioService', ['$rootScope', '$http', '$q', 'realm', "authentication", "apiUrl",
     function ($rootScope, $http, $q, realm, authentication, apiUrl) {
@@ -74,4 +77,4 @@ define(['app', 'socket.io', './authentication', './apiUrl'], function (app, io) 
             }
         }
     }]);
-});
+

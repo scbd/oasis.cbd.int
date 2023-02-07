@@ -27,4 +27,5 @@ i18n
 TestCases
 app/api/repositories
 app/api/db-translation-files
-
+buildme
+dist

@@ -1,6 +1,13 @@
-﻿define(['app', 'vueFile!views/widgets/views/list.vue', 'vuetify', 'views/workflows/vue-base-service', 'scbd-angularjs-services/authentication', 'angular-vue'], 
-function(app, listComponent, Vuetify, vueBaseService){
-    return ['$scope', 'apiToken', '$routeParams', function($scope, apiToken, $routeParams){        
+﻿import app from '~/app';
+import listComponent from './views/list.vue';
+import Vuetify from 'vuetify';
+import vueBaseService from '~/views/workflows/vue-base-service';
+import '~/components/scbd-angularjs-services/main';
+import 'angular-vue';
+
+
+export { default as template } from './index.html';
+    export default ['$scope', 'apiToken', '$routeParams', function($scope, apiToken, $routeParams){        
 
         apiToken.get().then(function(token){
             $scope.hasAuthToken = true;     
@@ -29,4 +36,4 @@ function(app, listComponent, Vuetify, vueBaseService){
 
 
     }]
-})
+

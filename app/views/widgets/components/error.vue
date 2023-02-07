@@ -12,13 +12,8 @@
 </template>
 <script>
 
-    define(['Vue',], function(Vue) {
-        
-        return{
-            template:template,
-            props:["errorMessage"],
-        }
-        
-    });
+export default {
+    props:["errorMessage"],
+}
 
 </script>

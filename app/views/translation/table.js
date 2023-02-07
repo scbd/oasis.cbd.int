@@ -1,8 +1,12 @@
-define(['app', 'lodash', 'json!views/translation/database-tables.json',
-'scbd-angularjs-services/generic-service', 'views/translation/directives/pagination',
-'components/scbd-angularjs-controls/form-control-directives/ng-enter','services/local-storage-service'],
- function (app, _, dbTables) {
-    return ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
+import app from '~/app';
+import _ from 'lodash';
+import dbTables from '~/views/translation/database-tables.json';
+import '~/components/scbd-angularjs-services/main';
+import './directives/pagination';
+import '~/services/local-storage-service';
+
+export { default as template } from './table.html';
+    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
     function ($scope, $http, $q, $routeParams, genericService, localStorageService) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
         $scope.baseUrl  = window.baseUrl;
@@ -75,7 +79,6 @@ define(['app', 'lodash', 'json!views/translation/database-tables.json',
 
         $scope.dowloadFiles = function(){
 
-console.log('j')
             var translation = $scope.translation;
 
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
@@ -110,9 +113,11 @@ console.log('j')
             });
         }
         $scope.addToDownload = function(row, $event){
-            console.log($event)
-            $event.stopPropagation();
-            let index = $scope.articlesToDownload.findIndex(x => x._id==row._id);
+
+            if($event)
+                $event.stopPropagation();
+
+            let index = $scope.articlesToDownload?.findIndex(x => x._id==row._id);
             index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
@@ -252,4 +257,4 @@ console.log('j')
         $scope.searchArticles({})
 
     }];
-});
+

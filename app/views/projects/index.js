@@ -1,6 +1,6 @@
-﻿define(['app'
-    ], function (app) {
-    return ['$scope', '$http', '$q',
+﻿import app from '~/app';
+export { default as template } from './index.html';
+    export default ['$scope', '$http', '$q',
     function ($scope, $http, $q) {
 
         $scope.baseUrl = window.baseUrl;
@@ -9,4 +9,4 @@
               $scope.projects = result.data;
           })
     }];
-});
+

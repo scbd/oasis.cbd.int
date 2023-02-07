@@ -1,6 +1,10 @@
-﻿define(['vue', 'text!./vue-list.html', 'axios', './vue-base-service', 'views/workflows/vue-wrapper'], 
-function(Vue, template, axios, vueBaseService){
+﻿import Vue from 'vue';
+import template from './vue-list.html';
+import axios from 'axios';
+import './vue-base-service';
+import './vue-wrapper';
 
+export { default as template } from './vue-list.html';
     Vue.component('failed-workflows', {
         props: ['vueValue'],
         template: template,
@@ -225,7 +229,7 @@ function(Vue, template, axios, vueBaseService){
             }
         }
     });
-})
+
 
             // }
             // increment: function() {

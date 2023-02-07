@@ -1,4 +1,4 @@
-define(['app'], function(app) {
+import app from '~/app';
   var directive =  function() {
         return {
             restrict: 'A',
@@ -12,4 +12,3 @@ define(['app'], function(app) {
       };
   app.directive('selectAllOnClick', directive);
   app.directive('scbdSelectAllOnClick', directive);
-});

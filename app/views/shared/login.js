@@ -1,8 +1,8 @@
-define(['app',
-	'scbd-angularjs-services/authentication'
-], function (app, moment) {
+import app from '~/app';
+import '~/components/scbd-angularjs-services/main';
 
-	return ["$scope", "$location", "authentication", '$rootScope', function ($scope, $location, authentication, $rootScope) {
+export { default as template } from './login.html';
+	export default ["$scope", "$location", "authentication", '$rootScope', function ($scope, $location, authentication, $rootScope) {
 
 		$scope.email = null;
 		$scope.password = null;
@@ -52,4 +52,4 @@ define(['app',
 		// })
 
 	}];
-});
+

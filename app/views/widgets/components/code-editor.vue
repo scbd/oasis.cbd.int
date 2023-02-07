@@ -17,80 +17,117 @@
         
 <script>
 
-    define(["Vue", 'code-editor-vue', 
-        'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css',
-        'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml',
-        'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars',
-        'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed',       
-        'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript',
-        'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line',
-        'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag',
-        'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets',
-        'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js',
-        'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js',
-        'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css',
-        'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css'
-    ], function (vue, codemirror) {
+import codemirror from 'code-editor-vue'
+
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js';
+import 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css';
+import 'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css';
+import 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css';
+
        
+export default {
+    components: {
+        codeMirror:codemirror.codemirror
+    },
+    props:['mode', 'preview', 'value', 'placeholder', 'readOnly'],
+    data: function() {
         return {
-            template: template,
-            components: {
-                codeMirror:codemirror.codemirror
-            },
-            props:['mode', 'preview', 'value', 'placeholder', 'readOnly'],
-            data: function() {
-                return {
-                    cmOptions: {
-                        lineNumbers: true,
-                        indentWithTabs: true,
-                        matchBrackets: true,
-                        autoCloseBrackets: true,
-                        lineWrapping: true,
-                        mode: {
-                            name: "handlebars", 
-                            base: "text/html"
-                        },
-                        theme: 'base16-dark',
-                        readOnly:this.readOnly
-                    },
-                    code:''
-                }
-            },
-            methods: {
-                onCmReady(cm) {
-                    // console.log('the editor is readied!', cm)
+            cmOptions: {
+                lineNumbers: true,
+                indentWithTabs: true,
+                matchBrackets: true,
+                autoCloseBrackets: true,
+                lineWrapping: true,
+                mode: {
+                    name: "handlebars", 
+                    base: "text/html"
                 },
-                onCmFocus(cm) {
-                    // console.log('the editor is focused!', cm)
-                },
-                onCmCodeChange(newCode) {
-                    // console.log('this is new code', newCode)
-                    this.code = newCode;  
-                    this.$emit('input', newCode)        
-                    if(this.preview)
-                        this.updatePreview(newCode);
-                },
-                updatePreview(code) {
-                    var previewFrame = this.$refs.templatePreview;
-                    var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
-                    preview.open();
-                    preview.write(code);
-                    preview.close();
-                }
+                theme: 'base16-dark',
+                readOnly:this.readOnly
             },
-            computed: {
-                codemirror() {
-                    return this.$refs.cmEditor.codemirror
-                }
-            },
-            mounted() {
-                this.cmOptions.mode = this.mode
-                this.code = this.value;
-                
-                if(this.placeholder && !this.code)
-                    this.code = this.placeholder; //'<div><b>Add your widget template here!</b></div>';
-            }
+            code:''
         }
-    });
+    },
+    methods: {
+        onCmReady(cm) {
+            // console.log('the editor is readied!', cm)
+        },
+        onCmFocus(cm) {
+            // console.log('the editor is focused!', cm)
+        },
+        onCmCodeChange(newCode) {
+            // console.log('this is new code', newCode)
+            this.code = newCode;  
+            this.$emit('input', newCode)        
+            if(this.preview)
+                this.updatePreview(newCode);
+        },
+        updatePreview(code) {
+            var previewFrame = this.$refs.templatePreview;
+            var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+            preview.open();
+            preview.write(code);
+            preview.close();
+        }
+    },
+    computed: {
+        codemirror() {
+            return this.$refs.cmEditor.codemirror
+        }
+    },
+    mounted() {
+        this.cmOptions.mode = this.mode
+        this.code = this.value;
+        
+        if(this.placeholder && !this.code)
+            this.code = this.placeholder; //'<div><b>Add your widget template here!</b></div>';
+    }
+}
+
+
+
+// <!-- const codeMirrorLibs = [
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/mode/simple.js',
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/css/css.js',
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/xml/xml.js',
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/javascript/javascript.js',
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/mode/multiplex.js',
+// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/fold/xml-fold.js',
+// `${cdnHost}npm/codemirror@5.58.3/mode/xml/xml.js`,
+//                         cdnHost+'npm/codemirror@5.58.3/mode/handlebars/handlebars.js',
+//                         cdnHost+'npm/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js',
+//                         cdnHost+'npm/codemirror@5.58.3/mode/javascript/javascript.js',
+//                         cdnHost+'npm/codemirror@5.58.3/addon/selection/active-line.js',
+//                         cdnHost+'npm/codemirror@5.58.3/addon/edit/closetag.js',
+//                         cdnHost+'npm/codemirror@5.58.3/addon/edit/matchbrackets.js',
+//                         cdnHost+'npm/codemirror@5.58.3/addon/comment/continuecomment.js',
+//                         cdnHost+'npm/codemirror@5.58.3/addon/comment/comment.js'];//.join(',');
+// const codeMirrorCss  = [`css!${cdnHost}combine/npm/codemirror@5.58.3/theme/base16-dark.css`,
+//                         'npm/codemirror@5.58.3/lib/codemirror.css',
+//                         'npm/codemirror@5.58.3/theme/base16-dark.css'].join(',');
+
+
+//                         'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css',
+// 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml',
+// 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars',
+// 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed',       
+// 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript',
+// 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line',
+// 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag',
+// 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets',
+// 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js',
+// 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js',
+// 'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css',
+// 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css' -->
+
+
 
 </script>

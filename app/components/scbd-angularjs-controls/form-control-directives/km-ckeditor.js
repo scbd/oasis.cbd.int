@@ -1,6 +1,8 @@
-define(['app','ck-editor', 'text!./km-ckeditor.html','lodash','scbd-angularjs-services/authentication', 
-'scbd-angularjs-services/storage'], 
-function(app,classicEditor, template, _) {
+import app from '~/app';
+import classicEditor from 'ck-editor';
+import template from './km-ckeditor.html';
+import _ from 'lodash';
+import '~/components/scbd-angularjs-services/main';
 
 	app.directive('ckEditor', ['$q', 'apiToken', '$http', 'IStorage', '$timeout',  function($q, apiToken, $http, storage, $timeout){
         
@@ -364,4 +366,4 @@ function(app,classicEditor, template, _) {
             }
         }
     }])
-});
+

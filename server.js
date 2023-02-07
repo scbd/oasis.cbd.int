@@ -1,5 +1,6 @@
 
 'use strict';
+require           = require("esm")(module)
 
 process.on('SIGTERM', ()=>process.exit());
 
@@ -8,6 +9,8 @@ var express     = require('express');
 var app = express();
 var proxy   = require('http-proxy').createProxyServer({});
 let config = require('./app/api/config.js');
+
+const { bundleUrls, cdnHost } = require('./app/boot.js');
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -31,8 +34,9 @@ console.info(`info: Git commit:  ${gitVersion}`);
 console.info(`info: App version: ${appVersion}`);
 console.info(`info: API address: ${config.api.url}`);
 
-
+app.use('/app',           express.static(__dirname + '/dist/app', { setHeaders: setCustomCacheControl }));
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
+
 
 app.use('/translation-api/git/:repository',          require('./app/api/git-query')  ());
 app.use('/translation-api/database-table/:table',    require('./app/api/database-table')());
@@ -41,7 +45,16 @@ app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.url, ch
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
 // CONFIGURE TEMPLATE
-app.get('/*',            function(req, res) { res.render('template', { baseUrl: req.headers.base_url || '/',appVersion: appVersion }); });
+app.get('/*',            function(req, res) { 
+    res.render('template', {
+        baseUrl: req.headers.base_url || '/',
+        appVersion: appVersion,
+
+        cdnHost             : cdnHost,
+        angularBundle      : bundleUrls.angularBundle,
+        initialCss         : bundleUrls.initialCss,
+    }); 
+});
 
 
 

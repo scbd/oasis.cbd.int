@@ -1,6 +1,9 @@
-define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (app, _) {
+import app from '~/app';
+import _ from 'lodash';
+import '~/components/scbd-angularjs-services/main';
 
-    app.controller('IndexController', ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
+export { default as template } from './index.html';
+    export default ['$scope', '$http', 'IGenericService', function ($scope, $http, genericService) {
             
         
         $scope.baseUrl  = window.baseUrl;
@@ -81,5 +84,5 @@ define(['app', 'lodash', 'scbd-angularjs-services/generic-service'], function (a
 
         loadCounts();
         loadRecords();
-    }]);
-});
+    }];
+

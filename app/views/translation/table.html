@@ -1,6 +1,5 @@
 ﻿<div>
 
-    <link rel="stylesheet" href="app/libs/angular-ui-select/dist/select.css" />
     <section class="content">
         <div class="row">
             <div class="col-md-12">
@@ -97,15 +96,17 @@
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                               <span class="caret"></span>
                                             </button>
-                                            <ul class="dropdown-menu" role="menu" style="max-width: 500px;overflow: scroll;height: 500px;border: 1px solid #3d8dbc;">
-                                                <li ng-repeat="row in articlesToDownload" style="border-bottom: 1px solid #eee;">                                                   
-                                                    {{$index+1}}.
-                                                    <button type="checkbox" class="btn btn-danger btn-xs" ng-click="addToDownload(row, $event)" ng-model="row.translate">x</button>
-                                                    <a target="_blank" ng-href="{{baseUrl}}articles/{{row._id}}" style="display: contents;">
-                                                        <span ng-bind="row.title|lstring"></span>
-                                                    </a>
-                                                </li> 
-                                            </ul>
+                                            <div class="dropdown-menu" role="menu" style="max-width: 500px;overflow: scroll;height: 500px;border: 1px solid #3d8dbc;">
+                                                <ul style="list-style: none;padding-left:5px;">
+                                                    <li ng-repeat="row in articlesToDownload" style="border-bottom: 1px solid #eee;">                                                   
+                                                        {{$index+1}}.
+                                                        <button type="checkbox" class="btn btn-danger btn-xs" ng-click="addToDownload(row, $event)" ng-model="row.translate">x</button>
+                                                        <a target="_blank" ng-href="{{baseUrl}}articles/{{row._id}}" style="display: contents;">
+                                                            <span ng-bind="row.title|lstring"></span>
+                                                        </a>
+                                                    </li> 
+                                                </ul>
+                                            </div>
 
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="dowloadFiles()" ng-disabled="gettingSignedUrl">
                                                 <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span>

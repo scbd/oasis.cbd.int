@@ -1,24 +1,20 @@
-define(['app',
-	'./km-control-group',
-	'./km-date',
-	'./km-document-validation',
-	'./km-form-languages',
-	'./km-form-std-buttons',
-	// './km-form-material-buttons',
-	'./km-inputtext-list',
-	'./km-inputtext-ml',
-	'./km-link',
-	'./km-notes',
-	'./km-reference',
-	'./km-select',
-	'./scbd-tab',
-	'./km-terms-check',
-	'./km-terms-radio',
-	'./km-yes-no',
-	'./afc-autocomplete',
-	// './km-auto-complete-server-select',
-	'./lonlat',
-	'./km-rich-textbox',
-	// './km-address-block'
-	'./ng-enter'
-], {});
+import '~/app'
+import './km-control-group'
+import './km-date'
+import './km-document-validation'
+import './km-form-languages'
+import './km-form-std-buttons'
+import './km-inputtext-list'
+import './km-inputtext-ml'
+import './km-link'
+import './km-notes'
+import './km-reference'
+import './km-select'
+import './scbd-tab'
+import './km-terms-check'
+import './km-terms-radio'
+import './km-yes-no'
+import './afc-autocomplete'
+import './lonlat'
+import './km-rich-textbox'
+import './ng-enter'

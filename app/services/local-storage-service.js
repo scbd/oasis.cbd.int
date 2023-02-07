@@ -1,5 +1,6 @@
-define(['app', 'lodash', 'ngStorage'],
- function (app, _) { 'use strict';
+import app from '~/app';
+import _ from 'lodash';
+import 'ngStorage'; 
 
 	app.factory('localStorageService',  ["$http","$location", "$rootScope", "$sessionStorage","$localStorage",
 	 function($http,$location, $rootScope, $sessionStorage, $localStorage) {
@@ -60,4 +61,4 @@ define(['app', 'lodash', 'ngStorage'],
 		};
 
     }]);
-});
+

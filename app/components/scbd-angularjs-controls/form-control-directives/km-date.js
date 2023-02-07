@@ -1,5 +1,7 @@
-define(['app', 'text!./km-date.html', 'bootstrap-datepicker'], function(app, template) {
-  'use strict';
+import app from '~/app';
+import template from './km-date.html';
+import 'bootstrap-datepicker';
+  
   //============================================================
   //
   //
@@ -31,4 +33,4 @@ define(['app', 'text!./km-date.html', 'bootstrap-datepicker'], function(app, tem
       controller: ["$scope", function($scope) {}]
     };
   }]);
-});
+

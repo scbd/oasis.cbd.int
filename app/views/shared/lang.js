@@ -1,7 +1,7 @@
-define(['app',
-		'scbd-angularjs-services/locale'
-        ], function (app, moment) {
-    return ["$scope", "$location", "locale","$timeout", "$window", "$routeParams", "$cookies",
+import app from '~/app';
+import '~/components/scbd-angularjs-services/main';
+export { default as template } from './lang.html';
+    export default ["$scope", "$location", "locale","$timeout", "$window", "$routeParams", "$cookies",
 		function ($scope, $location, locale, $timeout, $window, $routeParams, $cookies){
 			    var lang = 'en';
 				if($routeParams.langCode)
@@ -19,4 +19,4 @@ define(['app',
 					$window.location.href = returnUrl;
 				}, 1000);
 		}];
-});
+

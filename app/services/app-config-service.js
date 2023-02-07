@@ -1,4 +1,5 @@
-define(['app', 'lodash'], function (app, _) { 'use strict';
+import app from '~/app';
+import _ from 'lodash'; 
 
 	app.factory('appConfigService',  ["$location", function($location) {
 		var realmConfigurations = [
@@ -207,4 +208,4 @@ define(['app', 'lodash'], function (app, _) { 'use strict';
 	   };
 
     }]);
-});
+

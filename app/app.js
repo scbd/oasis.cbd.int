@@ -1,12 +1,13 @@
-'use strict';
-define(['angular', 'angular-sanitize',  'angular-ui-select2', 'ng-file-upload'],
-    function(angular) {
 
-        var dependencies = ['ngRoute', 'ngCookies', 'ngSanitize', 'ckeditor','ui.select','ngFileUpload', 'angularGrid', 'angularVue', 'ngStorage', 'toast'];
-        
-        angular.defineModules(dependencies);
-        var app = angular.module('app', dependencies);
+import angular from "angular-flex";
+import 'angular-sanitize';
+import 'angular-ui-select2';
+import 'ng-file-upload';
 
-       
-        return app;
-    });
+var dependencies = ['ngRoute', 'ngCookies', 'ngSanitize', 'ckeditor','ui.select','ngFileUpload', 'angularGrid', 'angularVue', 'ngStorage', 'toast'];
+
+angular.defineModules(dependencies);
+var app = angular.module('app', dependencies);
+
+export default app;
+    
