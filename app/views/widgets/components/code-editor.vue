@@ -19,13 +19,13 @@
 
 import codemirror from 'code-editor-vue'
 
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag.js';
+import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets.js';
 import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js';
 import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js';
 import 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css';
