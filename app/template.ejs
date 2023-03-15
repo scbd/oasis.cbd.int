@@ -314,6 +314,9 @@ class="hold-transition skin-blue sidebar-mini">
   <script src="<%=cdnHost%>combine/<%=angularBundle%>"></script>
 
   <script>
+    window.scbd = {
+      apiUrl : '<%=apiUrl%>'
+    }
     require.config({ baseUrl : "<%=baseUrl%>app/" });
 
     require(["boot"], function(boot){

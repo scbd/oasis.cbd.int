@@ -4,7 +4,7 @@ import './locale';
 
     var accountsBaseUrl = (function(){
 
-        const hostName = window.scbd?.API_URL || window.location.hostname;
+        const hostName = window.scbd?.apiUrl || window.location.hostname;
         let   domain   = hostName.replace(/[^\.]+\./, '');
 
         if(domain=='localhost')
