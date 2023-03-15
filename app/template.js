@@ -4,8 +4,8 @@ import '~/components/scbd-angularjs-services/main';
 import 'angular-vue';
     
 
-    app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q',
-        function($scope, $rootScope, authentication, $q
+    app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q', '$location',
+        function($scope, $rootScope, authentication, $q, $location
         ) {
 
           $q.when(authentication.getUser())
@@ -17,7 +17,9 @@ import 'angular-vue';
             $q.when(authentication.signOut())
             .then(function(data){
               $scope.user = undefined;
-              window.location = "/"
+              $location.search({ returnUrl: $location.url() });
+              $location.path('/signin')
+              window.reload()
             })  
           }
 

@@ -1,6 +1,7 @@
-import app from '~/app';
-import './apiUrl';
-import './locale';
+import app from '~/app'
+import ng from 'angular'
+import $ from 'jquery'
+import _ from 'lodash'
 
     var accountsBaseUrl = (function(){
 
@@ -14,20 +15,23 @@ import './locale';
 
     })();
 
-    app.factory('apiToken', ["$q", "$rootScope", "$window", "$document", "$timeout", function($q, $rootScope, $window, $document, $timeout) {
+	app.factory('apiToken', ["$q", "$rootScope", "$window", "$document", "$timeout", function($q, $rootScope, $window, $document, $timeout) {
 
-        var authenticationFrameQ = $q(function(resolve, reject){
+		var authenticationFrameQ = $q(function(resolve, reject){
 
 			var frame = $('<iframe src="'+accountsBaseUrl+'/app/authorize.html'+'" style="display:none"></iframe>');
 
 			$("body").prepend(frame);
+			let frameLoaded = false;
 
 			frame.on("load", function(evt){
 				resolve(evt.target || evt.srcElement);
+				frameLoaded = true
 			});
 
 			$timeout(function(){
-				reject('accounts is not available / call is made from an unauthorized domain');
+				if(!frameLoaded)
+					reject('accounts is not available / call is made from an unauthorized domain');
 			}, 5000);
 		});
 
@@ -151,145 +155,155 @@ import './locale';
             return authenticationToken;
         }
 
-        return {
-            get: getToken,
-            set: setToken
-        };
-    }]);
-    app.factory('authentication', ["$http", "$rootScope", "$q", "apiToken", function($http, $rootScope, $q, apiToken) {
+		return {
+			get : getToken,
+			set : setToken
+		};
+	}]);
 
-        var currentUser = null;
 
-        //============================================================
-        //
-        //
-        //============================================================
-        function anonymous() {
-            return {
-                userID: 1,
-                name: 'anonymous',
-                email: 'anonymous@domain',
-                government: null,
-                userGroups: null,
-                isAuthenticated: false,
-                isOffline: true,
-                roles: []
-            };
-        }
+	app.factory('authentication', ["$http", "$rootScope", "$q", "apiToken", function($http, $rootScope, $q, apiToken) {
 
-        //============================================================
-        //
-        //
-        //============================================================
-        function getUser() {
+		var currentUser = null;
 
-            if (currentUser)
-                return $q.when(currentUser);
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function anonymous() {
+			return { userID: 1, name: 'anonymous', email: 'anonymous@domain', government: null, userGroups: null, isAuthenticated: false, isOffline: true, roles: [] };
+		}
 
-            return $q.when(apiToken.get()).then(function(authenticationToken) {
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function getUser() {
 
-                if (!authenticationToken) {
-                    return anonymous();
-                }
+			if(currentUser)
+				return $q.when(currentUser);
 
-                return $http.get('/api/v2013/authentication/user', {
-                    headers: {
-                        Authorization: "Ticket " + authenticationToken.token
-                    }
-                }).then(function(r) {
-                    return r.data;
-                });
+			return $q.when(apiToken.get()).then(function(token) {
 
-            }).catch(function() {
+				if(!token) {
+					return anonymous();
+				}
 
-                return anonymous();
+				return $http.get('/api/v2013/authentication/user', { headers: { Authorization: "Ticket " + token } }).then(function(r){
+					return r.data;
+				});
 
-            }).then(function(user) {
+			}).catch(function() {
 
-                setUser(user);
+				return anonymous();
 
-                return user;
-            });
-        }
+			}).then(function(user){
 
-        //============================================================
-        //
-        //
-        //============================================================
-        function signIn(email, password) {
+				setUser(user);
 
-            return $http.post("/api/v2013/authentication/token", {
+				return user;
+			});
+		}
 
-                "email": email,
-                "password": password
+		//==============================
+		//
+		//==============================
+		function LEGACY_user() {
 
-            }).then(function(res) {
+		    console.warn("authentication.user() is DEPRECATED. Use: getUser()");
 
-                var token = res.data;
+			return $rootScope.user;
+		}
 
-                return $q.all([token, $http.get('/api/v2013/authentication/user', {
-                    headers: {
-                        Authorization: "Ticket " + token.authenticationToken
-                    }
-                })]);
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function signIn(email, password) {
 
-            }).then(function(res) {
+			return $http.post("/api/v2013/authentication/token", {
 
-                var token = res[0];
-                var user = res[1].data;
+				"email": email,
+				"password": password
 
-                email = (email || "").toLowerCase();
+			}).then(function(res) {
 
-                apiToken.set(token.authenticationToken, email, token.expiration);
-                setUser(user);
+				var token  = res.data;
 
-                $rootScope.$broadcast('signIn', user);
+				return $q.all([token, $http.get('/api/v2013/authentication/user', { headers: { Authorization: "Ticket " + token.authenticationToken } })]);
 
-                return user;
+			}).then(function(res) {
 
-            }).catch(function(error) {
+				var token = res[0];
+				var user  = res[1].data;
 
-                throw {
-                    error: error.data,
-                    errorCode: error.status
-                };
+				email = (email||"").toLowerCase();
 
-            });
-        }
+				apiToken.set(token.authenticationToken, email);
+				setUser (user);
 
-        //============================================================
-        //
-        //
-        //============================================================
-        function signOut() {
+				$rootScope.$broadcast('signIn', user);
 
-            apiToken.set(null);
+				return user;
 
-            setUser(null);
+			}).catch(function(error) {
 
-            return $q.when(getUser()).then(function(user) {
+				throw { error:error.data, errorCode : error.status };
 
-                $rootScope.$broadcast('signOut', user);
+			});
+		}
 
-                return user;
-            });
-        }
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function signOut () {
 
-        //============================================================
-        //
-        //
-        //============================================================
-        function setUser(user) {
+			apiToken.set(null);
 
-            currentUser = user || undefined;
-            $rootScope.user = user || anonymous();
-            
+			setUser(null);
+
+			return $q.when(getUser()).then(function(user) {
+
+				$rootScope.$broadcast('signOut', user);
+
+				return user;
+			});
+		}
+
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function setUser(user) {
+
+			currentUser     = user || undefined;
+			$rootScope.user = user || anonymous();
+
+			if(Vue?.prototype.$auth)
+				Vue.prototype.$auth.setUser($rootScope.user);
+
             if (user && user.isAuthenticated && !user.isEmailVerified) {
                 $rootScope.$broadcast('event:auth-emailVerification', {
                     message: 'Email verification pending. Please verify you email before submitting any data.'
                 });
             }
-        }
+		}
+
+		//============================================================
+	    //
+	    //
+	    //============================================================
+		function isInRole(user, roles) {
+
+			if(!user)  return false;
+			if(!roles) return false;
+
+			if( _.isString(roles)) roles = [roles];
+			if(!_.isArray (roles)) throw new Error("`roles` must be string or array od string");
+
+			return !!_.intersection(user.roles||[], roles).length;
+		}
 
         //============================================================
         //
@@ -315,15 +329,46 @@ import './locale';
             signOut();
         });
 
-        return {
-            getUser: getUser,
-            signIn: signIn,
-            signOut: signOut,
+		return {
+			getUser  : getUser,
+			signIn   : signIn,
+			signOut  : signOut,
+			isInRole : isInRole,
             isEmailVerified:isEmailVerified,
             accountsBaseUrl : function() { return accountsBaseUrl; }
-        };
+		};
 
-    }]);
+	}]);
+
+	app.factory('authenticationHttpIntercepter', ["$q", "apiToken", function($q, apiToken) {
+
+		return {
+			request: function(config) {
+
+				var trusted = /^https:\/\/api.cbd.int\//i.test(config.url) ||
+							  /^\/api\//i                .test(config.url);
+
+				var hasAuthorization = (config.headers||{}).hasOwnProperty('Authorization') ||
+							  		   (config.headers||{}).hasOwnProperty('authorization');
+
+				if(!trusted || hasAuthorization) // no need to alter config
+					return config;
+
+				//Add token to http headers
+
+				return $q.when(apiToken.getCookieToken()).then(function(token) {
+
+					if(token) {
+						config.headers = ng.extend(config.headers||{}, {
+							Authorization : "Ticket " + token
+						});
+					}
+
+					return config;
+				});
+			}
+		};
+	}]);
 
     app.factory('authenticationHttpIntercepter', ["$q", "apiToken", "$rootScope",
      function($q, apiToken, $rootScope) {
@@ -372,5 +417,3 @@ import './locale';
     app.config(['$httpProvider', function($httpProvider) {
         $httpProvider.interceptors.push('authenticationHttpIntercepter');
     }]);
-
-

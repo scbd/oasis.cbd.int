@@ -16,16 +16,7 @@ export { default as template } from './login.html';
 			$scope.errorInvalid = false;
 			$scope.errorTimeout = false;
 			$scope.waiting = true;
-			authentication.signIn($scope.email, $scope.password)
-				.then(function (user) {
-
-					$scope.user = user;
-					$rootScope.$broadcast('signIn', user);
-					if ($location.search().returnUrl)
-						$location.url($location.search().returnUrl);
-					else
-						$location.url('/');
-				})
+			authentication.signIn($scope.email, $scope.password)				
 				.catch(function onerror(error) {
 					$scope.password = "";
 					$scope.errorInvalid = error.errorCode == 403;
@@ -50,6 +41,22 @@ export { default as template } from './login.html';
 		// 		keyboard: false
 		// 	});
 		// })
+
+		const signInEvent = $scope.$on('signIn', function(evt, data){
+			redirectUser();
+		});
+		authentication.getUser().then(function(user){
+			if(user.isAuthenticated)
+				redirectUser();
+		})
+
+		function redirectUser(){
+			console.log($location.search())
+			if ($location.search().returnUrl)
+				$location.url($location.search().returnUrl);
+			else
+				$location.url('/');
+		}
 
 	}];
 
