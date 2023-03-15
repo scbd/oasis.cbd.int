@@ -1,6 +1,7 @@
 import app from '~/app';
 import './js/filters.js';
 import '~/components/scbd-angularjs-services/main';
+import 'angular-vue';
     
 
     app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q',

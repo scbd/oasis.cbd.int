@@ -60,7 +60,8 @@ export default function bootApp(window, require, defineX) {
 
             'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
             'axios'                     : cdnHost + 'npm/axios@0.21.1/dist/axios',
-            'angular-vue'               : cdnHost + 'npm/@scbd/angular-vue@2.0.0/dist/angular-vue.min',
+            'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue`,
+            'angular-vue-plugins'       : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue-plugins.min`,
             'coreui-vue'                : cdnHost + 'npm/@coreui/vue@3.1.4/dist/coreui-vue.umd',
             'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
 

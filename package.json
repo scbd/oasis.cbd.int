@@ -2,7 +2,6 @@
   "name": "oasis.cbd.int",
   "description": "Oasis",
   "dependencies": {
-    "@buxlabs/amd-to-es6": "^0.16.3",
     "cheerio": "^1.0.0-rc.10",
     "cjs-to-es6": "^2.0.1",
     "easy-zip": "0.0.4",
@@ -18,6 +17,7 @@
   "devDependencies": {
     "@babel/core": "7.12.10",
     "@babel/preset-env": "7.12.11",
+    "@buxlabs/amd-to-es6": "^0.16.3",
     "@rollup/plugin-alias": "^3.1.2",
     "@rollup/plugin-babel": "5.2.2",
     "@rollup/plugin-commonjs": "^17.1.0",
@@ -32,7 +32,8 @@
     "rollup-plugin-string": "^3.0.0",
     "rollup-plugin-terser": "7.0.2",
     "rollup-plugin-vue": "4.2.0",
-    "vue-template-compiler": "2.6.10"
+    "vue-template-compiler": "2.6.10",
+    "angular-vue":"3.1.0"
   },
   "engine": "node >= 14.0",
   "private": true,
