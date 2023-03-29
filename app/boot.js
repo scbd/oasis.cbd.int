@@ -58,12 +58,16 @@ export default function bootApp(window, require, defineX) {
             
             'angulargrid'               : cdnHost + 'npm/angulargrid@0.6.5/angulargrid.min',
 
-            'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
             'axios'                     : cdnHost + 'npm/axios@0.21.1/dist/axios',
+
+            'vue-i18n'                  : cdnHost + 'npm/vue-i18n@8.21.1/dist/vue-i18n.min',
+            'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
             'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue`,
             'angular-vue-plugins'       : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue-plugins.min`,
             'coreui-vue'                : cdnHost + 'npm/@coreui/vue@3.1.4/dist/coreui-vue.umd',
             'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
+            'vue-multiselect'           : `${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min`,
+            'vue-pagination-2'          : `${cdnHost}npm/vue-pagination-2@3.0.91/dist/vue-pagination-2.min`,
 
             'ngStorage'                 : cdnHost + 'npm/ngstorage@0.3.11/ngStorage.min',
             'toastr'                    : cdnHost + 'npm/angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
@@ -84,6 +88,9 @@ export default function bootApp(window, require, defineX) {
             'vueFile'                       : { 'deps': ['vue']},
             'coreui-vue'                    : { 'deps': ['vue', `css!${cdnHost}npm/@coreui/coreui@3.4.0/dist/css/coreui.css` ]},
             'code-editor-vue'               : { 'deps': ['vue', 'codemirror']},
+
+            'vue-multiselect'               : { deps : [`css!${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css`] },
+            'vue-pagination-2'              : { 'deps': ['angular-vue'] },
             
         },
         // urlArgs: 'v=' + appVersion
@@ -132,9 +139,15 @@ export default function bootApp(window, require, defineX) {
     defineX('ck-editor-content-css', ['css!' + cdnHost + 'npm/@scbd/ckeditor5-build-inline-full@'+ ckeditorVersion + '/build/content-style.css']);
 
     defineX('vue', ['Vue'],                              function(Vue){ return Vue; });
-    defineX('Vue', [cdnHost+'npm/vue@2.6.12/dist/vue.min.js'], function(Vue){
+    defineX('Vue', [cdnHost+'npm/vue@2.6.12/dist/vue.min.js', 'vue-i18n'], function(Vue){
         window.Vue = Vue;
+        Vue.config.devtools = true;
+        
         return Vue;
+    })
+
+    defineX('realmConf', [`json!/api/v2018/realm-configurations`], function(realmConf){
+        return realmConf;
     })
 
     defineX('codemirror', [ 

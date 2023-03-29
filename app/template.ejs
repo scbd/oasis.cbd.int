@@ -220,12 +220,19 @@ class="hold-transition skin-blue sidebar-mini">
               <i class="fa fa-th"></i>
               <span>Articles</span>
             </a>
-          </li>
-          <li>
-            <a href="<%=baseUrl%>workflows">
-              <i class="fa fa-th"></i>
-              <span>Workflows</span>
+          </li>          
+           <li class="treeview menu-open">
+            <a href="<%=baseUrl%>clearing-house">
+              <i class="fa fa-database"></i> <span>Clearing-House</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
             </a>
+            <ul class="treeview-menu" style="display: block;">
+              <li><a href="<%=baseUrl%>clearing-house/records"><i class="fa fa-list-ol"></i><span>Records</span></a></li>
+              <li><a href="<%=baseUrl%>clearing-house/records/history"><i class="fa  fa-history"></i><span>Record History</span></a></li>
+              <li><a href="<%=baseUrl%>clearing-house/records/failed-workflows"><i class="fa fa-hourglass"></i><span>Failed Workflows</span></a></li>
+            </ul>
           </li>
           <li>
             <a href="<%=baseUrl%>widgets">
