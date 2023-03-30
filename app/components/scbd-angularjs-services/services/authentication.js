@@ -71,7 +71,7 @@ import _ from 'lodash'
 					var message = JSON.parse(event.data);
 
 					if(message.type=='authenticationToken') {
-						defer.resolve(message.authenticationToken || null);
+						defer.resolve({ token : message.authenticationToken, expiration : message.expiration });
 
 						if(message.authenticationEmail)
 							$rootScope.lastLoginEmail = message.authenticationEmail;
@@ -88,7 +88,7 @@ import _ from 'lodash'
 					pToken = t;
 
 					if(Vue?.prototype.$auth)
-						Vue.prototype.$auth.setUserToken(pToken);
+						Vue.prototype.$auth.setUserToken(pToken.token);
 
 					return t;
 
@@ -117,22 +117,31 @@ import _ from 'lodash'
 	    //
 	    //
 	    //============================================================
-		function setToken(token, email) { // remoteUpdate:=true
+		function setToken(token, email, expiration) { // remoteUpdate:=true
+            
 
 			return $q.when(authenticationFrameQ).then(function(authenticationFrame){
 
-				pToken = token || undefined;
+				if(token){
+					pToken = {
+								token       : token,
+								expiration  : expiration
+							}
+				}
+				else
+					pToken = undefined;
 
 				if(authenticationFrame) {
 
 					var msg = {
 						type : "setAuthenticationToken",
 						authenticationToken : token,
-						authenticationEmail : email
+						authenticationEmail : email,
+						expiration        : expiration
 					};
 
 					if(Vue?.prototype.$auth)
-						Vue.prototype.$auth.setUserToken(pToken);
+						Vue.prototype.$auth.setUserToken(token);
 
 					authenticationFrame.contentWindow.postMessage(JSON.stringify(msg), accountsBaseUrl);
 				}
@@ -183,13 +192,13 @@ import _ from 'lodash'
 			if(currentUser)
 				return $q.when(currentUser);
 
-			return $q.when(apiToken.get()).then(function(token) {
+			return $q.when(apiToken.get()).then(function(apiUserToken) {
 
-				if(!token) {
+				if(!apiUserToken) {
 					return anonymous();
 				}
 
-				return $http.get('/api/v2013/authentication/user', { headers: { Authorization: "Ticket " + token } }).then(function(r){
+				return $http.get('/api/v2013/authentication/user', { headers: { Authorization: "Ticket " + apiUserToken.token } }).then(function(r){
 					return r.data;
 				});
 
@@ -340,36 +349,6 @@ import _ from 'lodash'
 
 	}]);
 
-	app.factory('authenticationHttpIntercepter', ["$q", "apiToken", function($q, apiToken) {
-
-		return {
-			request: function(config) {
-
-				var trusted = /^https:\/\/api.cbd.int\//i.test(config.url) ||
-							  /^\/api\//i                .test(config.url);
-
-				var hasAuthorization = (config.headers||{}).hasOwnProperty('Authorization') ||
-							  		   (config.headers||{}).hasOwnProperty('authorization');
-
-				if(!trusted || hasAuthorization) // no need to alter config
-					return config;
-
-				//Add token to http headers
-
-				return $q.when(apiToken.getCookieToken()).then(function(token) {
-
-					if(token) {
-						config.headers = ng.extend(config.headers||{}, {
-							Authorization : "Ticket " + token
-						});
-					}
-
-					return config;
-				});
-			}
-		};
-	}]);
-
     app.factory('authenticationHttpIntercepter', ["$q", "apiToken", "$rootScope",
      function($q, apiToken, $rootScope) {
 
@@ -377,7 +356,8 @@ import _ from 'lodash'
             request: function(config) {
                 
 				var trusted =   /^https:\/\/api.cbd.int\//i.test(config.url) ||
-                                /^https:\/\/api.cbddev.xyz\//i.test(config.url) ||
+                                /^https:\/\/api.cbddev.xyz\//i.test(config.url)||
+								/^\/api\//i                .test(config.url) ||
                                 /^http:\/\/localhost[:\/]/i.test(config.url);
 
                 var hasAuthorization = (config.headers || {}).hasOwnProperty('Authorization') ||

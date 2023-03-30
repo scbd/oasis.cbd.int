@@ -345,7 +345,7 @@ export default {
                 
             }
             catch(e){
-                this.error = "Error occurred on this operation \n" + e;
+                this.error = "Error occurred on this operation \n" + JSON.stringify(e);
             }
             finally{
                 this.loading = false;
