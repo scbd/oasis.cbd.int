@@ -14,6 +14,9 @@
                     item-key="_id" show-expand class="elevation-4" :loading="failedRecords.loading" loading-text="Loading... Please wait"
                     :server-items-length="failedRecords.total" :options.sync="failedRecords.options" >     
                         <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
+                        <template v-slot:item.history="{ item }">
+                            <a target="_blank" :href="'/clearing-house/records/history/'+item.data.identifier">History</a>
+                        </template>
                         <template v-slot:item.failedExecution.failDate="{ item }">
                             {{item.failedExecution.failDate  | formatDate('format','DD MMM YYYY HH:mm')}}
                         </template>
@@ -27,7 +30,10 @@
                             <td :colspan="headers.length" style="padding:10px;">
                                 <div>
                                     <v-card flat tile>    
-                                        <v-card-title>Workflow details</v-card-title>
+                                        <v-card-title>
+                                            Workflow details
+                                            <small>(<a target="_blank" :href="'/clearing-house/records/history/'+item.data.identifier">History</a>)</small>
+                                        </v-card-title>
                                             <v-row class="mb-12" no-gutters >
                                                 <v-col md="6">
                                                     <div class="v-data-table v-data-table--fixed-height theme--light">
@@ -56,11 +62,15 @@
                                                                         <th>Version</th><td>{{item.type.version}}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <th>Created</th><td>{{item.createdOn}} ({{item.createdBy}})</td>
+                                                                        <th>Created</th>
+                                                                        <td>{{item.createdOn}} 
+                                                                            (<a :href="'https://accounts.cbd.int/admin/users/'+item.createdBy">{{item.createdBy}}</a>)
+                                                                        </td>
                                                                         <th>Closed</th><td>{{item.closedOn}} ({{item.closedBy}})</td>
                                                                     </tr>
                                                                     <tr v-if="item.failedExecution.lockInfo">
-                                                                        <th>Lock Id</th><td>{{item.failedExecution.lockInfo.lockID}} ({{item.failedExecution.lockInfo.lockedOn}})</td>
+                                                                        <th>Lock Id</th><td>
+                                                                            {{item.failedExecution.lockInfo.lockID}} ({{item.failedExecution.lockInfo.lockedOn}})</td>
                                                                         <th>locked By</th>
                                                                         <td>
                                                                         {{item.failedExecution.lockInfo.lockedBy.firstName}} {{item.failedExecution.lockInfo.lockedBy.lastName  }}
@@ -87,7 +97,7 @@
                                                                         <th style="width:35px">Canceled on</th>
                                                                     </tr>
                                                                     <tr v-for="activity in item.activities">
-                                                                        <td> {{activity.createdOn}} ({{activity.createdBy}})</td>
+                                                                        <td> {{activity.createdOn}} (<a :href="'https://accounts.cbd.int/admin/users/'+activity.createdBy">{{activity.createdBy}}</a>)</td>
                                                                         <td> {{activity.closedOn}} ({{activity.closedBy}})</td>
                                                                         <td> {{activity.canceledOn}} ({{activity.canceledBy}})</td>
                                                                     </tr>

@@ -68,6 +68,8 @@ async function loadAsyncHeaders(baseConfig) {
 
 export function tryCastToApiError(error) {
 
+  console.error(error);
+
   if(error && error.response && error.response.data && error.response.data.code) {
       const apiError = error.response.data
       throw error.response.data;

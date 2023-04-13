@@ -167,11 +167,11 @@
                                                                 <td>
                                                                     <strong>
                                                                         <a target="_blank" :href="appDocumentUrl(documentIndex, 'published')">
-                                                                            {{documentIndex.title|lstring}} 
+                                                                            {{documentIndex.title}} 
                                                                             <i class="fa fa-external-link"></i>
                                                                         </a>
                                                                     </strong><br/>
-                                                                    <small v-html="$options.filters.lstring(documentIndex.summary, 'en')"></small>
+                                                                    <small v-html="documentIndex.summary"></small>
                                                                 </td>
                                                                 <td> {{ countryName(documentIndex.owner.replace('country:', '')) }}</td>
                                                                 <td> {{ countryName(documentIndex.government)}}</td>
@@ -252,11 +252,38 @@
                                                                     {{ documentDraft.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    <button class="btn btn-primary" @click="onShowJson(documentDraft)">Show JSON
+                                                                    <button class="btn btn-primary" 
+                                                                        @click="onShowJson(documentDraft)">Show JSON
+                                                                    </button>
+                                                                    <button class="btn btn-danger" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
+                                                                         @click="restartWorkflow(documentDraft)" :class="{'disabled': loading}">Restart Workflow
                                                                     </button>
                                                                 </td>
                                                             </tr>
-                                                            
+                                                            <tr v-if="documentDraft && documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && 
+                                                                (documentDraft.failureProcessed || documentDraft.validationErrors)">
+                                                                <td></td>
+                                                                <td colspan="8">
+                                                                    <div v-if="documentDraft.failureProcessed">
+                                                                        <span v-if="documentDraft.failureProcessed.processedOn">
+                                                                            Failure Processed on {{documentDraft.failureProcessed.processedOn  | formatDate('format','DD MMM YYYY HH:mm')}}<br/>
+                                                                            ({{documentDraft.failureProcessed.processedBy}}) :- {{documentDraft.failureProcessed.action}}
+                                                                        </span>
+                                                                        <div class="alert alert-success">Workflow processed!</div>
+                                                                    </div>
+                                                                    <div v-if="documentDraft.validationErrors">
+                                                                        <table class="table table-bordered">
+                                                                            <tr style="background-color: #dd4b39;">
+                                                                                <td colspan="2">The draft record has validation Errors, please modify the record on the owner clearing-house</td>
+                                                                            </tr>
+                                                                            <tr v-for="error in documentDraft.validationErrors">
+                                                                                <td>{{error.code}}</td>
+                                                                                <td>{{error.property}}</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
                                                             <tr v-if="documentDraft && documentDraft.showJson">
                                                                 <th></th>
                                                                 <td colspan="8">
@@ -305,44 +332,56 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                            <tr  v-if="documentRevisions" v-for="documentRevision in (documentRevisions||{}).Items">
-                                                                <td>{{ documentRevision.revision }}</td>
-                                                                <td>{{ documentRevision.realm }}</td>
-                                                                <td>
-                                                                    <strong>
-                                                                        <a target="_blank" :href="appDocumentUrl(documentRevision, 'draft')">
-                                                                            {{documentRevision.title|lstring}} 
-                                                                            <i class="fa fa-external-link"></i>
-                                                                        </a>
-                                                                    </strong><br/>
-                                                                    <small v-html="$options.filters.lstring(documentRevision.summary, 'en')"></small>
-                                                                </td>
-                                                                <td> {{ countryName(documentRevision.owner.replace('country:', '') )}}</td>
-                                                                <td> {{ countryName(documentRevision.metadata.government)}}</td>
-                                                                <td>
-                                                                    {{ documentRevision.createdBy.firstName }} {{ documentRevision.createdBy.lastName }}<br/>
-                                                                    {{ documentRevision.createdOn | formatDate }}
-                                                                </td>
-                                                                <td>{{ documentRevision.submittedBy.firstName }} {{ documentRevision.submittedBy.lastName }}<br/>
-                                                                    {{ documentRevision.submittedOn | formatDate }}
-                                                                </td>
-                                                                <td>{{ documentRevision.updatedBy.firstName }} {{ documentRevision.updatedBy.lastName }}<br/>
-                                                                    {{ documentRevision.updatedOn | formatDate }}
-                                                                </td>
-                                                                <td>
-                                                                    <button class="btn btn-primary" @click="onShowJson(documentRevisions)">Show JSON
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                            
-                                                            <tr v-if="documentRevisions && documentRevisions.showJson">
-                                                                <th></th>
-                                                                <td colspan="9">
-                                                                    <div>
-                                                                        <pre style="white-space: break-spaces;">{{ documentRevisions |json }}</pre>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>                                                     
+                                                            <template  v-if="documentRevisions" v-for="documentRevision in (documentRevisions||{}).Items">
+                                                                <tr v-if="documentRevision && documentRevision.deletedBy" class="danger">
+                                                                    
+                                                                    <td colspan="10">
+                                                                        <strong style="margin:30%">
+                                                                           Revision {{ documentRevision.revision }} was deleted by {{ documentRevision.deletedBy.firstName }} {{ documentRevision.deletedBy.lastName }} on 
+                                                                             {{ documentRevision.deletedOn | formatDate }}
+                                                                        </strong>
+                                                                    </td>
+                                                                </tr>  
+                                                                <tr :class="{'danger' :  documentRevision.deletedBy}">
+                                                                    <td>{{ documentRevision.revision }}</td>
+                                                                    <td>{{ documentRevision.realm }}</td>
+                                                                    <td>
+                                                                        <strong>
+                                                                            <a target="_blank" :href="appDocumentUrl(documentRevision, 'draft')">
+                                                                                {{documentRevision.title|lstring}} 
+                                                                                <i class="fa fa-external-link"></i>
+                                                                            </a>
+                                                                        </strong><br/>
+                                                                        <small v-html="$options.filters.lstring(documentRevision.summary, 'en')"></small>
+                                                                    </td>
+                                                                    <td> {{ countryName(documentRevision.owner.replace('country:', '') )}}</td>
+                                                                    <td> {{ countryName(documentRevision.metadata.government)}}</td>
+                                                                    <td>
+                                                                        {{ documentRevision.createdBy.firstName }} {{ documentRevision.createdBy.lastName }}<br/>
+                                                                        {{ documentRevision.createdOn | formatDate }}
+                                                                    </td>
+                                                                    <td>{{ documentRevision.submittedBy.firstName }} {{ documentRevision.submittedBy.lastName }}<br/>
+                                                                        {{ documentRevision.submittedOn | formatDate }}
+                                                                    </td>
+                                                                    <td>{{ documentRevision.updatedBy.firstName }} {{ documentRevision.updatedBy.lastName }}<br/>
+                                                                        {{ documentRevision.updatedOn | formatDate }}
+                                                                    </td>
+                                                                    <td>
+                                                                        <button class="btn btn-primary" @click="onShowJson(documentRevision)">Show JSON
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                                
+                                                                <tr v-if="documentRevision && documentRevision.showJson"
+                                                                :class="{'danger' :  documentRevision.deletedBy}">
+                                                                    <th></th>
+                                                                    <td colspan="9">
+                                                                        <div>
+                                                                            <pre style="white-space: break-spaces;">{{ documentRevision |json }}</pre>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>  
+                                                            </template>                                                   
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -376,7 +415,9 @@
                                                                 <tr :class="{'danger' : workflow.state =='failed'}">
                                                                     <th>Workflow Id {{ workflow._id }}</th>
                                                                     <th>State</th>
-                                                                    <td>{{workflow.state}}</td>
+                                                                    <td>
+                                                                        {{workflow.state}} <strong v-if="workflow.result">({{ workflow.result.action }})</strong>
+                                                                    </td>
                                                                     <th></th>
                                                                     <td></td>
                                                                 </tr>
@@ -700,6 +741,39 @@ export default {
                 return;
 
             return this.countries.find(e=>e.code == code.toUpperCase())?.name?.en;
+        },
+        async startNewWorkflow(documentDraft){
+            
+            try{
+                this.$set(documentDraft, 'validationErrors', undefined);
+                this.$set(documentDraft, 'failureProcessed', undefined);
+                this.loading=true;
+
+                const response = await kmWorkflowsAPI.startNewWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''))
+            
+                if(response?.errors){
+                    this.$set(documentDraft, 'validationErrors', response.errors);
+                }
+                else{
+                    this.$set(documentDraft, 'failureProcessed',  response)
+                }
+            }
+            catch(err){
+                console.log(err)
+                this.errors.push(err)
+                this.showError(err);
+            }
+            finally{
+                this.loading=false;
+            }
+        },
+        async restartWorkflow(documentDraft){
+            if(!documentDraft?.workingDocumentLock)
+                return;
+
+            if(confirm('Are you sure you want to restart the workflow?')){
+                await this.startNewWorkflow(documentDraft)
+            }
         }
     }
 }

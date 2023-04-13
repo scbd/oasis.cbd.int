@@ -39,6 +39,7 @@ export { default as template } from './vue-list.html';
                     updatingAction:false,
                     expanded: [],
                     headers: [ 
+                        { text: 'History', value: 'history'},
                         { text: 'State', value: 'state'},
                         { text: 'Realm', value: 'data.realm'},
                         { text: 'Schema', value: 'data.metadata.schema'},
