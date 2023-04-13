@@ -6,6 +6,8 @@ import '~/components/scbd-angularjs-services/main';
 
 import { securize, mapView, importQ, injectRouteParams } from './mixin';
 import * as angularViewWrapper from '~/views/shared/angular-view-wrapper'
+import * as vueViewWrapper     from '~/views/shared/vue-view-wrapper'
+import realmConfigurations from 'realmConf';
 
 var baseUrl = require.toUrl("").replace(/\?v=.*$/, "");
 
@@ -13,6 +15,8 @@ function logError(err) {
   console.log(err)
   throw err;
 }
+
+const chmAdminRoles = realmConfigurations.map(e=>e.roles.administrator).flat()
 
 const routeTemplates = {
 
@@ -31,6 +35,11 @@ const routeTemplates = {
     views_widgets_view        : { component: ()=>import('~/views/widgets/view').catch(logError) },
     views_tags_index          : { component: ()=>import('~/views/tags/index').catch(logError) },
     views_shared_login        : { component: ()=>import('~/views/shared/login').catch(logError) },
+    views_shared_404          : { component: ()=>import('~/views/shared/404').catch(logError) },   
+
+    views_chm_index           : { component: ()=>import('~/views/clearing-house/index.vue').catch(logError) },  
+    views_chm_records         : { component: ()=>import('~/views/clearing-house/record-list.vue').catch(logError) },  
+    views_chm_record_history  : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) },  
 };
 
 app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -49,15 +58,23 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
         when('/articles/new',                           { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_editor       , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }, isNew:true }).
         when('/articles/:id/:title?/edit',              { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_editor       , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         when('/articles/:id/:title?',                   { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_view         , securized : securize(null,null, true) }}).
-        when('/workflows',                              { ...mapView(angularViewWrapper), label:'Workflow Manager',   resolveUser : true, resolve : { ...routeTemplates.views_workflows_index      , securized : securize(['Administrator', 'oasisWorkflowManager'], null, true) }}).
+        
         when('/widgets',                                { ...mapView(angularViewWrapper), label:'Widgets',            resolveUser : true, resolve : { ...routeTemplates.views_widgets_index        , securized : securize(null,null, true) }}).
         when('/widgets/new',                            { ...mapView(angularViewWrapper), label:'New',                resolveUser : true, resolve : { ...routeTemplates.views_widgets_edit         , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }, isNew:true }).
         when('/widgets/:id/edit',                       { ...mapView(angularViewWrapper), label:'Edit',               resolveUser : true, resolve : { ...routeTemplates.views_widgets_edit         , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         when('/widgets/:id/view?',                      { ...mapView(angularViewWrapper), label:'Preview',            resolveUser : true, resolve : { ...routeTemplates.views_widgets_view         , securized : securize(null,null, true) }}).
-        when('/manage/:schema',                         { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_tags_index           , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
-        when('/signin',                                 { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_shared_login         , securized : securize(null,null, true) }}).
+        // when('/manage/:schema',                         { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_tags_index           , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+        when('/signin',                                 { ...mapView(angularViewWrapper), label:'Sign In',            resolveUser : true, resolve : { ...routeTemplates.views_shared_login         , securized : securize(null,null, true) }}).
+
+        when('/workflows',                              { "redirectTo": '/clearing-house/records/failed-workflows'}).
+        
+        when('/clearing-house'                              ,{ ...mapView(vueViewWrapper)    , label:'Clearing-House Management',   resolveUser : true, resolve : { ...routeTemplates.views_chm_index            , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).
+        when('/clearing-house/records/failed-workflows'     ,{ ...mapView(angularViewWrapper), label:'Failed Workflows'         ,   resolveUser : true, resolve : { ...routeTemplates.views_workflows_index      , securized : securize([...chmAdminRoles, 'Administrator', 'oasisWorkflowManager'], null, true) }}).
+        when('/clearing-house/records/history/:identifier?' ,{ ...mapView(vueViewWrapper)    , label:'Record History'           ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_record_history   , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).
+        when('/clearing-house/records/:realm?/:schema?'     ,{ ...mapView(vueViewWrapper)    , label:'Records'                  ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_records          , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
+        
     
-        otherwise({templateUrl: 'views/shared/404.html', label:'404 Error'});
+        otherwise({...mapView(angularViewWrapper), label:'404 Error', resolveUser : true, resolve : { ...routeTemplates.views_shared_404 }});
 
 }])
          

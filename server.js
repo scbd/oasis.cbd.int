@@ -23,7 +23,7 @@ app.set('port', process.env.PORT || 2012);
 
 // CONFIGURE /APP/* ROUTES
 if(!process.env.API_URL) {
-    console.warn('warning: evironment API_URL not set. USING default (https://api.cbd.int:443)');
+    console.warn('warning: evironment API_URL not set. USING default (https://api.cbddev.xyz)');
 }
 
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
@@ -50,9 +50,10 @@ app.get('/*',            function(req, res) {
         baseUrl: req.headers.base_url || '/',
         appVersion: appVersion,
 
-        cdnHost             : cdnHost,
+        cdnHost            : cdnHost,
         angularBundle      : bundleUrls.angularBundle,
         initialCss         : bundleUrls.initialCss,
+        apiUrl             : config.api.url
     }); 
 });
 

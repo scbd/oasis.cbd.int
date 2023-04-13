@@ -118,14 +118,7 @@ class="hold-transition skin-blue sidebar-mini">
       <!-- END: Actual animated container. -->
 
     </div>
-    <iframe id="authenticationFrame" style="display:none"></iframe>
-    <script>
-      var domain = document.location.hostname.replace(/[^\.]+\./, '');
-
-      if (domain == 'localhost') domain = 'cbddev.xyz';
-
-      document.getElementById('authenticationFrame').src = 'https://accounts.' + domain + '/app/authorize.html';
-    </script>
+    
     <header class="main-header">
       <!-- Logo -->
       <a href="https://www.cbd.int" class="logo">
@@ -227,12 +220,19 @@ class="hold-transition skin-blue sidebar-mini">
               <i class="fa fa-th"></i>
               <span>Articles</span>
             </a>
-          </li>
-          <li>
-            <a href="<%=baseUrl%>workflows">
-              <i class="fa fa-th"></i>
-              <span>Workflows</span>
+          </li>          
+           <li class="treeview menu-open">
+            <a href="<%=baseUrl%>clearing-house">
+              <i class="fa fa-database"></i> <span>Clearing-House</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
             </a>
+            <ul class="treeview-menu" style="display: block;">
+              <li><a href="<%=baseUrl%>clearing-house/records"><i class="fa fa-list-ol"></i><span>Records</span></a></li>
+              <li><a href="<%=baseUrl%>clearing-house/records/history"><i class="fa  fa-history"></i><span>Record History</span></a></li>
+              <li><a href="<%=baseUrl%>clearing-house/records/failed-workflows"><i class="fa fa-hourglass"></i><span>Failed Workflows</span></a></li>
+            </ul>
           </li>
           <li>
             <a href="<%=baseUrl%>widgets">
@@ -321,6 +321,9 @@ class="hold-transition skin-blue sidebar-mini">
   <script src="<%=cdnHost%>combine/<%=angularBundle%>"></script>
 
   <script>
+    window.scbd = {
+      apiUrl : '<%=apiUrl%>'
+    }
     require.config({ baseUrl : "<%=baseUrl%>app/" });
 
     require(["boot"], function(boot){

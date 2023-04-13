@@ -1,4 +1,4 @@
-import '~/app'
+import app from '~/app';
 import 'jquery'
 import 'angular-route'
 import '~/components/scbd-angularjs-services/main'
@@ -85,3 +85,4 @@ export function securize(roleList, useNationalRoles, checkEmailVerified){
         });
     }];
 }
+
