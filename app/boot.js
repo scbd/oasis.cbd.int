@@ -62,8 +62,7 @@ export default function bootApp(window, require, defineX) {
 
             'vue-i18n'                  : cdnHost + 'npm/vue-i18n@8.21.1/dist/vue-i18n.min',
             'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
-            'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue`,
-            'angular-vue-plugins'       : `${cdnHost}npm/@scbd/angular-vue@3.1.0/dist/angular-vue-plugins.min`,
+            'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@4.0.0/dist/index`,
             'coreui-vue'                : cdnHost + 'npm/@coreui/vue@3.1.4/dist/coreui-vue.umd',
             'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
             'vue-multiselect'           : `${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min`,
