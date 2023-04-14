@@ -1,4 +1,4 @@
-﻿import git          from 'simple-git';
+﻿import simpleGit          from 'simple-git';
 import path         from 'path';
 import _            from 'lodash';
 import fs           from 'fs';
@@ -16,6 +16,7 @@ const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
 const stat         = util.promisify(fs.stat);
 const mkdir        = util.promisify(fs.mkdir);
 const basePath     = __dirname + '/repositories/';
+const git          = simpleGit();
 
 function gitQuery(options){
     
@@ -83,7 +84,7 @@ function gitQuery(options){
     async function getUpdatesFiles(repositoryName, baseBranch, date, 
         ignoreFiles, allowedExtensions, ignoreFolders) {
 
-        try{
+        // try{
             
             let  dateFrom;
             let gitUrl = 'https://github.com/scbd/';
@@ -105,14 +106,14 @@ function gitQuery(options){
 
             if (!statsLang || statsLang && !statsLang.isDirectory()) {
                 await mkdir(basePath + repositoryName)
-                gitObject = git(basePath);
+                gitObject = git.cwd(basePath);
                 try {
                     await (gitObject.clone(gitUrl + repositoryName + '.git', basePath + repositoryName, []));
                 } catch (err) {
                     winston.error(err);
                 }
             } else {
-                gitObject = git(basePath + repositoryName);
+                gitObject = git.cwd(basePath + repositoryName);
                 await gitObject.checkout('master')
                 let r = await(gitObject.pull('origin'));
             }
@@ -120,12 +121,12 @@ function gitQuery(options){
 
             await gitObject.checkout('tags/'+baseBranch)
 
-            let modifieldfiles;
+            let modifiedFiles;
             
             if(date ==undefined || _.isEmpty(date))
-                modifieldfiles = await gitObject.raw(['ls-files']);
+                modifiedFiles = await gitObject.raw(['ls-files']);
             else 
-                modifieldfiles = await gitObject.log(['--after='+new Date(date).toUTCString(), "--name-only"]);
+                modifiedFiles = await gitObject.log(['--after='+new Date(date).toUTCString(), "--name-only"]);
 
             let modifiedFileInBranch = [];
 
@@ -133,25 +134,26 @@ function gitQuery(options){
             ignoreFiles         = (ignoreFiles || "bower.json, package.json,.bower.json,.awsbox.json").replace(/\s/g, '').split(',');
             ignoreFolders        = (ignoreFolders || 'i18n').replace(/\s/g, '').split(',');
             
-            if(modifieldfiles.all){
-                _.each(modifieldfiles.all, function(file){
-                    if(file.hash){                                
-                        modifiedFileInBranch.push(getFilesFromString(file.hash, allowedExtensions, ignoreFiles, ignoreFolders));
+            if(modifiedFiles?.all){
+                _.each(modifiedFiles.all, function(file){
+                    if(file.diff){                                
+                        modifiedFileInBranch.push(getFilesFromString(file.diff, allowedExtensions, ignoreFiles, ignoreFolders));
                     }
                 })
             }
-            else if(_.isString(modifieldfiles)){                
-                modifiedFileInBranch.push(getFilesFromString(modifieldfiles, allowedExtensions, ignoreFiles, ignoreFolders));
+            else if(_.isString(modifiedFiles)){                
+                modifiedFileInBranch.push(getFilesFromString(modifiedFiles, allowedExtensions, ignoreFiles, ignoreFolders));
             }            
 
             return _.map(_.uniq(_.flatten(modifiedFileInBranch)), function(file){
                 return {name : path.basename(file), path: file}
             });
 
-        }
-        catch(err) {
-            winston.error(err);
-        };
+        // }
+        // catch(err) {
+        //     winston.error(err);
+        //     thr
+        // };
 
 
 
@@ -176,20 +178,20 @@ function gitQuery(options){
         return files;
     }
 
-    function getFilesFromString(hash, allowedExtensions, ignoreFiles, ignoreFolders){
-        let r = hash.replace(/\'/g, '')
-            .replace(/\n/g, ';')
-            .split(';');
-        return _.uniq(r).filter(function (name) {
-            let ext = path.extname(name);
-            const dirPath = path.dirname(name).replace(/\//g, '_',)
+    function getFilesFromString(fileDiff, allowedExtensions, ignoreFiles, ignoreFolders){
+        // let r = hash.replace(/\'/g, '')
+        //     .replace(/\n/g, ';')
+        //     .split(';');
+        return _.uniq(fileDiff.files).filter(function ({file}) {
+            let ext = path.extname(file);
+            const dirPath = path.dirname(file).replace(/\//g, '_',)
             return _.indexOf(allowedExtensions, ext) >= 0 
-                   && _.indexOf(ignoreFiles, path.basename(name)) < 0
+                   && _.indexOf(ignoreFiles, path.basename(file)) < 0
                    && !ignoreFolders.filter(e=> {
                         const replaceFolderPath = dirPath.replace(e.replace(/\/$/, '').replace(/\//g, '_'), '_');
                         return replaceFolderPath == '_' || /__(.*)?/.test(replaceFolderPath);
                       }).length;
-        });
+        }).map(e=>e.file);
     }
 }
 

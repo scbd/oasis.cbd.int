@@ -175,14 +175,14 @@ function databaseTable(options){
         const supportedTables  = recordApiEndpoint.keys();
         
         if(!supportedFormats.includes(req.from)){
-            return req.send(`Invalid table (${req.from}), supported tables are ${supportedTables.join('|')}`).status(httpStatusCodes.invalidParameter)
+            return req.status(httpStatusCodes.invalidParameter).send(`Invalid table (${req.from}), supported tables are ${supportedTables.join('|')}`)
         }
 
         if(!supportedFormats.includes(req.from)){
-            return req.send(`Invalid format (${req.from}), supported formats are ${supportedFormats.join('|')}`).status(httpStatusCodes.invalidParameter)
+            return req.status(httpStatusCodes.invalidParameter).send(`Invalid format (${req.from}), supported formats are ${supportedFormats.join('|')}`);
         }
         if((req.from == 'data' || req.from == 'json') && !req.params.lang){
-            return req.send(`Language of translation is mandatory`).status(httpStatusCodes.invalidParameter);
+            return req.status(httpStatusCodes.invalidParameter).send(`Language of translation is mandatory`);
         }
         
         console.log(req);

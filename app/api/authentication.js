@@ -2,6 +2,7 @@ import requestq from 'superagent';
 import _        from 'lodash';
 import winston  from 'winston';
 import config from './config.js'
+import {httpStatusCodes} from './utils.js';
 //============================================================
 //
 //
@@ -12,7 +13,7 @@ async function authenticate (req, res, next) {
         let ANONYMOUS = { id: 1, anonymous: true, roles: [ 'Everyone' ], scopes: [] };
 
         if(!req.headers.authorization)
-            return ANONYMOUS;
+            return res.status(httpStatusCodes.unauthorized).send();
     
         let user = await getUser(req.headers.authorization);
 
