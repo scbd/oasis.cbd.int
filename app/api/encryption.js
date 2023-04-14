@@ -1,5 +1,5 @@
-﻿var crypto = require('crypto');
-const config = require('./config.js')
+﻿import crypto from 'crypto';
+import config from './config.js'
 
 const algorithm = 'aes-256-ctr';
 const password  = config.encryptionPassword;
@@ -24,4 +24,4 @@ function encryption(){
     }
 }
 
-module.exports = new encryption();
+export default new encryption();

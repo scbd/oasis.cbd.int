@@ -10,12 +10,12 @@ import { randomUUID } from 'crypto';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
 
-const basePath            = __dirname + 'db-translation-files';
-export const importWorkingFolder = `${basePath}/import`;
-
 const apiHost = process.env.API_HOST;
+const basePath            = __dirname + 'db-translation-files';
+
+export const importWorkingFolder = `${basePath}/import`;
 export const recordApiEndpoint = {
-    article : 'api/v2017/articles'
+    articles : 'api/v2017/articles'
 }
 
 function getRecordTypeEndpoint(recordType){
@@ -182,7 +182,7 @@ async function deleteFromDisk(path){
     }
     
 }
-await importTranslationFromZip('/Users/blaisefonseca/Projects/oasis.cbd.int/app/api/db-translation-files/BCH\#fr.zip', 'article');
+// await importTranslationFromZip('/Users/blaisefonseca/Projects/oasis.cbd.int/app/api/db-translation-files/BCH\#fr.zip', 'article');
 
     
 

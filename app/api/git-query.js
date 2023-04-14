@@ -1,17 +1,21 @@
-﻿const git          = require('simple-git/promise');
-const path         = require('path');
-const _            = require('lodash');
-const fs           = require('fs');
-const EasyZip      = require('easy-zip').EasyZip;
-const util         = require('util');
+﻿import git          from 'simple-git';
+import path         from 'path';
+import _            from 'lodash';
+import fs           from 'fs';
+import { EasyZip}   from 'easy-zip';
+import util         from 'util';
+import authenticate from './authentication.js';
+import express      from 'express';
+import config       from './config.js';
+import signedUrl    from './signed-url.js';
+import winston      from 'winston';
+
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
+
 const stat         = util.promisify(fs.stat);
 const mkdir        = util.promisify(fs.mkdir);
-const authenticate = require('./authentication.js');
-const express      = require('express');
-const config       = require('./config.js');
-const signedUrl    = require('./signed-url.js');
 const basePath     = __dirname + '/repositories/';
-const winston      = require('winston');
 
 function gitQuery(options){
     
@@ -189,4 +193,4 @@ function gitQuery(options){
     }
 }
 
-module.exports = gitQuery
+export default gitQuery;

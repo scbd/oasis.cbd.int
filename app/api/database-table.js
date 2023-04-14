@@ -1,16 +1,23 @@
-﻿const _              = require('lodash');
-const fs             = require('fs');
-const EasyZip        = require('easy-zip').EasyZip;
-const util           = require('util');
-const path           = require('path');
-const request        = require('superagent');
-const databaseTables = require('../views/translation/database-tables.json')
-const winston        = require('winston');
-const authenticate   = require('./authentication.js');
-const crypto         = require('crypto');
-const express        = require('express');
-const config         = require('./config.js');
-const signedUrl      = require('./signed-url.js');
+﻿import { recordApiEndpoint, importWorkingFolder } from './import-translation.js';
+import { httpStatusCodes } from './utils.js';
+import multer from 'multer';
+
+import _              from 'lodash';
+import fs             from 'fs';
+import { EasyZip}     from 'easy-zip';
+import util           from 'util';
+import path           from 'path';
+import request        from 'superagent';
+import winston        from 'winston';
+import crypto         from 'crypto';
+import express        from 'express';
+import databaseTables from '../views/translation/database-tables.json' assert { type: 'json'}
+import authenticate   from './authentication.js';
+import config         from './config.js';
+import signedUrl      from './signed-url.js';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
+
 const stat           = util.promisify(fs.stat);
 const basePath       = __dirname + '/db-translation-files/';
 
@@ -31,7 +38,19 @@ function databaseTable(options){
         :table : Name of the database table to import into
         :from  : type of data to import (.zip|.json|data)
     *********************/
-    router.post  ('/import/:tableName/:from/?:lang', authenticate, authorized, importTranslation);
+    const storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, importWorkingFolder)
+        },
+        filename: function (req, file, cb) {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+            cb(null, file.fieldname + '-' + uniqueSuffix)
+        }
+    })
+    const upload = multer({
+        storage
+    })
+    router.post  ('/import/:from/?:lang', authenticate, authorized, upload.array('translationFiles'), importTranslation);
 
     return router;
 
@@ -152,10 +171,23 @@ function databaseTable(options){
 
     async function importTranslation(req, res){
 
-        if(){
+        const supportedFormats = ['zip', 'json', 'data'];
+        const supportedTables  = recordApiEndpoint.keys();
+        
+        if(!supportedFormats.includes(req.from)){
+            return req.send(`Invalid table (${req.from}), supported tables are ${supportedTables.join('|')}`).status(httpStatusCodes.invalidParameter)
+        }
 
+        if(!supportedFormats.includes(req.from)){
+            return req.send(`Invalid format (${req.from}), supported formats are ${supportedFormats.join('|')}`).status(httpStatusCodes.invalidParameter)
+        }
+        if((req.from == 'data' || req.from == 'json') && !req.params.lang){
+            return req.send(`Language of translation is mandatory`).status(httpStatusCodes.invalidParameter);
         }
         
+        console.log(req);
+
+
         const importLogs = [];
     
         const errors= Object.keys(importLogs).filter(e=>importLogs[e].error).map(e=>{return {error:importLogs[e].error, id:e}})
@@ -164,4 +196,4 @@ function databaseTable(options){
     }
 }
 
-module.exports = databaseTable
+export default databaseTable

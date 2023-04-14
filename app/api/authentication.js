@@ -1,9 +1,7 @@
-
-let requestq = require('superagent');
-let _ = require('lodash');
-let winston = require('winston');
-
-const config = require('./config.js')
+import requestq from 'superagent';
+import _        from 'lodash';
+import winston  from 'winston';
+import config from './config.js'
 //============================================================
 //
 //
@@ -63,4 +61,4 @@ function isInRole(user, roles) {
 }
 authenticate.isInRole = isInRole;
 
-module.exports = exports = authenticate;
+export default authenticate;

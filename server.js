@@ -1,16 +1,19 @@
 
-'use strict';
-require           = require("esm")(module)
+import config from './app/api/config.js';
+import express from 'express';
+import httpProxy   from 'http-proxy';
+import { bundleUrls, cdnHost } from './app/boot.js';
+import gitQuery from './app/api/git-query.js'
+import translation from './app/api/database-table.js'
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
+
 
 process.on('SIGTERM', ()=>process.exit());
 
 // CREATE HTTP SERVER AND PROXY
-var express     = require('express');
-var app = express();
-var proxy   = require('http-proxy').createProxyServer({});
-let config = require('./app/api/config.js');
-
-const { bundleUrls, cdnHost } = require('./app/boot.js');
+const app = express();
+const proxy = httpProxy.createProxyServer({});
 
 app.set('views', __dirname + '/app');
 app.set('view engine', 'ejs');
@@ -38,8 +41,8 @@ app.use('/app',           express.static(__dirname + '/dist/app', { setHeaders: 
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
 
 
-app.use('/translation-api/git/:repository',          require('./app/api/git-query')  ());
-app.use('/translation-api/database-table/:table',    require('./app/api/database-table')());
+app.use('/translation-api/git/:repository',          gitQuery());
+app.use('/translation-api/database-table/:table',    translation());
 
 app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.host, changeOrigin: true, secure:false }));
 app.all('/app/*', function(req, res) { res.status(404).send(); } );

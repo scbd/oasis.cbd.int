@@ -35,3 +35,15 @@ export async function extractZipFile(zipFilePath, extractionLocation){
 
     return `${extractionLocation}/${fileBaseName}`;
 }
+
+export const httpStatusCodes = {
+    badRequest         : 400,
+    mandatory          : 400,
+    invalidParameter   : 400,
+    unauthorized       : 401,
+    forbidden          : 403,
+    notFound           : 404,
+    internalServerError: 500,
+    notImplemented     : 501,
+    serviceUnavailable : 503,
+}
