@@ -26,6 +26,12 @@ function databaseTable(options){
     router.get   ('/',             authenticate, authorized, get); 
     router.get   ('/signed-url',   authenticate, authorized, signedUrl.get);
     router.get   ('/download',     signedUrl.isValid, download);
+    
+    /**********************
+        :table : Name of the database table to import into
+        :from  : type of data to import (.zip|.json|data)
+    *********************/
+    router.post  ('/import/:tableName/:from/?:lang', authenticate, authorized, importTranslation);
 
     return router;
 
@@ -96,7 +102,7 @@ function databaseTable(options){
             var ag = [];
             ag.push({"$match": {'_id' : {$in : q.ids.map(e=> { return { "$oid" : e }})}}});
             let nr6Request = await request
-                                .get(`${config.api.url}${databaseTable.api}`)
+                                .get(`${config.api.host}${databaseTable.api}`)
                                 .query({"ag" : JSON.stringify(ag)})
                                 .set({accept:'application/json'});
 
@@ -144,6 +150,18 @@ function databaseTable(options){
         return files;
     }
 
+    async function importTranslation(req, res){
+
+        if(){
+
+        }
+        
+        const importLogs = [];
+    
+        const errors= Object.keys(importLogs).filter(e=>importLogs[e].error).map(e=>{return {error:importLogs[e].error, id:e}})
+        if(errors.length)
+            console.log(`Errors in articles : `, errors);
+    }
 }
 
 module.exports = databaseTable
