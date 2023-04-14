@@ -22,8 +22,8 @@ app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 2012);
 
 // CONFIGURE /APP/* ROUTES
-if(!process.env.API_URL) {
-    console.warn('warning: evironment API_URL not set. USING default (https://api.cbddev.xyz)');
+if(!process.env.API_HOST) {
+    console.warn('warning: evironment API_HOST not set. USING default (https://api.cbddev.xyz)');
 }
 
 var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
@@ -32,7 +32,7 @@ let appVersion = process.env.TAG      || gitVersion;
 console.info(`info: www.cbd.int/management`);
 console.info(`info: Git commit:  ${gitVersion}`);
 console.info(`info: App version: ${appVersion}`);
-console.info(`info: API address: ${config.api.url}`);
+console.info(`info: API address: ${config.api.host}`);
 
 app.use('/app',           express.static(__dirname + '/dist/app', { setHeaders: setCustomCacheControl }));
 app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCustomCacheControl }));
@@ -41,7 +41,7 @@ app.use('/app',           express.static(__dirname + '/app', { setHeaders: setCu
 app.use('/translation-api/git/:repository',          require('./app/api/git-query')  ());
 app.use('/translation-api/database-table/:table',    require('./app/api/database-table')());
 
-app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.url, changeOrigin: true, secure:false }));
+app.all('/api/*', (req, res) => proxy.web(req, res, { target: config.api.host, changeOrigin: true, secure:false }));
 app.all('/app/*', function(req, res) { res.status(404).send(); } );
 
 // CONFIGURE TEMPLATE
@@ -53,7 +53,7 @@ app.get('/*',            function(req, res) {
         cdnHost            : cdnHost,
         angularBundle      : bundleUrls.angularBundle,
         initialCss         : bundleUrls.initialCss,
-        apiUrl             : config.api.url
+        apiHost            : config.api.host
     }); 
 });
 

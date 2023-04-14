@@ -5,7 +5,7 @@ import _ from 'lodash'
 
     var accountsBaseUrl = (function(){
 
-        const hostName = window.scbd?.apiUrl || window.location.hostname;
+        const hostName = window.scbd?.apiHost || window.location.hostname;
         let   domain   = hostName.replace(/[^\.]+\./, '');
 
         if(domain=='localhost')

@@ -42,7 +42,7 @@ async function authenticate (req, res, next) {
 async function getUser(token) {
 
 
-    let response = await requestq.get(config.api.url+'/api/v2013/authentication/user')
+    let response = await requestq.get(config.api.host+'/api/v2013/authentication/user')
                                  .accept('application/json')
                                  .set('Authorization', token)
     return response.body;
