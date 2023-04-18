@@ -20,26 +20,27 @@ const chmAdminRoles = realmConfigurations.map(e=>e.roles.administrator).flat()
 
 const routeTemplates = {
 
-    views_home_index          : { component: ()=>import('~/views/home/index').catch(logError) },
-    views_projects_index      : { component: ()=>import('~/views/projects/index').catch(logError) },
-    views_translation_index   : { component: ()=>import('~/views/translation/index').catch(logError) },
-    views_translation_project : { component: ()=>import('~/views/translation/project').catch(logError) },
-    views_translation_database: { component: ()=>import('~/views/translation/database-tables').catch(logError) },
-    views_translation_table   : { component: ()=>import('~/views/translation/table').catch(logError) },
-    views_article_index       : { component: ()=>import('~/views/article/index').catch(logError) },
-    views_article_editor      : { component: ()=>import('~/views/article/editor').catch(logError) },
-    views_article_view        : { component: ()=>import('~/views/article/view').catch(logError) },
-    views_workflows_index     : { component: ()=>import('~/views/workflows/index').catch(logError) },
-    views_widgets_index       : { component: ()=>import('~/views/widgets/index').catch(logError) },
-    views_widgets_edit        : { component: ()=>import('~/views/widgets/edit').catch(logError) },
-    views_widgets_view        : { component: ()=>import('~/views/widgets/view').catch(logError) },
-    views_tags_index          : { component: ()=>import('~/views/tags/index').catch(logError) },
-    views_shared_login        : { component: ()=>import('~/views/shared/login').catch(logError) },
-    views_shared_404          : { component: ()=>import('~/views/shared/404').catch(logError) },   
+    views_home_index                        : { component: ()=>import('~/views/home/index').catch(logError) },
+    views_projects_index                    : { component: ()=>import('~/views/projects/index').catch(logError) },
+    views_translation_index                 : { component: ()=>import('~/views/translation/index').catch(logError) },
+    views_translation_project               : { component: ()=>import('~/views/translation/project').catch(logError) },
+    views_translation_database              : { component: ()=>import('~/views/translation/database-tables').catch(logError) },
+    views_translation_table                 : { component: ()=>import('~/views/translation/table').catch(logError) },
+    views_translation_table_import          : { component: ()=>import('~/views/translation/database-tables/import.vue').catch(logError) },  
+    views_article_index                     : { component: ()=>import('~/views/article/index').catch(logError) },
+    views_article_editor                    : { component: ()=>import('~/views/article/editor').catch(logError) },
+    views_article_view                      : { component: ()=>import('~/views/article/view').catch(logError) },
+    views_workflows_index                   : { component: ()=>import('~/views/workflows/index').catch(logError) },
+    views_widgets_index                     : { component: ()=>import('~/views/widgets/index').catch(logError) },
+    views_widgets_edit                      : { component: ()=>import('~/views/widgets/edit').catch(logError) },
+    views_widgets_view                      : { component: ()=>import('~/views/widgets/view').catch(logError) },
+    views_tags_index                        : { component: ()=>import('~/views/tags/index').catch(logError) },
+    views_shared_login                      : { component: ()=>import('~/views/shared/login').catch(logError) },
+    views_shared_404                        : { component: ()=>import('~/views/shared/404').catch(logError) },   
 
-    views_chm_index           : { component: ()=>import('~/views/clearing-house/index.vue').catch(logError) },  
-    views_chm_records         : { component: ()=>import('~/views/clearing-house/record-list.vue').catch(logError) },  
-    views_chm_record_history  : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) },  
+    views_chm_index                         : { component: ()=>import('~/views/clearing-house/index.vue').catch(logError) },  
+    views_chm_records                       : { component: ()=>import('~/views/clearing-house/record-list.vue').catch(logError) },  
+    views_chm_record_history                : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) },  
 };
 
 app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -50,10 +51,16 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
     $routeProvider.
         when('/',                                       { ...mapView(angularViewWrapper), label:'OASIS',              resolveUser : true, resolve : { ...routeTemplates.views_home_index           , securized : securize(null,null, true) }}).
         when('/projects',                               { ...mapView(angularViewWrapper), label:'Projects',           resolveUser : true, resolve : { ...routeTemplates.views_projects_index       , securized : securize(null,null, true) }}).
+        
+        
         when('/translation',                            { ...mapView(angularViewWrapper), label:'Translation',        resolveUser : true, resolve : { ...routeTemplates.views_translation_index    , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         when('/translation/project/:repository',        { ...mapView(angularViewWrapper), label:'Projects',           resolveUser : true, resolve : { ...routeTemplates.views_translation_project  , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+                
+        when('/translation/database-tables/:table',     { redirectTo : '/translation/database-tables/:table/export/' }).
         when('/translation/database-tables',            { ...mapView(angularViewWrapper), label:'Translation',        resolveUser : true, resolve : { ...routeTemplates.views_translation_database , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
-        when('/translation/database-tables/:table',     { ...mapView(angularViewWrapper), label:'Translation',        resolveUser : true, resolve : { ...routeTemplates.views_translation_table    , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+        when('/translation/database-tables/:table/export',{ ...mapView(angularViewWrapper), label:'Export for Translation',      resolveUser : true, resolve : { ...routeTemplates.views_translation_table          , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+        when('/translation/database-tables/:table/import',{ ...mapView(vueViewWrapper),     label:'Import from Translation',     resolveUser : true, resolve : { ...routeTemplates.views_translation_table_import   , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+        
         when('/articles',                               { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_index        , securized : securize(null,null, true) }, reloadOnSearch:false}).
         when('/articles/new',                           { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_editor       , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }, isNew:true }).
         when('/articles/:id/:title?/edit',              { ...mapView(angularViewWrapper), label:'Article Editor',     resolveUser : true, resolve : { ...routeTemplates.views_article_editor       , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).

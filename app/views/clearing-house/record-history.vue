@@ -186,7 +186,7 @@
                                                                     {{ documentIndex.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    <a target="_blank" :href="apiHost + '/api/v2013/index/select?q=identifier_s:'+ documentIndex.identifier">Show JSON
+                                                                    <a target="_blank" :href="apiUrl + '/api/v2013/index/select?q=identifier_s:'+ documentIndex.identifier">Show JSON
                                                                     </a>
                                                                 </td>
                                                             </tr>
@@ -654,8 +654,8 @@ export default {
         }
     },
     computed:{
-        apiHost(){
-            return window.scbd.apiHost;
+        apiUrl(){
+            return window.scbd.apiUrl;
         }
     },
     methods : {        

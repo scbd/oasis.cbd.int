@@ -18,17 +18,31 @@
                                     </div>                                    
                                     <div class="box-footer">
                                         <div class="row">
-                                            <div class="col-sm-4 border-right">
+                                            <!-- <div class="col-sm-4 border-right">
                                                 <div class="description-block">
-                                                    <!-- <h5 class="description-header">{{table.rows}}</h5>
-                                                    <span class="description-text">Rows</span> -->
+                                                    <h5 class="description-header">{{table.rows}}</h5>
+                                                    <span class="description-text">Rows</span>
                                                 </div>
-                                            </div>                                            
-                                            <div class="col-sm-4">
-                                                <a ng-href="{{baseUrl}}translation/database-tables/{{table.name}}">
+                                            </div>                                             -->
+                                            <div class="col-sm-5">
+                                                <a ng-href="{{baseUrl}}translation/database-tables/{{table.name}}/export">
                                                     <div class="description-block">
-                                                        <h5 class="description-header"></h5>
-                                                        <span class="description-text">Translation</span>
+                                                        <i class="fa fa-download"></i>
+                                                        <span class="description-text">Export for Translation</span>
+                                                    </div>
+                                                </a>
+                                            </div>   
+                                            <div class="col-sm-2 border-left border-right">
+                                                <div class="description-block">
+                                                    <h5 class="description-header ng-binding">&nbsp;</h5>                                                    
+                                                </div>
+                                                <!-- /.description-block -->
+                                            </div>                                      
+                                            <div class="col-sm-5">
+                                                <a ng-href="{{baseUrl}}translation/database-tables/{{table.name}}/import">
+                                                    <div class="description-block">
+                                                        <i class="fa fa-upload"></i>
+                                                        <span class="description-text">Import from Translation</span>
                                                     </div>
                                                 </a>
                                             </div>

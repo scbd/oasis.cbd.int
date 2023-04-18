@@ -67,6 +67,7 @@ export default function bootApp(window, require, defineX) {
             'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
             'vue-multiselect'           : `${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min`,
             'vue-pagination-2'          : `${cdnHost}npm/vue-pagination-2@3.0.91/dist/vue-pagination-2.min`,
+            'vue-simple-uploader'       : `${cdnHost}npm/vue-simple-uploader@0.7.6/dist/vue-uploader`,
 
             'ngStorage'                 : cdnHost + 'npm/ngstorage@0.3.11/ngStorage.min',
             'toastr'                    : cdnHost + 'npm/angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
@@ -87,9 +88,10 @@ export default function bootApp(window, require, defineX) {
             'vueFile'                       : { 'deps': ['vue']},
             'coreui-vue'                    : { 'deps': ['vue', `css!${cdnHost}npm/@coreui/coreui@3.4.0/dist/css/coreui.css` ]},
             'code-editor-vue'               : { 'deps': ['vue', 'codemirror']},
-
             'vue-multiselect'               : { deps : [`css!${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css`] },
-            'vue-pagination-2'              : { 'deps': ['angular-vue'] },
+            'vue-pagination-2'              : { 'deps' : ['angular-vue'] },
+            'vue-simple-uploader'           : { 'deps' : ['angular-vue', 'vue-virtual-scroll-list'] },
+            'vue-virtual-scroll-list'       : { 'deps' : ['angular-vue'] }
             
         },
         // urlArgs: 'v=' + appVersion
@@ -153,9 +155,13 @@ export default function bootApp(window, require, defineX) {
         `${cdnHost}npm/codemirror@5.58.3/lib/codemirror.js`,
         `css!${cdnHost}npm/codemirror@5.58.3/lib/codemirror.css`
     ], function(codemirror) { 
-        console.log(codemirror)
         return codemirror;
     });
+
+    defineX('vue-virtual-scroll-list', [`${cdnHost}npm/vue-virtual-scroll-list@2.3.4/dist/index.js`], function(VirtualList){
+        window.VirtualList = VirtualList;
+        return VirtualList;
+    })
 
     if(document) { // BOOT App
         const deps = [
