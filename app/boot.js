@@ -163,7 +163,7 @@ export default function bootApp(window, require, defineX) {
         return VirtualList;
     })
 
-    if(document) { // BOOT App
+    if(document?.documentElement) { // BOOT App
         const deps = [
           import('angular'),
           import('./app'),
