@@ -5,8 +5,10 @@ import fs      from 'fs/promises';
 import crypto  from 'crypto';
 import cheerio from 'cheerio';
 import unzip   from 'unzipper';
-import { extractZipFile, verifyFileExists } from './utils.js';
+import { extractZipFile, logStep, importLogType } from './utils.js';
 import { randomUUID } from 'crypto';
+import logger from './logger.js';
+
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
 
@@ -33,19 +35,23 @@ function getRecordIdFromFilePath(filePath){
     return recordId;
 }
 
-export async function updateRecord(record, recordType, user){
+export async function updateRecord(record, recordType, user, importLog){
 
+    logStep(`Updating ${recordType}record with translation`, importLog, importLogType.console)
     let articleUpdate = await request.put(`${apiHost}/${getRecordTypeEndpoint(recordType)}/${record._id}`)
                         .set({ 
                             'Accept': 'application/json', 'Content-Type': 'application/json;Charset=utf-8',
-                            'Authorization': 'Ticket ' + user?.token
+                            'Authorization': user?.token
                         })
                         .send(record);
 
     return articleUpdate;
+    
 }
 
-export async function importFromFolder(basePath, lang, recordType, importLogs, user){
+export async function importFromFolder(basePath, lang, recordType, importLog, user){
+
+    logStep(`Importing from folder ${basePath.replace(importWorkingFolder, '')} ${recordType} in ${lang}`, importLog, importLogType.console)
     let dirs = await fs.readdir(basePath)
     for (let index = 0; index < dirs.length; index++) {
 
@@ -55,62 +61,79 @@ export async function importFromFolder(basePath, lang, recordType, importLogs, u
         const stats=  await fs.lstat(filePath);
         const ext = path.extname(filePath);
 
-        if(stats.isFile() && ext == '.json'){
+        if(stats.isDirectory()){
+            await importFromFolder(filePath, lang, recordType, importLog, user)
+        }
+        else if(stats.isFile()){
             const recordId = getRecordIdFromFilePath(filePath);
-            try{
-                await importFromFile(filePath, lang, importLogs, recordType, user)
+            if( ext == '.json'){
+                try{
+                    await importFromFile(filePath, lang, recordType, importLog, user)
+                }
+                catch(e){
+                    if(importLog[recordId].error){
+                        logger.error((e.response||{}).body||e)
+                        logStep({id:recordId, error:(e.response||{}).body||e}, importLog, importLogType.error);
+                    }
+                }
             }
-            catch(e){
-                if(!importLogs[recordId].error)
-                    importLogs[recordId].error = (e.response||{}).body||e;                
+            else {
+                logStep(`File  ${filePath.replace(importWorkingFolder, '')} under folder ${basePath.replace(importWorkingFolder, '')} for ${recordType} in ${lang} is not supported`, importLog, importLogType.console)
             }
-        }
-        else if(stats.isDirectory()){
-            await importFromFolder(filePath, lang, user)
         }
     }
 
+    return importLog;
 }
 
-export async function importFromFile(basePath, lang, importLogs, recordType, user){
-    
+export async function importFromFile(basePath, lang, recordType, importLog, user){
+
+    logStep(`importing from file ${basePath.replace(importWorkingFolder, '')} ${recordType} for lang ${lang}`, importLog, importLogType.console)
     let recordId = getRecordIdFromFilePath(basePath);
-    let record;
-    
-    importLogs[recordId] = importLogs[recordId] || { fields:[]};
+    try{
+        let record;
+        
+        importLog[recordId] = importLog[recordId] || { fields:[]};
 
-    if(!record){
+        if(!record){
 
-        let articleRequest =  await request.get(`${apiHost}/${getRecordTypeEndpoint(recordType)}/${recordId}`)
-                                        .set({accept:'application/json'});
-        if(!articleRequest?.body)
-            throw new Error('record has not body');
+            logStep(`getting record from api ${recordId}`, importLog, importLogType.console)
+            let articleRequest =  await request.get(`${apiHost}/${getRecordTypeEndpoint(recordType)}/${recordId}`)
+                                            .set({accept:'application/json'});
+            if(!articleRequest?.body)
+                throw new Error('record has not body');
 
-            record = articleRequest.body;
+                record = articleRequest.body;
+        }
+        
+        //read the json file from disk
+        const translatedFile = await fs.readFile(basePath, {encoding:'utf-8'});
+        const translatedRecord = JSON.parse(translatedFile);
+
+        await importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record);
     }
-    
-    //read the json file from disk
-    const translatedFile = await fs.readFile(basePath, {encoding:'utf-8'});
-    const translatedRecord = JSON.parse(translatedFile);
-
-    await importFromObject(translatedRecord, importLogs, recordId, record, lang, recordType, user);
-    
+    catch(e){
+        logger.error(e);
+        logStep({id:recordId, error:e.message||e}, importLog, importLogType.error)
+    }
+    return importLog;
 }
 
-export async function importFromObject(translatedRecord, importLogs, recordId, record, lang, recordType, user) {
+export async function importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record) {
 
+    logStep(`importing from object ${recordId} ${recordType} for lang ${lang}`, importLog, importLogType.console)
     _.each(translatedRecord, (field, key) => {
         let splits = key.split('_');
         let fieldName = splits[0];
         let hash = splits[1];
         //check for hash
-        importLogs[recordId][`original${fieldName}Hash`] = crypto.createHash('md5').update(record[fieldName].en).digest("hex");
-        importLogs[recordId][`translation${fieldName}Hash`] = hash;
-        importLogs[recordId].fields.push(fieldName);
+        importLog[recordId][`original${fieldName}Hash`] = crypto.createHash('md5').update(record[fieldName].en).digest("hex");
+        importLog[recordId][`translation${fieldName}Hash`] = hash;
+        importLog[recordId].fields.push(fieldName);
 
-        if (importLogs[recordId][`original${fieldName}Hash`] != hash) {
-            importLogs[recordId].error = `${fieldName} hash not matching for record: ${record[fieldName].en}(${recordId})`;
-            throw new Error(importLogs[recordId].error);
+        if (importLog[recordId][`original${fieldName}Hash`] != hash) {
+            logStep({id:recordId, error:`${fieldName} hash not matching for record id ${recordId}`}, importLog, importLogType.error)
+            return;
         }
 
         record[fieldName][lang.toLowerCase()] = field;
@@ -129,52 +152,61 @@ export async function importFromObject(translatedRecord, importLogs, recordId, r
         }
     });
 
-    await updateRecord(translatedRecord, recordType, user);
+    await updateRecord(record, recordType, user, importLog);
 
+    return importLog;
 }
 
 //expected user : { Token : '' }
-export async function importTranslationFromZip(zipFileName, recordType, user, taskId){
-
+export async function importTranslationFromZip(zipFileName, recordType, importLog, user, taskId, language){
+    logStep(`Begin importing from zip ${zipFileName.replace(importWorkingFolder, '')} ${recordType} for task ${taskId}`, importLog, importLogType.console)
           taskId            = taskId || randomUUID();
-    let   importLogs        = {};
+          importLog        = importLog || {};
     const taskWorkingFolder = `${importWorkingFolder}/${taskId}`;
     const langRegex         = /#(ar|es|fr|ru|zh)/;
+    const fileName          = path.basename(zipFileName);
+    const extractionFolder  = fileName.replace(path.extname(fileName), '')
+    if(!language && !langRegex.test(zipFileName))
+        throw new Error(`Zip file is missing language name(${fileName}), format should 'name#[ar|es|fr|ru|zh].zip'`)
 
-    if(!langRegex.test(zipFileName))
-        throw new Error('Zip file is missing language name, format should `name#[ar|es|fr|ru|zh].zip`')
+    const lang  = language || zipFileName.match(langRegex)[1]
 
-    const lang  = zipFileName.match(langRegex)[1]
-
-    await createDir(taskWorkingFolder);
+    await createDir(taskWorkingFolder, importLog);
     
-    const extractionLocation = await extractZipFile(zipFileName, taskWorkingFolder);
+    const extractionLocation = await extractZipFile(zipFileName, `${taskWorkingFolder}/${extractionFolder}`, importLog);
 
-    await importFromFolder(extractionLocation, lang, recordType, importLogs, user);
-    await deleteFromDisk(taskWorkingFolder);
+    await importFromFolder(extractionLocation, lang, recordType, importLog, user);
+
+    logStep(`Finish importing from zip ${zipFileName} ${recordType} for task ${taskId}`, importLog, importLogType.console);
+
+    return importLog;
 
 }
 
 
-async function createDir(dirname){
+export async function createDir(dirname, importLog){
     let baseDir;
     try {
         baseDir = await fs.stat(dirname);
     } catch (e) {}
     if (!baseDir || baseDir && !baseDir.isDirectory()) {
+        logStep(`creating dir ${dirname.replace(importWorkingFolder, '')}`, importLog, importLogType.console)
         await fs.mkdir(dirname, { recursive:true })
     }
 }
-async function deleteFromDisk(path){
+export async function deleteFromDisk(path, importLog){
     let pathStat;
     try {
         pathStat = await fs.stat(path);
         if (pathStat){
             if(pathStat.isDirectory()) {
-                await fs.rmdir(path, { recursive:true })
+                logStep(`deleting dir ${path.replace(importWorkingFolder, '')}`, importLog, importLogType.console)
+                await fs.rm(path, { recursive:true })
             }
-            else if(pathStat.isFile())
+            else if(pathStat.isFile()){
+                logStep(`deleting file ${path.replace(importWorkingFolder, '')}`, importLog, importLogType.console)
                 await fs.rm(path)
+            }
         }        
     }
     catch (e) {
@@ -182,7 +214,3 @@ async function deleteFromDisk(path){
     }
     
 }
-// await importTranslationFromZip('/Users/blaisefonseca/Projects/oasis.cbd.int/app/api/db-translation-files/BCH\#fr.zip', 'article');
-
-    
-

@@ -1,6 +1,8 @@
-﻿import { recordApiEndpoint, importWorkingFolder } from './import-translation.js';
-import { httpStatusCodes } from './utils.js';
+﻿import { recordApiEndpoint, importWorkingFolder, createDir,
+         importTranslationFromZip, deleteFromDisk, importFromFile } from './import-translation.js';
+import { httpStatusCodes, importLogType, logStep } from './utils.js';
 import multer from 'multer';
+import { randomUUID } from 'crypto';
 
 import _              from 'lodash';
 import fs             from 'fs';
@@ -8,7 +10,7 @@ import { EasyZip}     from 'easy-zip';
 import util           from 'util';
 import path           from 'path';
 import request        from 'superagent';
-import winston        from 'winston';
+import winston        from './logger.js';
 import crypto         from 'crypto';
 import express        from 'express';
 import databaseTables from '../views/translation/database-tables.json' assert { type: 'json'}
@@ -38,19 +40,8 @@ function databaseTable(options){
         :table : Name of the database table to import into
         :from  : type of data to import (.zip|.json|data)
     *********************/
-    const storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, importWorkingFolder)
-        },
-        filename: function (req, file, cb) {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-            cb(null, file.fieldname + '-' + uniqueSuffix)
-        }
-    })
-    const upload = multer({
-        storage
-    })
-    router.post  ('/import/:from/?:lang', authenticate, authorized, upload.array('translationFiles'), importTranslation);
+    
+    router.post  ('/import/:from/:lang?', authenticate, authorized, fileUpload, importTranslation);
 
     return router;
 
@@ -120,12 +111,12 @@ function databaseTable(options){
             
             var ag = [];
             ag.push({"$match": {'_id' : {$in : q.ids.map(e=> { return { "$oid" : e }})}}});
-            let nr6Request = await request
+            let articleRequest = await request
                                 .get(`${config.api.host}${databaseTable.api}`)
                                 .query({"ag" : JSON.stringify(ag)})
                                 .set({accept:'application/json'});
 
-            documents =  nr6Request.body;
+            const documents =  articleRequest.body;
             let translationFiles = [];
            
             for (let i = 0; i < documents.length; i++) {
@@ -171,28 +162,117 @@ function databaseTable(options){
 
     async function importTranslation(req, res){
 
-        const supportedFormats = ['zip', 'json', 'data'];
-        const supportedTables  = recordApiEndpoint.keys();
+        let logs     = [];
+        try{
+            const supportedFormats = ['zip', 'json', 'data'];
+            const supportedTables  = Object.keys(recordApiEndpoint);
+            
+            if(!supportedFormats.includes(req.params.from)){
+                return res.status(httpStatusCodes.invalidParameter).send(`Invalid table (${req.from}), supported tables are ${supportedTables.join('|')}`)
+            }
+
+            if(!supportedFormats.includes(req.params.from)){
+                return res.status(httpStatusCodes.invalidParameter).send(`Invalid format (${req.from}), supported formats are ${supportedFormats.join('|')}`);
+            }
+            if((req.params.from == 'data' || req.params.from == 'json') && !req.params.lang){
+                return res.status(httpStatusCodes.invalidParameter).send(`Language of translation is mandatory`);
+            }
+            
+            const files = req.files;
+
+            const user = { ...req.user };
+            user.token = req.headers['authorization'];
+
+            for (const index in files) {
+
+                if (Object.hasOwnProperty.call(files, index)) {
+                    const file = files[index];
+                    let importLogs = {};
+                    try{
+
+                        if(file.mimetype == 'application/zip'){
+                            await importTranslationFromZip(file.path, req.params.table.toLowerCase(), importLogs, user, req.guid, req.params.lang);
+                        }
+                        else if(file.mimetype == 'application/json'){
+                            await importFromFile(file.path, req.params.lang, req.params.table.toLowerCase(), importLogs, user);
+                        }
+                    }
+                    catch(e){
+                        winston.error(e);
+
+                        logStep({error:e.message||e}, importLogs, importLogType.error);
+                    }
+                    finally{
+
+                        for (const log in importLogs) {
+                            if (Object.hasOwnProperty.call(importLogs, log)) {
+                                const element = importLogs[log];
+                                if(element.error){
+                                    element.error = element.error.message||element.error
+                                    if(_.isObject(element.error))
+                                        element.error = JSON.stringify(element.error)
+                                }                            
+                            }
+                        }
+                        logs.push({ 
+                            fileName : file.originalname, 
+                            ...importLogs
+                        })
+                    }
+                }
+            }
+
+            // if(errors?.length){
+            //     console.log(`Errors in import : `, errors);
+            //     return res.status(httpStatusCodes.badRequest).send(errors)
+            // }
         
-        if(!supportedFormats.includes(req.from)){
-            return req.status(httpStatusCodes.invalidParameter).send(`Invalid table (${req.from}), supported tables are ${supportedTables.join('|')}`)
+            res.send(logs).status(200)
         }
+        catch(err) {
+            winston.error(err);
 
-        if(!supportedFormats.includes(req.from)){
-            return req.status(httpStatusCodes.invalidParameter).send(`Invalid format (${req.from}), supported formats are ${supportedFormats.join('|')}`);
+            logs.push({ 
+                errors:[err?.message||err]
+            })
+
+            return res.status(500).send(logs);
+            
         }
-        if((req.from == 'data' || req.from == 'json') && !req.params.lang){
-            return req.status(httpStatusCodes.invalidParameter).send(`Language of translation is mandatory`);
-        }
+        finally{
+            await deleteFromDisk(req.importDir);
+        };
+    }
+
+    async function fileUpload(req, res, next){
+
+        req.guid = randomUUID();
+        req.importDir = `${importWorkingFolder}/${req.guid}`;
+
+        const storage = multer.diskStorage({
+            destination: async function (req, file, cb) {
+                await createDir(req.importDir);
+                cb(null, req.importDir )
+            },
+            filename: function (req, file, cb) {
+                // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+                cb(null, `${file.originalname}`);// + '-' + uniqueSuffix)
+            }
+        })
+        const upload = multer({ storage }).array('file')
+
+        upload(req, res, function(err){
+            if(err){
+                winston.error(err);
+                let { field, message, name} = err
+                if(err.message != 'Unexpected field'){
+                    message = 'Unknown error in file upload'
+                }
+                return res.status(httpStatusCodes.internalServerError).send({ field, message, name});
+            }
+            next();
+        });
         
-        console.log(req);
-
-
-        const importLogs = [];
-    
-        const errors= Object.keys(importLogs).filter(e=>importLogs[e].error).map(e=>{return {error:importLogs[e].error, id:e}})
-        if(errors.length)
-            console.log(`Errors in articles : `, errors);
     }
 }
 
