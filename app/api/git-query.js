@@ -8,7 +8,7 @@ import authenticate from './authentication.js';
 import express      from 'express';
 import config       from './config.js';
 import signedUrl    from './signed-url.js';
-import winston      from 'winston';
+import winston      from './logger.js';
 
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));

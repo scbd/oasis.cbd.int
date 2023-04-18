@@ -2,6 +2,7 @@
 import { stat } from 'fs/promises';
 import path from 'path';
 import unzip   from 'unzipper';
+import logger from './logger.js'
 
 export const verifyFileExists = async function ({table, translationFiles, basePath}){
 
@@ -26,14 +27,15 @@ export const verifyFileExists = async function ({table, translationFiles, basePa
 }
 
 
-export async function extractZipFile(zipFilePath, extractionLocation){
+export async function extractZipFile(zipFilePath, extractionLocation, importLog){
 
+    logStep(`Begin zip extraction ${zipFilePath} to ${extractionLocation}`, importLog, importLogType.console)
     const fileBaseName       = path.basename(zipFilePath, path.extname(zipFilePath));
 
     const zipBuffer = await unzip.Open.file(zipFilePath)
                       await zipBuffer.extract({path: extractionLocation, concurrency: 5});
 
-    return `${extractionLocation}/${fileBaseName}`;
+    return `${extractionLocation}`;
 }
 
 export const httpStatusCodes = {
@@ -47,3 +49,19 @@ export const httpStatusCodes = {
     notImplemented     : 501,
     serviceUnavailable : 503,
 }
+
+export const importLogType = {
+    console : 'console',
+    error   : 'errors',
+    success : 'success'
+}
+export function logStep(message, importLog, logType){
+    if(importLog){
+        importLog[logType||'console'] = importLog[logType||'console'] || [];
+        importLog[logType||'console'].push(message);
+    }
+    if(logType!=importLogType.error)
+        logger.debug(message)
+}
+
+export const sleep = (ms)=>new Promise((resolve)=>setTimeout(resolve, ms));

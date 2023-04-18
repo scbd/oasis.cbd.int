@@ -1,6 +1,6 @@
 import requestq from 'superagent';
 import _        from 'lodash';
-import winston  from 'winston';
+import winston  from './logger.js';
 import config from './config.js'
 import {httpStatusCodes} from './utils.js';
 //============================================================
