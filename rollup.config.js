@@ -14,6 +14,7 @@ import bootWebApp, { cdnHost }   from './app/boot.js';
 import injectCssToDom           from './rollup/inject-css-to-dom';
 import resolveLocalized         from './rollup/resolve-localized';
 import stripBom                 from './rollup/strip-bom';
+import livereload               from 'rollup-plugin-livereload'
 
 const isWatchOn = process.argv.includes('--watch');
 const outputDir = 'dist';
@@ -89,7 +90,8 @@ function bundle(entryPoint, baseDir='app') {
         presets: [['@babel/preset-env', { targets: "> 0.25%, IE 10, not dead"}]],
         allowAllFormats: true
       }),
-      isWatchOn ? null : terser({ mangle: false }) // DISABLE IN DEV
+      isWatchOn ? null : terser({ mangle: false }), // DISABLE IN DEV
+      isWatchOn ? livereload('dist') : null         // ENABLE IN DEV ONLY
     ]
   }
 }
