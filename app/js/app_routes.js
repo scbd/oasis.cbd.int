@@ -57,7 +57,7 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
         when('/translation/project/:repository',        { ...mapView(angularViewWrapper), label:'Projects',           resolveUser : true, resolve : { ...routeTemplates.views_translation_project  , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
                 
         when('/translation/database-tables/:table',     { redirectTo : '/translation/database-tables/:table/export/' }).
-        when('/translation/database-tables',            { ...mapView(angularViewWrapper), label:'Translation',        resolveUser : true, resolve : { ...routeTemplates.views_translation_database , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
+        when('/translation/database-tables',            { ...mapView(angularViewWrapper), label:'Database Tables',        resolveUser : true, resolve : { ...routeTemplates.views_translation_database , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         when('/translation/database-tables/:table/export',{ ...mapView(angularViewWrapper), label:'Export for Translation',      resolveUser : true, resolve : { ...routeTemplates.views_translation_table          , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         when('/translation/database-tables/:table/import',{ ...mapView(vueViewWrapper),     label:'Import from Translation',     resolveUser : true, resolve : { ...routeTemplates.views_translation_table_import   , securized : securize(['Administrator', 'oasisArticleEditor'],null, true) }}).
         

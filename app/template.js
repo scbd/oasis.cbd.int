@@ -2,11 +2,12 @@ import app from '~/app';
 import './js/filters.js';
 import '~/components/scbd-angularjs-services/main';
 import 'angular-vue';
+import 'ng-breadcrumbs'
+import _ from 'lodash';
     
 
-    app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q', '$location',
-        function($scope, $rootScope, authentication, $q, $location
-        ) {
+    app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q', '$location', 'breadcrumbs',
+        function($scope, $rootScope, authentication, $q, $location, breadcrumbs){
 
           $q.when(authentication.getUser())
           .then(function(data){
@@ -31,6 +32,9 @@ import 'angular-vue';
              $scope.user = user
           });
 
+          $scope.getBreadcrumbs = function(){
+            return _.uniqBy(breadcrumbs.get(), item => { return item.path; });
+          }
         }
     ]);
     app.directive(

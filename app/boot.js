@@ -24,6 +24,7 @@ export const bundleUrls = {
     ].join(','),
     angularDependencies: [
         'npm/ngSmoothScroll@2.0.1/dist/angular-smooth-scroll.min.js',
+        'npm/angular-breadcrumbs@0.5.3/dist/ng-breadcrumbs.min.js',
     ].join(','),
     initialCss: [
         'npm/bootstrap@3.3.6/dist/css/bootstrap.min.css',     
