@@ -9,7 +9,7 @@
                         <div class="col-md-12">
                             <div class="box box-default">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Import from translations : </h3>
+                                    <h3 class="box-title">Import from translations : {{ $route.params.table }}</h3>
                                 </div>
                                 <div class="box-body">
                                     <div class="row">
@@ -44,8 +44,14 @@
                                     </div>
                                 </div>
                                 <div class="box-footer">
-                                    <button class="btn btn-sm btn-primary" @click="onUploadAll()">Upload All</button>
-                                    <button class="btn btn-sm btn-danger" @click="onReset()">Clear</button>
+                                    <button class="btn btn-sm btn-primary" :disabled="loading" @click="onUploadAll()">Upload All</button>
+                                    <button class="btn btn-sm btn-danger"  :disabled="loading" @click="onReset()">Clear</button>
+                                </div>
+                                <div class="box-footer" v-if="loading">
+                                    <div class="row" >
+                                        <div class="col-md-12" style="margin:5px">
+                                        <i class="fa fa-cog fa-spin fa-lg" style="margin-left: 50%;"></i> Uploading files...</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -86,7 +92,7 @@
                                                                 <tr v-for="(file, index) in file.files">
                                                                     <td>{{index+1}}</td>                                                    
                                                                     <td>
-                                                                        <a target="_blank" :href="'articles/' + file.id">{{ file.fileName }}</a>
+                                                                        <a target="_blank" :href="$route.params.table.toLowerCase() + '/' + file.id">{{ file.fileName }}</a>
                                                                     </td>
                                                                     <td> {{ file.message || 'Success' }}
                                                                     </td>
@@ -161,8 +167,8 @@ export default {
             autoStart:false,
             target: (file,request,c)=>{
                 const urls = {
-                    'application/zip'  : '/translation-api/database-table/Articles/import/zip',
-                    'application/json' : '/translation-api/database-table/Articles/import/json'
+                    'application/zip'  : `/translation-api/database-table/${this.$route.params.table}/import/zip`,
+                    'application/json' : `/translation-api/database-table/${this.$route.params.table}/import/json`
                 }
                 let url = urls[file.fileType];
                 url = `${url}/${this.fileLanguage?.code}`;
@@ -192,7 +198,8 @@ export default {
             {code : 'fr', title : "Françai"} ,
             {code : 'ru', title : "Русский"}  
         ],
-        fileLanguage : undefined
+        fileLanguage : undefined,
+        loading:false
       }
     },
     methods:{
@@ -204,11 +211,13 @@ export default {
             }
         },
 
-        onFileSuccess(rootFile, uploadedFile,response, chunk){
+        async onFileSuccess(rootFile, uploadedFile,response, chunk){
 
             const jsonResponse = JSON.parse(response);
             if(jsonResponse){
-                jsonResponse.forEach(async file => {
+                for (let i = 0; i < jsonResponse.length; i++) {
+                    const file = jsonResponse[i];      
+
                     if(file.success){
                         let isFolder = false
                         let {fileName, success } = file;
@@ -225,9 +234,10 @@ export default {
                     if(file.errors){
                         await this.formatLogs(file.errors, 'errors', file?.fileName)
                     }
-                });
-                
+                };
             }
+            if(rootFile.completed)
+                this.loading = false;
         },
         onFileError(rootFile, file,response, chunk){
             console.log(rootFile, file,response, chunk)
@@ -243,8 +253,10 @@ export default {
                 return;
             }
            
-            if(uploader?.fileList?.length)
+            if(uploader?.fileList?.length){
+                this.loading = true;
                 uploader.resume();
+            }
         },
         onReset(){
             const uploader = this.$refs.uploader.uploader;
@@ -258,6 +270,7 @@ export default {
             this.logs = [];
             this.fileStatus = [];
             this.fileLanguage = undefined;
+            this.loading = false;
         },
         async formatLogs(logs, type, fileName){
             for (let i = 0; i < logs.length; i++) {
