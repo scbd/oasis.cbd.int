@@ -65,8 +65,8 @@ export async function importFromFolder(basePath, lang, recordType, importLog, us
             await importFromFolder(filePath, lang, recordType, importLog, user)
         }
         else if(stats.isFile()){
-            const recordId = getRecordIdFromFilePath(filePath);
             if( ext == '.json'){
+                const recordId = getRecordIdFromFilePath(filePath);
                 try{
                     await importFromFile(filePath, lang, recordType, importLog, user)
                 }
@@ -88,12 +88,15 @@ export async function importFromFolder(basePath, lang, recordType, importLog, us
 
 export async function importFromFile(basePath, lang, recordType, importLog, user){
 
+    if(~basePath.indexOf('__MACOSX'))
+        return;
+
     logStep(`importing from file ${basePath.replace(importWorkingFolder, '')} ${recordType} for lang ${lang}`, importLog, importLogType.console)
     let recordId = getRecordIdFromFilePath(basePath);
     try{
         let record;
         
-        importLog[recordId] = importLog[recordId] || { fields:[]};
+        // importLog[recordId] = importLog[recordId] || { fields:[]};
 
         if(!record){
 
@@ -110,7 +113,7 @@ export async function importFromFile(basePath, lang, recordType, importLog, user
         const translatedFile = await fs.readFile(basePath, {encoding:'utf-8'});
         const translatedRecord = JSON.parse(translatedFile);
 
-        await importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record);
+        await importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record, path.basename(basePath));
     }
     catch(e){
         logger.error(e);
@@ -119,21 +122,38 @@ export async function importFromFile(basePath, lang, recordType, importLog, user
     return importLog;
 }
 
-export async function importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record) {
+export async function importFromObject(translatedRecord, lang, recordType, importLog, user, recordId, record, fileName) {
 
-    logStep(`importing from object ${recordId} ${recordType} for lang ${lang}`, importLog, importLogType.console)
+    logStep(`importing from object ${recordId} ${recordType} for lang ${lang}`, importLog, importLogType.console);
+
+    let hasError = false;
+    const recordLogs = {fields:[]};
     _.each(translatedRecord, (field, key) => {
         let splits = key.split('_');
         let fieldName = splits[0];
         let hash = splits[1];
         //check for hash
-        importLog[recordId][`original${fieldName}Hash`] = crypto.createHash('md5').update(record[fieldName].en).digest("hex");
-        importLog[recordId][`translation${fieldName}Hash`] = hash;
-        importLog[recordId].fields.push(fieldName);
+        recordLogs.fileName = fileName||recordId;
+        recordLogs[`original${fieldName}Hash`] = crypto.createHash('md5').update(record[fieldName].en).digest("hex");
+        recordLogs[`translation${fieldName}Hash`] = hash;
+        recordLogs.fields.push(fieldName);
 
-        if (importLog[recordId][`original${fieldName}Hash`] != hash) {
-            logStep({id:recordId, error:`${fieldName} hash not matching for record id ${recordId}`}, importLog, importLogType.error)
+        if (recordLogs[`original${fieldName}Hash`] != hash) {
+            hasError = true;
+            recordLogs.message = `${fieldName} hash not matching for record id ${recordId}`
+            logStep({id:recordId, error:recordLogs.message}, importLog, importLogType.error)
             return;
+        }
+
+        if (record[fieldName][lang]) {
+            const existingLangHash = crypto.createHash('md5').update(record[fieldName][lang]).digest("hex");
+            const newLangHash      = crypto.createHash('md5').update(field).digest("hex");
+            if(existingLangHash == newLangHash){
+                hasError = true;
+                recordLogs.message = `${fieldName} was already imported, ${recordId}`
+                logStep({id:recordId, error:recordLogs.message}, importLog, importLogType.error)
+                return;
+            }
         }
 
         record[fieldName][lang.toLowerCase()] = field;
@@ -152,8 +172,12 @@ export async function importFromObject(translatedRecord, lang, recordType, impor
         }
     });
 
-    await updateRecord(record, recordType, user, importLog);
-
+    if(!hasError){
+        await updateRecord(record, recordType, user, importLog);
+    }
+    
+    logStep({id:recordId, ...recordLogs }, importLog, importLogType.success)
+    
     return importLog;
 }
 

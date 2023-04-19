@@ -52,6 +52,57 @@
 
                     </div>
 
+                    <div class="row" v-show="fileStatus.length">
+                            
+                            <div class="col-md-12">
+                                <div class="box box-default">
+                                    <div class="box-header with-border">
+                                        <h3 class="box-title">File Status</h3>
+                                    </div>                                    
+                                    <div class="box-body">
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <th style="width: 10px">#</th>
+                                                    <th>File</th>
+                                                    <th>Message</th>
+                                                </tr>
+                                                <template v-for="(file, index) in fileStatus">
+                                                    <tr>
+                                                        <td>{{index+1}}</td>                                                    
+                                                        <td>
+                                                            {{ file.fileName }}
+                                                        </td>
+                                                        <td> 
+                                                            <span v-if="file.files && file.files.length">{{ file.files[0].message || 'Success' }}</span>
+                                                        </td>
+                                                    </tr> 
+                                                    <tr v-if="file.files && file.files.length > 1">
+                                                       
+                                                        <td></td>
+                                                        <td colspan="2">
+                                                            <table class="table table-bordered">
+                                                                <tbody>
+                                                                <tr v-for="(file, index) in file.files">
+                                                                    <td>{{index+1}}</td>                                                    
+                                                                    <td>
+                                                                        {{ file.fileName }}
+                                                                    </td>
+                                                                    <td> {{ file.message || 'Success' }}
+                                                                    </td>
+                                                                </tr> </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                </template>                                               
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </div>
+                    </div>
+
                     <div class="row" v-show="logs.length">
                             
                             <div class="col-md-12">
@@ -75,7 +126,7 @@
 
                                 </div>
                             </div>
-                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -131,6 +182,7 @@ export default {
             document : ['zip', 'json']
         },         
         logs :[],
+        fileStatus:[],
         itemComponent:LogItem,
         languages : [
             {code : 'ar', title : "العربية" },
@@ -157,6 +209,10 @@ export default {
             const jsonResponse = JSON.parse(response);
             if(jsonResponse){
                 jsonResponse.forEach(async file => {
+                    if(file.success){
+                        const {fileName, success } = file;
+                        this.fileStatus.push({fileName, files:success})
+                    }
                     if(file.console){
                         await this.formatLogs(file.console, 'console', file?.fileName)
                     }
@@ -208,7 +264,7 @@ export default {
                 //     this.$refs.vsl.scrollToIndex(this.logs.length-2);
                 //     this.$refs.vsl.scrollToBottom();
                 // }
-                await sleep(200);
+                await sleep(50);
             }
         }
     }
