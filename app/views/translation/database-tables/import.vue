@@ -74,10 +74,10 @@
                                                             {{ file.fileName }}
                                                         </td>
                                                         <td> 
-                                                            <span v-if="file.files && file.files.length">{{ file.files[0].message || 'Success' }}</span>
+                                                            <span v-if="!(file.isFolder || file.fileType== 'application/zip') && file.files && file.files.length">{{ file.files[0].message || 'Success' }}</span>
                                                         </td>
                                                     </tr> 
-                                                    <tr v-if="file.files && file.files.length > 1">
+                                                    <tr v-if="file.files && file.files.length && (file.isFolder || file.fileType== 'application/zip')">
                                                        
                                                         <td></td>
                                                         <td colspan="2">
@@ -86,7 +86,7 @@
                                                                 <tr v-for="(file, index) in file.files">
                                                                     <td>{{index+1}}</td>                                                    
                                                                     <td>
-                                                                        {{ file.fileName }}
+                                                                        <a target="_blank" :href="'articles/' + file.id">{{ file.fileName }}</a>
                                                                     </td>
                                                                     <td> {{ file.message || 'Success' }}
                                                                     </td>
@@ -204,14 +204,20 @@ export default {
             }
         },
 
-        onFileSuccess(rootFile, file,response, chunk){
+        onFileSuccess(rootFile, uploadedFile,response, chunk){
 
             const jsonResponse = JSON.parse(response);
             if(jsonResponse){
                 jsonResponse.forEach(async file => {
                     if(file.success){
-                        const {fileName, success } = file;
-                        this.fileStatus.push({fileName, files:success})
+                        let isFolder = false
+                        let {fileName, success } = file;
+                        const { relativePath, fileType }     = uploadedFile
+                        if(~relativePath.indexOf('/')){
+                            fileName = relativePath.substr(0, relativePath.indexOf('/'));
+                            isFolder = true
+                        }
+                        this.fileStatus.push({fileName, files:success, fileType, isFolder })
                     }
                     if(file.console){
                         await this.formatLogs(file.console, 'console', file?.fileName)
@@ -249,6 +255,9 @@ export default {
                     uploader.removeFile(element)
                 }
             }
+            this.logs = [];
+            this.fileStatus = [];
+            this.fileLanguage = undefined;
         },
         async formatLogs(logs, type, fileName){
             for (let i = 0; i < logs.length; i++) {
