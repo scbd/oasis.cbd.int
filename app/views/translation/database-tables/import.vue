@@ -171,7 +171,7 @@ export default {
                     'application/json' : `/translation-api/database-table/${this.$route.params.table}/import/json`
                 }
                 let url = urls[file.fileType];
-                url = `${url}/${this.fileLanguage?.code}`;
+                url = `${url}/${this.fileLanguage?.code||''}`;//language param is optional
 
                 return url
             },
