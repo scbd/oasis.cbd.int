@@ -145,7 +145,7 @@
                                                                     {{ document.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    <a target="_blank" :href="'/clearing-house/records/history/'+ document.identifier">Record history
+                                                                    <a target="_blank" :href="'clearing-house/records/history/'+ document.identifier">Record history
                                                                     </a>
                                                                 </td>
                                                             </tr>

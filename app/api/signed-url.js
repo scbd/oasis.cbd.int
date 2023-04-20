@@ -1,5 +1,5 @@
-var winston = require('winston');
-const encryption = require('./encryption.js');
+import winston    from './logger.js';
+import encryption from './encryption.js';
 //============================================================
 //
 //
@@ -56,4 +56,4 @@ function signedUrl (req, res) {
     }
 }
 
-module.exports = exports = new signedUrl();
+export default new signedUrl();

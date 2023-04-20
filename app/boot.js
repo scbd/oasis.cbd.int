@@ -24,6 +24,7 @@ export const bundleUrls = {
     ].join(','),
     angularDependencies: [
         'npm/ngSmoothScroll@2.0.1/dist/angular-smooth-scroll.min.js',
+        'npm/angular-breadcrumbs@0.5.3/dist/ng-breadcrumbs.min.js',
     ].join(','),
     initialCss: [
         'npm/bootstrap@3.3.6/dist/css/bootstrap.min.css',     
@@ -62,11 +63,12 @@ export default function bootApp(window, require, defineX) {
 
             'vue-i18n'                  : cdnHost + 'npm/vue-i18n@8.21.1/dist/vue-i18n.min',
             'vuetify'                   : cdnHost + 'npm/vuetify@2.2.32/dist/vuetify.min',
-            'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@4.0.0/dist/index`,
+            'angular-vue'               : `${cdnHost}npm/@scbd/angular-vue@4.0.0/dist/index.min`,
             'coreui-vue'                : cdnHost + 'npm/@coreui/vue@3.1.4/dist/coreui-vue.umd',
             'code-editor-vue'           : cdnHost + 'npm/vue-codemirror@4.0.6/dist/vue-codemirror',
             'vue-multiselect'           : `${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min`,
             'vue-pagination-2'          : `${cdnHost}npm/vue-pagination-2@3.0.91/dist/vue-pagination-2.min`,
+            'vue-simple-uploader'       : `${cdnHost}npm/vue-simple-uploader@0.7.6/dist/vue-uploader`,
 
             'ngStorage'                 : cdnHost + 'npm/ngstorage@0.3.11/ngStorage.min',
             'toastr'                    : cdnHost + 'npm/angular-toastr@1.5.0/dist/angular-toastr.tpls.min',
@@ -87,9 +89,10 @@ export default function bootApp(window, require, defineX) {
             'vueFile'                       : { 'deps': ['vue']},
             'coreui-vue'                    : { 'deps': ['vue', `css!${cdnHost}npm/@coreui/coreui@3.4.0/dist/css/coreui.css` ]},
             'code-editor-vue'               : { 'deps': ['vue', 'codemirror']},
-
             'vue-multiselect'               : { deps : [`css!${cdnHost}npm/vue-multiselect@2.1.6/dist/vue-multiselect.min.css`] },
-            'vue-pagination-2'              : { 'deps': ['angular-vue'] },
+            'vue-pagination-2'              : { 'deps' : ['angular-vue'] },
+            'vue-simple-uploader'           : { 'deps' : ['angular-vue', 'vue-virtual-scroll-list'] },
+            'vue-virtual-scroll-list'       : { 'deps' : ['angular-vue'] }
             
         },
         // urlArgs: 'v=' + appVersion
@@ -153,11 +156,15 @@ export default function bootApp(window, require, defineX) {
         `${cdnHost}npm/codemirror@5.58.3/lib/codemirror.js`,
         `css!${cdnHost}npm/codemirror@5.58.3/lib/codemirror.css`
     ], function(codemirror) { 
-        console.log(codemirror)
         return codemirror;
     });
 
-    if(document) { // BOOT App
+    defineX('vue-virtual-scroll-list', [`${cdnHost}npm/vue-virtual-scroll-list@2.3.4/dist/index.js`], function(VirtualList){
+        window.VirtualList = VirtualList;
+        return VirtualList;
+    })
+
+    if(document?.documentElement) { // BOOT App
         const deps = [
           import('angular'),
           import('./app'),

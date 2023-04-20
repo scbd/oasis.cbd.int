@@ -5,7 +5,7 @@ import _ from 'lodash'
 
     var accountsBaseUrl = (function(){
 
-        const hostName = window.scbd?.apiUrl || window.location.hostname;
+        const hostName = window.scbd?.apiHost || window.location.hostname;
         let   domain   = hostName.replace(/[^\.]+\./, '');
 
         if(domain=='localhost')
@@ -357,7 +357,7 @@ import _ from 'lodash'
                 
 				var trusted =   /^https:\/\/api.cbd.int\//i.test(config.url) ||
                                 /^https:\/\/api.cbddev.xyz\//i.test(config.url)||
-								/^\/api\//i                .test(config.url) ||
+								/^\/(api|translation-api)\//i                .test(config.url) ||								
                                 /^http:\/\/localhost[:\/]/i.test(config.url);
 
                 var hasAuthorization = (config.headers || {}).hasOwnProperty('Authorization') ||

@@ -6,7 +6,7 @@ import 'ng-file-upload';
 import { AngularVuePlugin, CreateAngularVuePlainPlugin, AngularVueRoutePlugin, 
     AngularVueRouterPlugin, AngularVueAuthPlugin, AngularVueDirective } from 'angular-vue';
 
-var dependencies = ['ngRoute', 'ngCookies', 'ngSanitize', 'ckeditor','ui.select','ngFileUpload', 'angularGrid', 'angularVue', 'ngStorage', 'toast'];
+var dependencies = ['ngRoute', 'ngCookies', 'ngSanitize', 'ckeditor','ui.select','ngFileUpload', 'angularGrid', 'angularVue', 'ngStorage', 'toast', 'ng-breadcrumbs'];
 
 angular.defineModules(dependencies);
 var app = angular.module('app', dependencies);

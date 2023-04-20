@@ -1,9 +1,8 @@
-
-let requestq = require('superagent');
-let _ = require('lodash');
-let winston = require('winston');
-
-const config = require('./config.js')
+import requestq from 'superagent';
+import _        from 'lodash';
+import winston  from './logger.js';
+import config from './config.js'
+import {httpStatusCodes} from './utils.js';
 //============================================================
 //
 //
@@ -14,7 +13,7 @@ async function authenticate (req, res, next) {
         let ANONYMOUS = { id: 1, anonymous: true, roles: [ 'Everyone' ], scopes: [] };
 
         if(!req.headers.authorization)
-            return ANONYMOUS;
+            return res.status(httpStatusCodes.unauthorized).send();
     
         let user = await getUser(req.headers.authorization);
 
@@ -42,7 +41,7 @@ async function authenticate (req, res, next) {
 async function getUser(token) {
 
 
-    let response = await requestq.get(config.api.url+'/api/v2013/authentication/user')
+    let response = await requestq.get(config.api.host+'/api/v2013/authentication/user')
                                  .accept('application/json')
                                  .set('Authorization', token)
     return response.body;
@@ -63,4 +62,4 @@ function isInRole(user, roles) {
 }
 authenticate.isInRole = isInRole;
 
-module.exports = exports = authenticate;
+export default authenticate;

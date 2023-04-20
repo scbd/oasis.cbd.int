@@ -15,7 +15,7 @@
                     :server-items-length="failedRecords.total" :options.sync="failedRecords.options" >     
                         <v-progress-linear v-slot:progress color="blue" indeterminate></v-progress-linear>
                         <template v-slot:item.history="{ item }">
-                            <a target="_blank" :href="'/clearing-house/records/history/'+item.data.identifier">History</a>
+                            <a target="_blank" :href="'clearing-house/records/history/'+item.data.identifier">History</a>
                         </template>
                         <template v-slot:item.failedExecution.failDate="{ item }">
                             {{item.failedExecution.failDate  | formatDate('format','DD MMM YYYY HH:mm')}}
@@ -32,7 +32,7 @@
                                     <v-card flat tile>    
                                         <v-card-title>
                                             Workflow details
-                                            <small>(<a target="_blank" :href="'/clearing-house/records/history/'+item.data.identifier">History</a>)</small>
+                                            <small>(<a target="_blank" :href="'clearing-house/records/history/'+item.data.identifier">History</a>)</small>
                                         </v-card-title>
                                             <v-row class="mb-12" no-gutters >
                                                 <v-col md="6">
