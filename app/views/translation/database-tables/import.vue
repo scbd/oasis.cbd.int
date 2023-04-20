@@ -167,11 +167,13 @@ export default {
             autoStart:false,
             target: (file,request,c)=>{
                 const urls = {
-                    'application/zip'  : `/translation-api/database-table/${this.$route.params.table}/import/zip`,
-                    'application/json' : `/translation-api/database-table/${this.$route.params.table}/import/json`
+                    'application/zip'  : `/translation-api/database-table/${encodeURIComponent(this.$route.params.table)}/import/zip`,
+                    'application/json' : `/translation-api/database-table/${encodeURIComponent(this.$route.params.table)}/import/json`
                 }
                 let url = urls[file.fileType];
-                url = `${url}/${this.fileLanguage?.code||''}`;//language param is optional
+                
+                if(this.fileLanguage?.code)
+                    url = `${url}/${encodeURIComponent(this.fileLanguage.code)}`;
 
                 return url
             },
