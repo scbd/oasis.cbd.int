@@ -312,10 +312,10 @@ export default {
                     return;
                 }
 
-                if(this.search.schema.type == 'national' && !this.search.government){
-                    this.error = 'Please select a Country';
-                    return;
-                }
+                // if(this.search.schema.type == 'national' && !this.search.government){
+                //     this.error = 'Please select a Country';
+                //     return;
+                // }
 
                 this.result.documents = {};
                 this.search.recordType = type;
