@@ -2,10 +2,11 @@ import app from '~/app';
 import { cssEscape } from '~/services/css.escape';
 import '~/components/scbd-angularjs-services/main';
 import 'ck-editor-content-css';
+import '~/services/local-storage-service';
     
 export { default as template } from './view.html';
-    export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location',
-        function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location) {
+    export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location', 'localStorageService',
+        function ($scope, genericService, $q, $route, $rootScope, $timeout, $http, $location, localStorageService) {
             $scope.baseUrl = window.baseUrl;
             $scope.locales = ['en','ar','es','fr','ru','zh'];
             $scope.activeLocale = 'en';
@@ -75,6 +76,21 @@ export { default as template } from './view.html';
                     $window.location = search.returnUrl;
                 else    
                     $location.path('/articles')
+            }
+
+            $scope.addToDownload = function(row){
+
+                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                let index = articlesToDownload?.findIndex(x => x._id==row._id);
+                index === -1 ? articlesToDownload.push(row) : articlesToDownload.splice(index, 1);
+                localStorageService.set('articlesToDownload', articlesToDownload, 10000);
+                articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
+            }
+
+            $scope.isInDownloadList = function(row){
+
+                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                return articlesToDownload?.find(x => x._id==row._id);
             }
             $scope.cssEscape = cssEscape
         }

@@ -249,14 +249,21 @@
                                         <h3>{{::article.title|lstring}}</h3>
                                         <div class="description" ng-bind-html="::article.content |lstring | limitTo:100|unsafe"></div>
                                     </div>
-                                    <div ng-if="isAuthorizedForActions" style="border-top: 1px solid #eee">
-                                        <div>&nbsp; updated on {{article.meta.modifiedOn|formatDate}}</div>
-                                        <div class="btn-group pull-right">
-                                            <a class="btn" href="#" ng-click="delete($event, article)">
-                                                <i class="fa fa-remove"></i>
-                                            </a>
-                                            <a class="btn" href="articles/{{article._id}}/edit">
+                                    <div ng-if="isAuthorizedForActions" style="border-top: 1px solid #eee;padding:5px">
+                                        
+                                        <div>
+                                            Updated by {{article.meta.modifiedByInfo.firstName}} {{article.meta.modifiedByInfo.lastName}}
+                                            <br/>on {{article.meta.modifiedOn|formatDateWithTime}}</div>
+                                        <div class="btn-group pull-right" style="margin-bottom: 2px;">
+                                            
+                                            <a class="btn btn-default" href="articles/{{article._id}}/edit">
                                                 <i class="fa fa-edit"></i>
+                                            </a>
+                                            <a class="btn btn-default" href="#" ng-click="addToDownload(article, $event)" ng-class="{'btn-danger':isInDownloadList(article)}">
+                                                <i class="fa fa-download"></i>
+                                            </a>
+                                            <a class="btn btn-danger" href="#" ng-click="delete($event, article)">
+                                                <i class="fa fa-trash"></i>
                                             </a>
                                         </div>
                                     </div>

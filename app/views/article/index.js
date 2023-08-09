@@ -263,6 +263,23 @@ export { default as template } from './index.html';
                 $location.url('/articles/new' + params)
             }
 
+            $scope.addToDownload = function(row, $evt){
+
+                $evt.stopPropagation();
+                $evt.preventDefault();
+                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                let index = articlesToDownload?.findIndex(x => x._id==row._id);
+                index === -1 ? articlesToDownload.push(row) : articlesToDownload.splice(index, 1);
+                localStorageService.set('articlesToDownload', articlesToDownload, 10000);
+                articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
+            }
+            
+            $scope.isInDownloadList = function(row){
+
+                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                return articlesToDownload?.find(x => x._id==row._id);
+            }
+
             function updateQS(){
                 if($scope.search.titleContent == '')
                     $location.search('title',       undefined);

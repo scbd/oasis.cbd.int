@@ -59,15 +59,7 @@ export { default as template } from './table.html';
             .then(function(result){
                 const articleTD = (localStorageService.get('articlesToDownload')||[]);
                 $scope.translation.rows          = result[0].data;
-                _.each($scope.translation.rows, function(row){
-                    //_.set(_.find(row, articleTD), row.translate, true);
-                    let index = articleTD.findIndex(x => x._id==row._id);
-                    if(index === -1){
-                        row.translate = false;
-                    } else {
-                        row.translate = true;
-                    }
-                })
+                // updateSelection(articleTD)
                 $scope.translation.rowCount      = result[1];
                 $scope.translation.pageCount     = Math.ceil($scope.translation.rowCount / $scope.translation.itemsPerPage);
                 $scope.translation.currentPage   = page;
@@ -77,10 +69,10 @@ export { default as template } from './table.html';
             });
         }
 
-        $scope.dowloadFiles = function(){
+        $scope.downloadFiles = function(){
 
             var translation = $scope.translation;
-
+            $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
             var url = baseUrl+'translation-api/database-table/'+encodeURIComponent(translation.name);
             var filesForTranslation = _.map($scope.articlesToDownload,'_id');
 
@@ -116,7 +108,8 @@ export { default as template } from './table.html';
 
             if($event)
                 $event.stopPropagation();
-
+            
+            $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
             let index = $scope.articlesToDownload?.findIndex(x => x._id==row._id);
             index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
@@ -252,6 +245,23 @@ export { default as template } from './table.html';
         $scope.clearFilters = function(){
             $scope.search = {};
             $scope.searchArticles({})
+        }
+
+        $scope.getArticlesToDownload = function(){
+            $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
+            updateSelection($scope.articlesToDownload);
+            return $scope.articlesToDownload;
+        }
+
+        function updateSelection(articlesToDownload){
+            _.each($scope.translation.rows, function(row){
+                let index = articlesToDownload.findIndex(x => x._id==row._id);
+                if(index === -1){
+                    row.translate = false;
+                } else {
+                    row.translate = true;
+                }
+            })
         }
 
         $scope.searchArticles({})

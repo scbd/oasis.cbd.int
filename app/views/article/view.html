@@ -52,6 +52,11 @@
                                 <button type="button" class="btn btn-default" ng-class="{'btn-primary':activeLocale==locale}"
                                 ng-repeat="locale in locales" ng-bind="locale|uppercase" ng-click="changeLocale(locale)"></button>
                             </div>
+                            <button class="btn btn-danger btn-xs" ng-click="addToDownload(article)">
+                                <span ng-if="!isInDownloadList(article)">Add to</span>
+                                <span ng-if="isInDownloadList(article)">Remove from</span> Download
+                            </button>
+                                                       
                             <br><br>
                         </div>                         
                         <div class="image-credit-wrapper"  ng-if="article.coverImage.url" >

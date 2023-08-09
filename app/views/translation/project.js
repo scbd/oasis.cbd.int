@@ -54,7 +54,7 @@ export { default as template } from './project.html';
                 }
             }
 
-            $scope.dowloadFiles = function(){
+            $scope.downloadFiles = function(){
                
                 if($scope.translation.previousRelease){
 
