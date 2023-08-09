@@ -6,8 +6,8 @@ import './directives/pagination';
 import '~/services/local-storage-service';
 
 export { default as template } from './table.html';
-    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService',
-    function ($scope, $http, $q, $routeParams, genericService, localStorageService) {
+    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService', '$timeout',
+    function ($scope, $http, $q, $routeParams, genericService, localStorageService, $timeout) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
         $scope.baseUrl  = window.baseUrl;
         $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
@@ -59,7 +59,7 @@ export { default as template } from './table.html';
             .then(function(result){
                 const articleTD = (localStorageService.get('articlesToDownload')||[]);
                 $scope.translation.rows          = result[0].data;
-                // updateSelection(articleTD)
+                updateSelection(articleTD)
                 $scope.translation.rowCount      = result[1];
                 $scope.translation.pageCount     = Math.ceil($scope.translation.rowCount / $scope.translation.itemsPerPage);
                 $scope.translation.currentPage   = page;
@@ -247,10 +247,13 @@ export { default as template } from './table.html';
             $scope.searchArticles({})
         }
 
-        $scope.getArticlesToDownload = function(){
+        var refreshArticlesToDownloadTimeout;
+        function refreshArticlesToDownload(hitNumber){
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
-            updateSelection($scope.articlesToDownload);
-            return $scope.articlesToDownload;
+            if($scope.articlesToDownload.length){
+                updateSelection($scope.articlesToDownload);
+                refreshArticlesToDownloadTimeout = $timeout(()=>refreshArticlesToDownload(hitNumber+1), 5000)
+            }
         }
 
         function updateSelection(articlesToDownload){
@@ -265,6 +268,10 @@ export { default as template } from './table.html';
         }
 
         $scope.searchArticles({})
+        refreshArticlesToDownload(0);
 
+        $scope.$on('$destroy', function(){
+            clearTimeout(refreshArticlesToDownloadTimeout);
+        });
     }];
 

@@ -88,17 +88,17 @@
                                         <button class="btn btn-sm btn-primary" ng-click="searchArticles(search)">Search</button>
                                         <button class="btn btn-sm btn-primary" ng-click="clearFilters(search)">Clear Filters</button>
                                          
-                                        <div class="btn-group pull-right" ng-if="getArticlesToDownload().length > 0">
+                                        <div class="btn-group pull-right" ng-if="articlesToDownload.length > 0">
 
                                             <button type="button" class="btn btn-primary">
-                                                <span class="badge bg-teal" ng-bind="getArticlesToDownload().length"></span> Selected for download
+                                                <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span> Selected for download
                                             </button>
                                             <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                               <span class="caret"></span>
                                             </button>
                                             <div class="dropdown-menu" role="menu" style="max-width: 500px;overflow: scroll;height: 500px;border: 1px solid #3d8dbc;">
                                                 <ul style="list-style: none;padding-left:5px;">
-                                                    <li ng-repeat="row in getArticlesToDownload()" style="border-bottom: 1px solid #eee;">                                                   
+                                                    <li ng-repeat="row in articlesToDownload" style="border-bottom: 1px solid #eee;">                                                   
                                                         {{$index+1}}.
                                                         <button type="checkbox" class="btn btn-danger btn-xs" ng-click="addToDownload(row, $event)" ng-model="row.translate">x</button>
                                                         <a target="_blank" ng-href="{{baseUrl}}articles/{{row._id}}" style="display: contents;">
@@ -109,7 +109,7 @@
                                             </div>
 
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="downloadFiles()" ng-disabled="gettingSignedUrl">
-                                                <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download <span class="badge bg-teal" ng-bind="getArticlesToDownload().length"></span>
+                                                <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Download <span class="badge bg-teal" ng-bind="articlesToDownload.length"></span>
                                             </button>
                                             <button style="margin-left: 10px;" ng-if="!fetchingFiles" type="submit" class="btn btn-primary pull-right" ng-click="clearDownload()" ng-disabled="gettingSignedUrl">
                                                 <i ng-if="gettingSignedUrl" class="fa fa-spin fa-spinner"></i>Clear All
