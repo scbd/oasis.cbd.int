@@ -243,6 +243,9 @@ export { default as template } from './index.html';
                             $scope.articles = $scope.articles.concat(data);
                              
                              currentPage += pageSize;
+                            $timeout(function(){
+                                $('[data-toggle="tooltip"]').tooltip({'placement': 'top'});
+                            }, 1000)
                         })
                         .finally(function(){$scope.isLoading=false;})
             }
@@ -267,7 +270,7 @@ export { default as template } from './index.html';
 
                 $evt.stopPropagation();
                 $evt.preventDefault();
-                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                let articlesToDownload = localStorageService.get('articlesToDownload')||[];
                 let index = articlesToDownload?.findIndex(x => x._id==row._id);
                 index === -1 ? articlesToDownload.push(row) : articlesToDownload.splice(index, 1);
                 localStorageService.set('articlesToDownload', articlesToDownload, 10000);
@@ -275,8 +278,9 @@ export { default as template } from './index.html';
             }
             
             $scope.isInDownloadList = function(row){
-
-                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                if(!row)
+                    return false;
+                let articlesToDownload = localStorageService.get('articlesToDownload')||[];
                 return articlesToDownload?.find(x => x._id==row._id);
             }
 

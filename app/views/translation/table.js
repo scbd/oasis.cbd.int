@@ -6,8 +6,8 @@ import './directives/pagination';
 import '~/services/local-storage-service';
 
 export { default as template } from './table.html';
-    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService', '$timeout',
-    function ($scope, $http, $q, $routeParams, genericService, localStorageService, $timeout) {
+    export default ['$scope', '$http', '$q', '$routeParams','IGenericService','localStorageService', '$timeout', '$location',
+    function ($scope, $http, $q, $routeParams, genericService, localStorageService, $timeout, $location) {
         var languages = [ 'ar', 'fr', 'es', 'ru', 'zh' ]
         $scope.baseUrl  = window.baseUrl;
         $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
@@ -55,7 +55,7 @@ export { default as template } from './table.html';
             else
                 rowCountQuery = $scope.translation.rowCount
 
-            $q.all([$http.get($scope.translation.api, {params: { ag : JSON.stringify(ag)}}),rowCountQuery])
+            return $q.all([$http.get($scope.translation.api, {params: { ag : JSON.stringify(ag)}}),rowCountQuery])
             .then(function(result){
                 const articleTD = (localStorageService.get('articlesToDownload')||[]);
                 $scope.translation.rows          = result[0].data;
@@ -104,14 +104,21 @@ export { default as template } from './table.html';
                 // }
             });
         }
-        $scope.addToDownload = function(row, $event){
+        $scope.addToDownload = function(row, $event, forceAdd){
 
             if($event)
                 $event.stopPropagation();
             
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
             let index = $scope.articlesToDownload?.findIndex(x => x._id==row._id);
-            index === -1 ? $scope.articlesToDownload.push(row) : $scope.articlesToDownload.splice(index, 1);
+
+            if(index === -1){
+                $scope.articlesToDownload.push(row) 
+            }
+            else if(!forceAdd){
+                $scope.articlesToDownload.splice(index, 1);
+             }
+
             localStorageService.set('articlesToDownload', $scope.articlesToDownload, 10000);
             $scope.articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
         }
@@ -220,7 +227,10 @@ export { default as template } from './table.html';
             // console.log(search);
             search = search || {};
             var query =  { $and : []};
-            if(!search.titleContent && (search.tags||[]).length==0 && (search.customTags||[]).length==0 && (search.adminTags||[]).length==0)
+            if(!search.titleContent && (search.tags||[]).length==0 && 
+                (search.customTags||[]).length==0 
+                && (search.adminTags||[]).length==0
+                && !search?.addToDownload?.length)
                 query=undefined;
 
             if(search.titleContent && search.titleContent!=''){
@@ -238,8 +248,11 @@ export { default as template } from './table.html';
                  query.$and.push({"adminTags": {$in : _.map(search.adminTags, function(item){ return item.title })}});
              }
 
+            if(search.addToDownload && search.addToDownload.length>0){
+                query.$and.push({'_id' : {$in : search.addToDownload.map(e=> { return { "$oid" : e }})}});
+            }
             $scope.translation.query = query;
-            load(0)
+            return load(0)
         }
 
         $scope.clearFilters = function(){
@@ -267,11 +280,27 @@ export { default as template } from './table.html';
             })
         }
 
-        $scope.searchArticles({})
-        refreshArticlesToDownload(0);
+        function init(){
+
+            const searchFilter = {};
+            const query = $location.search();
+            if(query.addToDownload && query.addToDownload!=true){
+                searchFilter.addToDownload = _.isArray(query.addToDownload) ? query.addToDownload : [query.addToDownload];
+            }
+            $scope.searchArticles(searchFilter).then(()=>{
+                searchFilter.addToDownload.forEach(e=>{
+                    const record = $scope.translation.rows.find(row=>row._id == e)
+                    if(record)
+                        $scope.addToDownload(record, undefined, true);
+                })
+            })
+            refreshArticlesToDownload(0);
+        }
 
         $scope.$on('$destroy', function(){
             clearTimeout(refreshArticlesToDownloadTimeout);
         });
+
+        init();
     }];
 

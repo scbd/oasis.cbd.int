@@ -80,7 +80,7 @@ export { default as template } from './view.html';
 
             $scope.addToDownload = function(row){
 
-                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                let articlesToDownload = localStorageService.get('articlesToDownload')||[];
                 let index = articlesToDownload?.findIndex(x => x._id==row._id);
                 index === -1 ? articlesToDownload.push(row) : articlesToDownload.splice(index, 1);
                 localStorageService.set('articlesToDownload', articlesToDownload, 10000);
@@ -88,10 +88,12 @@ export { default as template } from './view.html';
             }
 
             $scope.isInDownloadList = function(row){
-
-                const articlesToDownload = localStorageService.get('articlesToDownload')||[];
-                return articlesToDownload?.find(x => x._id==row._id);
+                if(!row)
+                    return false;
+                const articles = localStorageService.get('articlesToDownload')||[];
+                return articles?.find(x => x._id==row._id);
             }
+
             $scope.cssEscape = cssEscape
         }
     ]
