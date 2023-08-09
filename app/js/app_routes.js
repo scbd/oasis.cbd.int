@@ -37,6 +37,7 @@ const routeTemplates = {
     views_tags_index                        : { component: ()=>import('~/views/tags/index').catch(logError) },
     views_shared_login                      : { component: ()=>import('~/views/shared/login').catch(logError) },
     views_shared_404                        : { component: ()=>import('~/views/shared/404').catch(logError) },   
+    views_shared_403                        : { component: ()=>import('~/views/shared/403').catch(logError) },   
 
     views_chm_index                         : { component: ()=>import('~/views/clearing-house/index.vue').catch(logError) },  
     views_chm_records                       : { component: ()=>import('~/views/clearing-house/record-list.vue').catch(logError) },  
@@ -80,8 +81,8 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
         when('/clearing-house/records/history/:identifier?' ,{ ...mapView(vueViewWrapper)    , label:'Record History'           ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_record_history   , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).
         when('/clearing-house/records/:realm?/:schema?'     ,{ ...mapView(vueViewWrapper)    , label:'Records'                  ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_records          , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
         
-    
-        otherwise({...mapView(angularViewWrapper), label:'404 Error', resolveUser : true, resolve : { ...routeTemplates.views_shared_404 }});
+        when('/403'     ,{ ...mapView(angularViewWrapper), label:'Unauthorized Access',   resolveUser : true, resolve : { ...routeTemplates.views_shared_403 }}).        
+        otherwise(       {...mapView(angularViewWrapper) , label:'404 Error', resolveUser : true, resolve : { ...routeTemplates.views_shared_404 }});
 
 }])
          
