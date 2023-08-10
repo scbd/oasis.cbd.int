@@ -243,6 +243,9 @@ export { default as template } from './index.html';
                             $scope.articles = $scope.articles.concat(data);
                              
                              currentPage += pageSize;
+                            $timeout(function(){
+                                $('[data-toggle="tooltip"]').tooltip({'placement': 'top'});
+                            }, 1000)
                         })
                         .finally(function(){$scope.isLoading=false;})
             }
@@ -261,6 +264,24 @@ export { default as template } from './index.html';
                          '&adminTags='+_.map(qs.adminTags||[], encodeURIComponent)
                 }
                 $location.url('/articles/new' + params)
+            }
+
+            $scope.addToDownload = function(row, $evt){
+
+                $evt.stopPropagation();
+                $evt.preventDefault();
+                let articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                let index = articlesToDownload?.findIndex(x => x._id==row._id);
+                index === -1 ? articlesToDownload.push(row) : articlesToDownload.splice(index, 1);
+                localStorageService.set('articlesToDownload', articlesToDownload, 10000);
+                articlesToDownload = (localStorageService.get('articlesToDownload')||[]);
+            }
+            
+            $scope.isInDownloadList = function(row){
+                if(!row)
+                    return false;
+                let articlesToDownload = localStorageService.get('articlesToDownload')||[];
+                return articlesToDownload?.find(x => x._id==row._id);
             }
 
             function updateQS(){
