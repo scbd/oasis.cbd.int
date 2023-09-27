@@ -17,25 +17,16 @@
         
 <script>
 
-import codemirror from 'code-editor-vue'
-
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js';
-import 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js';
-import 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css';
-import 'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css';
-import 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css';
+import 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3';
+import 'css!https://cdn.jsdelivr.net/npm/codemirror@5.58.3/theme/base16-dark.css';
+import 'css!https://cdn.jsdelivr.net/npm/codemirror@5.58.3/lib/codemirror.css';
+import 'css!https://cdn.jsdelivr.net/npm/codemirror@5.58.3/theme/base16-dark.css';
+import { codemirror as codeMirror } from 'code-editor-vue'
 
        
 export default {
     components: {
-        codeMirror:codemirror.codemirror
+        codeMirror
     },
     props:['mode', 'preview', 'value', 'placeholder', 'readOnly'],
     data: function() {
@@ -91,43 +82,5 @@ export default {
             this.code = this.placeholder; //'<div><b>Add your widget template here!</b></div>';
     }
 }
-
-
-
-// <!-- const codeMirrorLibs = [
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/mode/simple.js',
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/css/css.js',
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/xml/xml.js',
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/mode/javascript/javascript.js',
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/mode/multiplex.js',
-// 'https://cdn.jsdelivr.net/npm/codemirror@5.58.3/addon/fold/xml-fold.js',
-// `${cdnHost}npm/codemirror@5.58.3/mode/xml/xml.js`,
-//                         cdnHost+'npm/codemirror@5.58.3/mode/handlebars/handlebars.js',
-//                         cdnHost+'npm/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js',
-//                         cdnHost+'npm/codemirror@5.58.3/mode/javascript/javascript.js',
-//                         cdnHost+'npm/codemirror@5.58.3/addon/selection/active-line.js',
-//                         cdnHost+'npm/codemirror@5.58.3/addon/edit/closetag.js',
-//                         cdnHost+'npm/codemirror@5.58.3/addon/edit/matchbrackets.js',
-//                         cdnHost+'npm/codemirror@5.58.3/addon/comment/continuecomment.js',
-//                         cdnHost+'npm/codemirror@5.58.3/addon/comment/comment.js'];//.join(',');
-// const codeMirrorCss  = [`css!${cdnHost}combine/npm/codemirror@5.58.3/theme/base16-dark.css`,
-//                         'npm/codemirror@5.58.3/lib/codemirror.css',
-//                         'npm/codemirror@5.58.3/theme/base16-dark.css'].join(',');
-
-
-//                         'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css',
-// 'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml',
-// 'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars',
-// 'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed',       
-// 'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript',
-// 'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line',
-// 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag',
-// 'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets',
-// 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js',
-// 'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js',
-// 'css!https://cdn.cbd.int/codemirror@5.58.3/lib/codemirror.css',
-// 'css!https://cdn.cbd.int/codemirror@5.58.3/theme/base16-dark.css' -->
-
-
 
 </script>
