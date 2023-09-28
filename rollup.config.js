@@ -21,15 +21,7 @@ const outputDir = 'dist';
 
 let externals = [
   'require', 
-  'https://cdn.cbd.int/codemirror@5.58.3/mode/xml/xml.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/mode/handlebars/handlebars.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/mode/htmlmixed/htmlmixed.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/mode/javascript/javascript.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/addon/selection/active-line.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/closetag.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/addon/edit/matchbrackets.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/continuecomment.js',
-  'https://cdn.cbd.int/codemirror@5.58.3/addon/comment/comment.js',
+  'https://cdn.jsdelivr.net/npm/codemirror@5.58.3'
 ];
 
 export default async function () {
