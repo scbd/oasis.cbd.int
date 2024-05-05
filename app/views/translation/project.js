@@ -16,7 +16,7 @@ export { default as template } from './project.html';
                 ignoreFolders: 'i18n, app/app-data/bch/report-analyzer/mapping, app/app-data/abs/report-analyzer/mapping',
                 ignoreFiles : 'bower.json, package.json,.bower.json,.awsbox.json,realm-configuration.json, offline-formats.json, '+
                               'help-guides.json, help-videos.json',
-                allowedExtensions : ".html, .json"
+                allowedExtensions : ".json"
             };
 
             $q.all([repositoryQuery, latestReleaseQuery, releaseQuery])
