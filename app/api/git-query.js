@@ -34,7 +34,7 @@ function gitQuery(options){
             let q = req.query;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders, q.includeFolders);
 
             res.status(200).send(files);
         }
@@ -51,7 +51,7 @@ function gitQuery(options){
             let q = req.decryptedInfo;
             
             let repositoryName = req.params.repository;
-            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders);
+            let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders, q.includeFolders);
 
             if(files && files.length > 0){
                 
@@ -90,7 +90,7 @@ function gitQuery(options){
     }
 
     async function getUpdatesFiles(repositoryName, baseBranch, date, 
-        ignoreFiles, allowedExtensions, ignoreFolders) {
+        ignoreFiles, allowedExtensions, ignoreFolders, includeFolders) {
 
         // try{
             
@@ -140,18 +140,19 @@ function gitQuery(options){
 
             allowedExtensions   = (allowedExtensions||".html,.json").replace(/\s/g, '').split(',');
             ignoreFiles         = (ignoreFiles || "bower.json, package.json,.bower.json,.awsbox.json").replace(/\s/g, '').split(',');
-            ignoreFolders        = (ignoreFolders || 'i18n').replace(/\s/g, '').split(',');
+            ignoreFolders       = (ignoreFolders || 'i18n').replace(/\s/g, '').split(',');
+            includeFolders      = (includeFolders|| 'i18n').replace(/\s/g, '').split(',');
             
             if(modifiedFiles?.all){
                 _.each(modifiedFiles.all, function(file){
                     if(file.diff){                                
-                        modifiedFileInBranch.push(getFilesFromString(file.diff, allowedExtensions, ignoreFiles, ignoreFolders));
+                        modifiedFileInBranch.push(getFilesFromString(file.diff, allowedExtensions, ignoreFiles, ignoreFolders, includeFolders));
                     }
                 })
             }
             else if(_.isString(modifiedFiles)){                
                 const files = modifiedFiles.split('\n').map(e=>{return {file:e}})
-                modifiedFileInBranch.push(getFilesFromString({files}, allowedExtensions, ignoreFiles, ignoreFolders));
+                modifiedFileInBranch.push(getFilesFromString({files}, allowedExtensions, ignoreFiles, ignoreFolders, includeFolders));
             }            
 
             return _.map(_.uniq(_.flatten(modifiedFileInBranch)), function(file){
@@ -255,7 +256,7 @@ function gitQuery(options){
         }
     }
 
-    function getFilesFromString(fileDiff, allowedExtensions, ignoreFiles, ignoreFolders){
+    function getFilesFromString(fileDiff, allowedExtensions, ignoreFiles, ignoreFolders, includeFolders){
         // let r = hash.replace(/\'/g, '')
         //     .replace(/\n/g, ';')
         //     .split(';');
@@ -263,17 +264,20 @@ function gitQuery(options){
             let ext = path.extname(file);
             const dirPath = path.dirname(file).replace(/\//g, '_',)
             return _.indexOf(allowedExtensions, ext) >= 0 
-                   && _.indexOf(ignoreFiles, path.basename(file)) < 0
-                   && !ignoreFolders.filter(e=> {
-                        const replaceFolderPath = dirPath.replace(e.replace(/\/$/, '').replace(/\//g, '_'), '_');
-                        return replaceFolderPath == '_' || /__(.*)?/.test(replaceFolderPath);
-                      }).length;
+                   && _.indexOf(ignoreFiles, path.basename(file)) < 0                   
+                   && includeFolders.filter(e=> compareFolder(e, dirPath)).length
+                   && !ignoreFolders.filter(e=> compareFolder(e, dirPath)).length;
         }).map(e=>e.file);
     }
     
     async function deleteDirectory(dir){
         await sleep(15*1000);
         await fs.rm(dir, {recursive:true, force:true});
+    }
+
+    function compareFolder(userPath, dirPath){
+        const replaceFolderPath = dirPath.replace(userPath.replace(/\/$/, '').replace(/\//g, '_'), '_');
+        return replaceFolderPath == '_' || /__(.*)?/.test(replaceFolderPath);
     }
 }
 

@@ -13,7 +13,8 @@ export { default as template } from './project.html';
             var latestReleaseQuery  = $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases/latest');
 
             $scope.translation = {
-                ignoreFolders: 'i18n, app/app-data/bch/report-analyzer/mapping, app/app-data/abs/report-analyzer/mapping',
+                includeFolders: 'app/app-text',
+                ignoreFolders: 'i18n, app/app-data',
                 ignoreFiles : 'bower.json, package.json,.bower.json,.awsbox.json,realm-configuration.json, offline-formats.json, '+
                               'help-guides.json, help-videos.json',
                 allowedExtensions : ".json"
@@ -37,6 +38,7 @@ export { default as template } from './project.html';
                         branch              : $scope.latestRelease.tag_name,
                         date                : $scope.translation.previousRelease.created_at,
                         ignoreFolders        : $scope.translation.ignoreFolders,
+                        includeFolders      : $scope.translation.includeFolders,
                         ignoreFiles         : $scope.translation.ignoreFiles,
                         allowedExtensions   : $scope.translation.allowedExtensions
                     }
@@ -63,6 +65,7 @@ export { default as template } from './project.html';
                         branch              : $scope.latestRelease.tag_name,
                         date                : $scope.translation.previousRelease.created_at,
                         ignoreFolders        : $scope.translation.ignoreFolders,
+                        includeFolders      : $scope.translation.includeFolders,
                         ignoreFiles         : $scope.translation.ignoreFiles,
                         allowedExtensions  : $scope.translation.allowedExtensions
                     }
