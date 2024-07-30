@@ -54,7 +54,7 @@
                                                                 </td>
                                                                 <td>{{ realm.email }}</td>
                                                                 <td style="text-align: center;">
-                                                                    <a :href="'/clearing-house/realms/' + realm.realm"><i class="fa fa-search" aria-hidden="true"></i></a>
+                                                                    <a :href="'/clearing-house/realms/' + encodeURIComponent(realm.hosts[0])"><i class="fa fa-search" aria-hidden="true"></i></a>
                                                                 </td>
                                                             </tr>
                                                         </tbody>

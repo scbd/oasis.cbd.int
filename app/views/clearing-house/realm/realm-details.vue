@@ -213,7 +213,6 @@ const realmConfApi = new realmConfigurationAPI();
 export default {
     data() {
         return {
-            realms: [],
             realmDetails: [],
             loading: false,
             error: undefined
@@ -222,10 +221,7 @@ export default {
     async mounted() {
         this.loading = true;
         try {
-            this.realms = await realmConfApi.queryRealmConfigurations();
-            if(this.$route?.params?.realm){
-                this.realmDetails  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            }
+            this.realmDetails = await realmConfApi.getRealmConfigurationByHost(this.$route.params.realm);            
         } catch (err) {
             this.error = err.message || 'Failed to load realms';
         } finally {
