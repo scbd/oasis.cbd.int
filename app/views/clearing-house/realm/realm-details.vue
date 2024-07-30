@@ -42,7 +42,7 @@
                                                                 <th>Display name</th>
                                                                 <th>Hosts</th>
                                                                 <th>Email</th>
-                                                                <th>baseURL</th>
+                                                                <th>Base URL</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -88,7 +88,7 @@
                                                             <tr>
                                                                 <td>
                                                                     <div v-for="(roles, roleName) in realmDetails.roles" :key="roleName">
-                                                                        <strong>{{ roleName }}:</strong>
+                                                                        <strong>{{ camelCaseToUpperCase(roleName) }}:</strong>
                                                                         <ul>
                                                                             <li v-for="(role, index) in roles" :key="index">{{ role }}</li>
                                                                         </ul>
@@ -126,8 +126,8 @@
                                                                 <th>Title</th>
                                                                 <th>Type</th>
                                                                 <th>Short Code</th>
-                                                                <th>Disable Add</th>
-                                                                <th>Publishing Authorities/NAU</th>
+                                                                <th>Disable new</th>
+                                                                <th>Roles</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -226,6 +226,11 @@ export default {
             this.error = err.message || 'Failed to load realms';
         } finally {
             this.loading = false;
+        }
+    },
+    methods :{
+        camelCaseToUpperCase(str) {
+            return str.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
         }
     }
 };
