@@ -90,15 +90,15 @@
                                                                     <div v-for="(roles, roleName) in realmDetails.roles" :key="roleName">
                                                                         <strong>{{ camelCaseToUpperCase(roleName) }}:</strong>
                                                                         <ul>
-                                                                            <li v-for="(role, index) in roles" :key="index">{{ role }}</li>
+                                                                            <li v-for="(role, index) in roles" :key="index">{{ getUserRoleNames(role) }}</li>
                                                                         </ul>
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <span v-for="(role, index) in realmDetails.adminRoles" :key="index">{{ role }}<br></span>
+                                                                    <span v-for="(role, index) in realmDetails.adminRoles" :key="index">{{ getUserRoleNames(role) }}<br></span>
                                                                 </td>
                                                                 <td>
-                                                                    <span v-for="(role, index) in realmDetails.nfpRoles" :key="index">{{ role }}<br></span>
+                                                                    <span v-for="(role, index) in realmDetails.nfpRoles" :key="index">{{ getUserRoleNames(role) }}<br></span>
                                                                 </td>
                                                                 
                                                                 
@@ -145,13 +145,13 @@
                                                                     <div  v-if="schema.publishingAuthorities">
                                                                         <strong>Publishing Authorities: </strong>
                                                                         <ul>
-                                                                            <li v-for="(authority, index) in schema.publishingAuthorities" :key="index">{{ authority }}</li>
+                                                                            <li v-for="(authority, index) in schema.publishingAuthorities" :key="index">{{ getUserRoleNames(authority) }}</li>
                                                                         </ul>
                                                                     </div>
                                                                     <div  v-if="schema.nationalAuthorizedUser">
                                                                         <strong>NAU: </strong>
                                                                         <ul>
-                                                                            <li v-for="(user, index) in schema.nationalAuthorizedUser" :key="index">{{ user }}</li>
+                                                                            <li v-for="(user, index) in schema.nationalAuthorizedUser" :key="index">{{ getUserRoleNames(user) }}</li>
                                                                         </ul>
                                                                     </div>
                                                                 </td>
@@ -206,14 +206,16 @@
 
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
-import { lstring } from '~/services/filters'
+import UserRolesApi from '~/services/api/user-roles';
 
 const realmConfApi = new realmConfigurationAPI();
+const userRolesApi = new UserRolesApi();
 
 export default {
     data() {
         return {
             realmDetails: [],
+            userRoleNames: undefined,
             loading: false,
             error: undefined
         };
@@ -221,6 +223,7 @@ export default {
     async mounted() {
         this.loading = true;
         try {
+            this.userRoleNames = await userRolesApi.getUserRoleNames();            
             this.realmDetails = await realmConfApi.getRealmConfigurationByHost(this.$route.params.realm);            
         } catch (err) {
             this.error = err.message || 'Failed to load realms';
@@ -231,6 +234,11 @@ export default {
     methods :{
         camelCaseToUpperCase(str) {
             return str.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
+        },
+        getUserRoleNames (roleCode){
+
+            const userRole = this.userRoleNames.find(role => role.code === roleCode);
+            return userRole ? userRole.name : roleCode;
         }
     }
 };
