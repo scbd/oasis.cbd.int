@@ -223,12 +223,18 @@ export default {
     async mounted() {
         this.loading = true;
         try {
-            this.userRoleNames = await userRolesApi.getUserRoleNames();            
-            this.realmDetails = await realmConfApi.getRealmConfigurationByHost(this.$route.params.realm);            
+            this.realmDetails = await realmConfApi.getRealmConfigurationByHost(this.$route.params.realm);
+            this.userRoleNames = await userRolesApi.getUserRoleNames(this.roleCodes); 
+
         } catch (err) {
             this.error = err.message || 'Failed to load realms';
         } finally {
             this.loading = false;
+        }
+    },
+    computed : {
+        roleCodes () {
+            return [...(this.realmDetails.adminRoles || []),...(this.realmDetails.nfpRoles || []),...Object.values(this.realmDetails.roles || {}).flat()];
         }
     },
     methods :{
@@ -236,8 +242,7 @@ export default {
             return str.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
         },
         getUserRoleNames (roleCode){
-
-            const userRole = this.userRoleNames.find(role => role.code === roleCode);
+            const userRole = this.userRoleNames?.find(role => role.code === roleCode);
             return userRole ? userRole.name : roleCode;
         }
     }

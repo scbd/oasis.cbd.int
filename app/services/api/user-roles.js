@@ -7,9 +7,8 @@ export default class UserRolesApi extends ApiBase
     super(options);
   }
 
-  async getUserRoleNames()  {
-    //ToDo: pass correct query params to get all roles. 
-    return this.http.get(`api/v2013/roles?q={"roles":["Everyone","User","ChmNrNationalAuthorizedUser-dev"]}`)
+  async getUserRoleNames(roleCodes)  {
+    return this.http.get(`api/v2013/roles?q={"roles":${JSON.stringify(roleCodes)}}`)
                     .then(res => res.data)
                     .catch(tryCastToApiError);
   }
