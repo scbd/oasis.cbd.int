@@ -88,6 +88,9 @@
                             <div class="box">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">Realms</h3>
+                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms`">
+                                        View realm (list)
+                                    </a>
                                 </div>
 
                                 <div class="box-body">
@@ -105,6 +108,9 @@
                                                 </div>
 
                                                 <div class="box-body">
+                                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${encodeURIComponent(realm.hosts[0])}`">
+                                                        View realm details
+                                                    </a>
                                                     <table class="table table-bordered">
                                                         <tbody>
                                                             <tr>

@@ -132,7 +132,9 @@
                                                         </thead>
                                                         <tbody>
                                                             <tr v-for="(schema, key) in realmDetails.schemas" :key="key">
-                                                                <td>{{ key }}</td>
+                                                                <td>
+                                                                    <a :href="'clearing-house/records/' + realmDetails.realm + '/' + key">{{ key }}</a>
+                                                                    </td>
                                                                 <td>
                                                                     {{ schema.title.en }}<br>
                                                                     <span v-if="schema.titlePlural"><strong>Title Plural:</strong> {{ schema.titlePlural.en }}</span>
