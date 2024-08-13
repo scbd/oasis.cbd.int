@@ -41,7 +41,9 @@ const routeTemplates = {
 
     views_chm_index                         : { component: ()=>import('~/views/clearing-house/index.vue').catch(logError) },  
     views_chm_records                       : { component: ()=>import('~/views/clearing-house/record-list.vue').catch(logError) },  
-    views_chm_record_history                : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) },  
+    views_chm_record_history                : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) }, 
+    views_chm_realm_list                    : { component: ()=>import('~/views/clearing-house/realm/realm-list.vue').catch(logError) },
+    views_chm_realm_details                 : { component: ()=>import('~/views/clearing-house/realm/realm-details.vue').catch(logError) },
 };
 
 app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -80,6 +82,8 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
         when('/clearing-house/records/failed-workflows'     ,{ ...mapView(angularViewWrapper), label:'Failed Workflows'         ,   resolveUser : true, resolve : { ...routeTemplates.views_workflows_index      , securized : securize([...chmAdminRoles, 'Administrator', 'oasisWorkflowManager'], null, true) }}).
         when('/clearing-house/records/history/:identifier?' ,{ ...mapView(vueViewWrapper)    , label:'Record History'           ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_record_history   , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).
         when('/clearing-house/records/:realm?/:schema?'     ,{ ...mapView(vueViewWrapper)    , label:'Records'                  ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_records          , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
+        when('/clearing-house/realms'                       ,{ ...mapView(vueViewWrapper)    , label:'Realms'                   ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_realm_list       , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
+        when('/clearing-house/realms/:realm?'               ,{ ...mapView(vueViewWrapper)    , label:'Realm Details'            ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_realm_details    , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
         
         when('/403'     ,{ ...mapView(angularViewWrapper), label:'Unauthorized Access',   resolveUser : true, resolve : { ...routeTemplates.views_shared_403 }}).        
         otherwise(       {...mapView(angularViewWrapper) , label:'404 Error', resolveUser : true, resolve : { ...routeTemplates.views_shared_404 }});

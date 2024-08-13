@@ -79,49 +79,6 @@ import '~/components/scbd-angularjs-services/main';
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
 						},
-						highlight: {
-							options: [
-								{
-									model: 'greenMarker',
-									class: 'marker-green',
-									title: 'Green marker',
-									color: 'var(--ck-highlight-marker-green)',
-									type: 'marker'
-								},
-								{
-									model: 'redPen',
-									class: 'pen-red',
-									title: 'Red pen',
-									color: 'var(--ck-highlight-pen-red)',
-									type: 'pen'
-								}
-							]
-						},
-						fontColor: {
-							colors: [
-								{
-									color: 'hsl(0, 0%, 0%)',
-									label: 'Black'
-								},
-								{
-									color: 'hsl(0, 0%, 30%)',
-									label: 'Dim grey'
-								},
-								{
-									color: 'hsl(0, 0%, 60%)',
-									label: 'Grey'
-								},
-								{
-									color: 'hsl(0, 0%, 90%)',
-									label: 'Light grey'
-								},
-								{
-									color: 'hsl(0, 0%, 100%)',
-									label: 'White',
-									hasBorder: true
-								}
-							]
-						},
 						list: {
 							properties: {
 								styles: true,
@@ -249,7 +206,9 @@ import '~/components/scbd-angularjs-services/main';
 									/uploads\.knightlab\.com\/scenevr\/.*/,
 									/cdn\.knightlab\.com\/libs\/storyline\/.*/,
 									/theydrawit\.mucollective\.co\/vis\/.*/,
-									/youtube\.com\/embed\/videoseries.*/
+									/youtube\.com\/embed\/videoseries.*/,
+									/app\.tango\.us\/app\/workflow\/.*/
+									
 								],
 								html: function(id){
 									return '<figure class="media">' +
@@ -296,7 +255,7 @@ import '~/components/scbd-angularjs-services/main';
 						
 						
 						ed.editing.view.document.on('paste', function(eventInfo, data){
-							console.log('paste', eventInfo, data)
+							// console.log('paste', eventInfo, data)
 						});
 
 						ed.editing.view.document.on('drop', function(eventInfo, data){

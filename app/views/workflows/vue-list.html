@@ -7,6 +7,13 @@
                     </v-toolbar>
                     <v-card-title>
                         <v-spacer></v-spacer>
+                        <select class="mr-3 form-control v-text-field" v-model="searchBy" style="width:20%;-webkit-appearance: auto !important;margin-top:15px;">
+                            <option value="all">All</option>
+                            <option value="title">Title</option>
+                            <option value="abstract">Summary</option>
+                            <option value="realm">Realm</option>
+                            <option value="schema">Schema</option>
+                        </select>
                         <v-text-field v-model="search" append-icon="search" label="Search" single-line hide-details></v-text-field>
                     </v-card-title>
 
