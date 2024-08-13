@@ -15,8 +15,8 @@ export default class RealmConfigurationAPI extends ApiBase
 
   async getRealmConfigurationByHost(host)  {
 
-    return this.http.get(`api/v2017/articles/${host}`)
-                    .then(res => res.data)
+    return this.http.get(`api/v2018/realm-configurations/${host}`)
+                    .then(res => res.data?.length ? res.data[0] : undefined)
                     .catch(tryCastToApiError);
   }
 

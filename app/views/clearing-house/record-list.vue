@@ -69,7 +69,8 @@
                                         <strong>{{ search.recordType }} </strong>
                                          records
                                          <span v-if="search.realm">
-                                            from <strong>{{ search.realm.displayName }}</strong>
+                                            from 
+                                            <strong><a :href="`clearing-house/realms/${encodeURIComponent(search.realm.hosts[0])}`">{{ search.realm.displayName }}</a></strong>
                                             <span v-if="search.schema"> 
                                                 for <strong>{{ search.schema.title.en }}</strong>
                                             </span>
@@ -104,7 +105,7 @@
                                                         </h3>
                                                         <i class="fa fa-external-link"></i>
                                                     </a>
-                                                    <strong class="pull-right">Total count : {{ result.count }}</strong>
+                                                    <strong class="pull-right">Total {{ search.recordType }} : {{ result.count }}</strong>
                                                 </div>
 
                                                 <div class="box-body">
@@ -135,13 +136,24 @@
                                                                 <td> {{ ownerName(document.owner)}}</td>
                                                                 <td> {{ countryName(document.metadata.government)}}</td>
                                                                 <td>
-                                                                    {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}</br>
+                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
+                                                                        {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}
+                                                                    </a>
+                                                                    </br>
                                                                     {{ document.createdOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ document.submittedBy.firstName }} {{ document.submittedBy.lastName }}</br>
+                                                                <td>
+                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
+                                                                        {{ document.submittedBy.firstName }} {{ document.submittedBy.lastName }}
+                                                                    </a>
+                                                                    </br>
                                                                     {{ document.submittedOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ document.updatedBy.firstName }} {{ document.updatedBy.lastName }}</br>
+                                                                <td>
+                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
+                                                                        {{ document.updatedBy.firstName }} {{ document.updatedBy.lastName }}
+                                                                    </a>
+                                                                    </br>
                                                                     {{ document.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>

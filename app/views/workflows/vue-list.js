@@ -3,6 +3,7 @@ import template from './vue-list.html';
 import axios from 'axios';
 import './vue-base-service';
 import './vue-wrapper';
+import _ from 'lodash';
 
 export { default as template } from './vue-list.html';
     Vue.component('failed-workflows', {
@@ -10,6 +11,7 @@ export { default as template } from './vue-list.html';
         template: template,
         data: function() {
             return {     
+                searchBy : 'all',
                 search: '',           
                 errors:[],
                 processWorkflowModel : {
@@ -73,7 +75,7 @@ export { default as template } from './vue-list.html';
             }
         },
         methods: {
-            loadFailedWorkflows : function(){
+            loadFailedWorkflows :  _.debounce(function(){
 
                 var self = this;
 
@@ -101,6 +103,16 @@ export { default as template } from './vue-list.html';
                             {"data.metadata.schema": { "$$contains" : this.search}},
                         ]
                     };
+                    if(this.searchBy!= 'all'){
+                        if(this.searchBy == 'title')
+                            searchQuery = {"data.title.en": { "$$contains" : this.search}}
+                        else if(this.searchBy == 'abstract')
+                            searchQuery = {"data.abstract.en": { "$$contains" : this.search}}
+                        else if(this.searchBy == 'realm')
+                            searchQuery = {"data.realm": { "$$contains" : this.search}}
+                        else if(this.searchBy == 'schema')
+                            searchQuery = {"data.metadata.schema": { "$$contains" : this.search}}
+                    }
                     ag.push({$match:searchQuery});
                     countAg.push({$match:searchQuery})
                 }
@@ -125,7 +137,8 @@ export { default as template } from './vue-list.html';
                 
                 axios.get(`/api/v2013/workflows/failed-workflows`, { params : countAgQuery, cancelToken: self.searchCountSource.token})
                 .then(function(response){
-                    self.failedRecords.total = response.data[0].count
+                    if(response.data?.length)
+                        self.failedRecords.total = response.data[0].count
                 })
                 .catch(function(err) {
                     if (axios.isCancel(err)) {
@@ -156,7 +169,7 @@ export { default as template } from './vue-list.html';
                     self.failedRecords.loading = false;
                     self.searchSource=undefined
                 })
-            }, 
+            }, 500), 
             showProcessWorkflow         : function(workflow){
                 this.processWorkflowModel.show = true
                 this.processWorkflowModel.workflow = workflow;
