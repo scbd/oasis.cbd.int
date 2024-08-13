@@ -90,15 +90,15 @@
                                                                     <div v-for="(roles, roleName) in realmDetails.roles" :key="roleName">
                                                                         <strong>{{ camelCaseToUpperCase(roleName) }}:</strong>
                                                                         <ul>
-                                                                            <li v-for="(role, index) in roles" :key="index">{{ getUserRoleNames(role) }}</li>
+                                                                            <li v-for="(role, index) in roles" :key="index"><a target="_blank" :href="`https://accounts.cbd.int/admin/users?role=${getUserRoleId(role)}`"> {{ getUserRoleNames(role) }} ({{ role }})</a></li>
                                                                         </ul>
                                                                     </div>
                                                                 </td>
                                                                 <td>
-                                                                    <span v-for="(role, index) in realmDetails.adminRoles" :key="index">{{ getUserRoleNames(role) }}<br></span>
+                                                                    <span v-for="(role, index) in realmDetails.adminRoles" :key="index"><a target="_blank" :href="`https://accounts.cbd.int/admin/users?role=${getUserRoleId(role)}`"> {{ getUserRoleNames(role) }} ({{ role }})</a><br></span>
                                                                 </td>
                                                                 <td>
-                                                                    <span v-for="(role, index) in realmDetails.nfpRoles" :key="index">{{ getUserRoleNames(role) }}<br></span>
+                                                                    <span v-for="(role, index) in realmDetails.nfpRoles" :key="index"><a target="_blank" :href="`https://accounts.cbd.int/admin/users?role=${getUserRoleId(role)}`"> {{ getUserRoleNames(role) }} ({{ role }})</a><br></span>
                                                                 </td>
                                                                 
                                                                 
@@ -147,16 +147,78 @@
                                                                     <div  v-if="schema.publishingAuthorities">
                                                                         <strong>Publishing Authorities: </strong>
                                                                         <ul>
-                                                                            <li v-for="(authority, index) in schema.publishingAuthorities" :key="index">{{ getUserRoleNames(authority) }}</li>
+                                                                            <li v-for="(role, index) in schema.publishingAuthorities" :key="index"><a target="_blank" :href="`https://accounts.cbd.int/admin/users?role=${getUserRoleId(role)}`"> {{ getUserRoleNames(role) }} ({{ role }})</a></li>
                                                                         </ul>
                                                                     </div>
                                                                     <div  v-if="schema.nationalAuthorizedUser">
                                                                         <strong>NAU: </strong>
                                                                         <ul>
-                                                                            <li v-for="(user, index) in schema.nationalAuthorizedUser" :key="index">{{ getUserRoleNames(user) }}</li>
+                                                                            <li v-for="(role, index) in schema.nationalAuthorizedUser" :key="index"><a target="_blank" :href="`https://accounts.cbd.int/admin/users?role=${getUserRoleId(role)}`"> {{ getUserRoleNames(role) }} ({{ role }})</a></li>
                                                                         </ul>
                                                                     </div>
                                                                 </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <section PDF -->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="box box-default box-solid">
+                                                <div class="box-header with-border">
+                                                    <strong>PDF</strong>
+                                                </div>
+
+                                                <div class="box-body">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>File name</th>
+                                                                <th>Path</th>
+                                                                <th>S3</th>
+                                                                <th>Use PrincePDF</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="(schema, key) in realmDetails.pdf" :key="key">
+                                                                <td>{{ key }}</td>
+                                                                <td>{{ schema.fileName }}</td>
+                                                                <td>{{ schema.path }}</td>
+                                                                <td>{{ schema.s3 ? (schema.s3.bucket + '/' + schema.s3.folder) : '' }}</td>
+                                                                <td>{{ schema.usePrincePdf }}</td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <!-- <section PDF -->
+                                    <div class="row" v-if="realmDetails.externalNotification">
+                                        <div class="col-md-12">
+                                            <div class="box box-default box-solid">
+                                                <div class="box-header with-border">
+                                                    <strong>External notification</strong>
+                                                </div>
+
+                                                <div class="box-body">
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Organization</th>
+                                                                <th>Email</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr v-for="(schema, key) in realmDetails.externalNotification" :key="key">
+                                                                <td>{{ key }}</td>
+                                                                <td>{{ schema.join(', ') }}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -210,6 +272,7 @@
 import realmConfigurationAPI from '~/services/api/realm-configuration';
 import UserRolesApi from '~/services/api/user-roles';
 
+
 const realmConfApi = new realmConfigurationAPI();
 const userRolesApi = new UserRolesApi();
 
@@ -226,7 +289,7 @@ export default {
         this.loading = true;
         try {
             this.realmDetails = await realmConfApi.getRealmConfigurationByHost(this.$route.params.realm);
-            this.userRoleNames = await userRolesApi.getUserRoleNames(this.roleCodes); 
+            this.userRoleNames = await userRolesApi.getUserRoleNames([...new Set(this.roleCodes)]); 
 
         } catch (err) {
             this.error = err.message || 'Failed to load realms';
@@ -246,6 +309,10 @@ export default {
         getUserRoleNames (roleCode){
             const userRole = this.userRoleNames?.find(role => role.code === roleCode);
             return userRole ? userRole.name : roleCode;
+        },
+        getUserRoleId (roleCode){
+            const userRole = this.userRoleNames?.find(role => role.code === roleCode);
+            return userRole ? userRole.roleId : roleCode;
         }
     }
 };
