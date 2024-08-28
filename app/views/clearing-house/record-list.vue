@@ -95,6 +95,71 @@
                                         <div class="col-md-12">
                                         No Records found</div>
                                     </div>
+                                    
+                                    <div class="row" v-if="showDifference.loading || showDifference.show">
+                                        <div class="col-md-12">
+                                            <div class="box box-default box-solid">
+                                                <div class="box-body">
+                                                    <div class="row" v-if="showDifference.loading">
+                                                        <div class="col-md-12" style="margin:5px">
+                                                            <i class="fa fa-cog fa-spin fa-lg" style="margin-left: 40%;"></i> 
+                                                            Validating missing records from index
+                                                            <strong> Please wait this can will time</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    <div v-if="!showDifference.loading && !showDifference.documents.length">
+                                                        <strong>No difference in api and index record count</strong>
+                                                    </div>
+                                                    <table class="table table-bordered" v-if="showDifference.documents && showDifference.documents.length">
+                                                        <tbody>
+                                                            <tr>
+                                                                <th colspan="7">Records missing from index</th>
+                                                            </tr>
+                                                            <tr>
+                                                                <th style="width: 10px">#</th>
+                                                                <th>Title</th>
+                                                                <th>Owner</th>
+                                                                <th>Government</th>
+                                                                <th>Updated By</th>
+                                                                <th>Action</th>
+                                                                <th></th>
+                                                            </tr>
+                                                            <tr v-for="(document, index) in showDifference.documents">
+                                                                <td>{{index+1}}</td>
+                                                                <td>
+                                                                    <strong>
+                                                                        <a target="_blank" :href="appDocumentUrl(search.realm, document)">
+                                                                            {{document.title|lstring}} 
+                                                                            <i class="fa fa-external-link"></i>
+                                                                        </a>
+                                                                    </strong></br>
+                                                                    <small v-html="$options.filters.lstring(document.summary, 'en')"></small>
+                                                                </td>
+                                                                <td> {{ ownerName(document.owner)}}</td>
+                                                                <td> {{ countryName(document.metadata.government)}}</td>
+                                                                <td>
+                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
+                                                                        {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}
+                                                                    </a>
+                                                                    </br>
+                                                                    {{ document.createdBy | formatDate }}
+                                                                </td>
+                                                                <td>
+                                                                    {{ document.index ? 'In index, DELETE FROM SOLR' : 'Not in index, TRIGGER REINDEX' }}
+                                                                </td>
+                                                                <td>
+                                                                    <a target="_blank" :href="'clearing-house/records/history/'+ document.identifier">Record history
+                                                                    </a>
+                                                                </td>
+                                                            </tr>                                                            
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
                                     <div class="row" v-if="result.documents && result.documents.length">
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
@@ -105,7 +170,16 @@
                                                         </h3>
                                                         <i class="fa fa-external-link"></i>
                                                     </a>
-                                                    <strong class="pull-right">Total {{ search.recordType }} : {{ result.count }}</strong>
+                                                    <strong class="pull-right">
+                                                        Total {{ search.recordType }} : {{ result.count }}
+                                                        <span v-if="search.recordType == 'published'"> 
+                                                            | Index count {{ result.indexCount }}
+                                                            <span v-if="result.count != result.indexCount">
+                                                                <button class="btn btn-sm" @click="onShowDifference">Show Difference</button>
+                                                            </span>
+                                                        </span>
+                                                        
+                                                    </strong>
                                                 </div>
 
                                                 <div class="box-body">
@@ -144,13 +218,13 @@
                                                                 </td>
                                                                 <td>
                                                                     <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
-                                                                        {{ document.submittedBy.firstName }} {{ document.submittedBy.lastName }}
+                                                                        {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}
                                                                     </a>
                                                                     </br>
                                                                     {{ document.submittedOn | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.createdBy.userID)}`" target="_blank">
+                                                                    <a :href="`https://accounts.cbd.int/admin/users/${encodeURIComponent(document.updatedBy.userID)}`" target="_blank">
                                                                         {{ document.updatedBy.firstName }} {{ document.updatedBy.lastName }}
                                                                     </a>
                                                                     </br>
@@ -194,11 +268,14 @@ import CountriesAPI          from '~/services/api/countries';
 import KMDocumentsAPI        from '~/services/api/km-documents';
 import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
-import { isRealm }           from '~/services/utils'
+import { isRealm }           from '~/services/utils';
+import SolrIndexAPI          from '~/services/api/solr-index';
+import { escape }            from '~/services/utils'
 
 const realmConfApi    = new realmConfigurationAPI();
 const countriesAPI    = new CountriesAPI();
 const kmDocumentsAPI  = new KMDocumentsAPI();
+const solrIndexAPI    = new SolrIndexAPI();
 
 export default {
     components : {
@@ -224,6 +301,10 @@ export default {
                 documents   : {},
                 pageNumber: 1,
                 recordsPerPage: 25,
+            },
+            showDifference : {
+                loading : false,
+                documents  : []
             },            
             loading     : false,
             error       : undefined
@@ -271,6 +352,10 @@ export default {
                 pageNumber      : 1,
                 recordsPerPage  : 25,
             };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            }
             this.error = undefined;
         },
         onCountrySelect(){
@@ -280,6 +365,10 @@ export default {
                 pageNumber      : 1,
                 recordsPerPage  : 25,
             };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            }
             this.error = undefined;
         },
         onSchemaSelect(){
@@ -289,6 +378,10 @@ export default {
                 pageNumber      : 1,
                 recordsPerPage  : 25,
             };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            }
             this.error = undefined;
         },
         onReset(){
@@ -302,6 +395,10 @@ export default {
                 pageNumber      : 1,
                 recordsPerPage  : 25,
             };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            }
             this.error = undefined;
         },
         onChangePage(pageNumber){
@@ -312,6 +409,10 @@ export default {
         async loadDocuments(type, skip, top){
             try{
 
+                this.showDifference = {
+                    loading : false,
+                    documents  : []
+                }
                 this.error = undefined;
 
                 if(!this.search.realm){
@@ -354,13 +455,77 @@ export default {
                 const result = await kmDocumentsAPI.queryDocuments(query, { realm : this.search.realm.realm});
                 this.result.documents = result.Items;
                 this.result.count     = result.Count;
+                this.result.query     = query;
+
+                if(this.search.recordType == 'published'){
+                    let q = `realm_ss:${this.search.realm?.realm?.toLowerCase()}`;
+
+                    if(this.search.government)
+                        q += ` AND government_s:${this.search.government.code.toLowerCase()}`
+                    if(this.search.schema)
+                        q += ` AND schema_s:${this.search.schema.key}`
+
+                    const solrQuery = {
+                        query : q, 
+                        rowsPerPage  : 0
+                    }
+                    const solrReq = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    this.result.indexCount = solrReq.response.numFound;
+                    this.result.solrQuery  = solrQuery
+                }
                 
             }
             catch(e){
-                this.error = "Error occurred on this operation \n" + JSON.stringify(e);
+                console.error(e)
+                this.error = "Error occurred on this operation \n" + e;
             }
             finally{
                 this.loading = false;
+            }
+        },
+        async onShowDifference(){
+            if(this.result.query && this.result.count > 0){
+                this.showDifference.loading = true;
+                try{
+                    const rowsPerPage = 100;
+                    const pages = Math.ceil(this.result.count / rowsPerPage)+1
+                    
+                    //AND identifier_s:(${result.Items.map(e=>escape(e.identifier)).join(' ')})
+                    const solrQuery = {
+                        query : `${this.result.solrQuery.query} `,
+                        fields : 'identifier_s, type:schema_s, title:title_EN_s,government:government_s',
+                        rowsPerPage : this.result.indexCount
+                    }
+                    const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    let apiRecords = []
+                    for (let i = 0; i < pages; i++) {
+                        const lQuery = {...this.result.query}
+                        lQuery.$skip = i * rowsPerPage;
+                        lQuery.$top  = rowsPerPage;
+                        const result = await kmDocumentsAPI.queryDocuments(lQuery, { realm : this.search.realm.realm});
+
+                        if(result.Items?.length){
+                            apiRecords = [...apiRecords, ...result.Items];
+                        }                        
+                    }
+
+                    if(solrResult.response.docs.length != apiRecords.length){
+                        this.showDifference.documents = [
+                            ...apiRecords.filter(e=>!solrResult.response.docs.find(s=>s.identifier_s == e.identifier)).map(e=>({...e, index : false})),
+                            ...solrResult.response.docs.filter(s=>!apiRecords.find(e=>s.identifier_s == e.identifier)).map(e=>
+                                            ({...e, metadata : {government : e.government}, createdBy : {userID : ''},
+                                            identifier:e.identifier_s, index : true}))
+                        ];
+                        this.showDifference.show = true;
+                    }
+                }
+                catch(e){
+                    console.error(e)
+                    this.error = "Error loading index difference \n" + JSON.stringify(e);
+                }
+                
+                this.showDifference.loading = false;
+                
             }
         },
         appDocumentUrl(realm, document){
