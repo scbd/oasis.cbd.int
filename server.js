@@ -56,7 +56,8 @@ app.get('/*',            function(req, res) {
         cdnHost            : cdnHost,
         angularBundle      : bundleUrls.angularBundle,
         initialCss         : bundleUrls.initialCss,
-        apiHost            : config.api.host
+        apiHost            : config.api.host,
+        accountsUrl        : config.api.accountsUrl
     }); 
 });
 

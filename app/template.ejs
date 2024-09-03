@@ -338,9 +338,16 @@ class="hold-transition skin-blue sidebar-mini">
   <script src="<%=cdnHost%>combine/<%=angularBundle%>"></script>
 
   <script>
-    window.scbd = {
-      apiHost : '<%=apiHost%>'
-    }
+    Object.defineProperty(window, 'scbd', {
+        value: Object.freeze({
+            accountsUrl: '<%=accountsUrl %>', 
+            apiHost     : '<%=apiHost %>'
+        }), // Set the new value you want
+        writable: false, // Allow the property to be writable
+        configurable: false, // Allow the property to be reconfigured
+        enumerable: true // Allow the property to be enumerated
+    });
+      
     require.config({ baseUrl : "<%=baseUrl%>app/" });
 
     require(["boot"], function(boot){

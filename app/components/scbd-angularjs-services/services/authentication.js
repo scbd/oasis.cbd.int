@@ -3,17 +3,7 @@ import ng from 'angular'
 import $ from 'jquery'
 import _ from 'lodash'
 
-    var accountsBaseUrl = (function(){
-
-        const hostName = window.scbd?.apiHost || window.location.hostname;
-        let   domain   = hostName.replace(/[^\.]+\./, '');
-
-        if(domain=='localhost')
-            domain = 'cbddev.xyz';
-
-        return 'https://accounts.'+domain;
-
-    })();
+    var accountsBaseUrl = window.scbd.accountsUrl;
 
 	app.factory('apiToken', ["$q", "$rootScope", "$window", "$document", "$timeout", function($q, $rootScope, $window, $document, $timeout) {
 
