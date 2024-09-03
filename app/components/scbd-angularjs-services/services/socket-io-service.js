@@ -6,15 +6,7 @@ import './apiUrl';
     app.factory('socketioService', ['$rootScope', '$http', '$q', 'realm', "authentication", "apiUrl",
     function ($rootScope, $http, $q, realm, authentication, apiUrl) {
         return new function () {
-            var apiServer = 'https://api.cbd.int/';
-
-            if(apiUrl.isAppDevelopment()){
-                
-                var url = apiUrl.devApiUrl();
-                if(url)
-                   apiServer = url;
-                //apiServer = apiUrl.devApiUrl();
-            }
+            var apiServer = window.scbd.apiUrl
 
             var socket;
 
