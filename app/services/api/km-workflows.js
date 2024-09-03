@@ -29,4 +29,10 @@ export default class KMWorkflowsApi extends ApiBase
 
   }
 
+  async releaseWorkflow(workflowId){
+    return this.http.put(`/api/v2013/workflows/failed-workflows/${workflowId}/release-workflow`)
+                    .then(res => res.data)
+                    .catch(tryCastToApiError);
+  }
+
 }

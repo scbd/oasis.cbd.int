@@ -99,13 +99,20 @@
                                                                 <td> {{ countryName(document.owner.replace('country:', '')) }}</td>
                                                                 <td> {{ countryName(document.metadata.government)}}</td>
                                                                 <td>
-                                                                    {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}<br/>
+                                                                    <span v-if="document.createdBy">
+                                                                    {{ document.createdBy.firstName }} {{ document.createdBy.lastName }}
+                                                                    </span>
+                                                                    <br/>
                                                                     {{ document.createdOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ document.submittedBy.firstName }} {{ document.submittedBy.lastName }}<br/>
+                                                                <td>
+                                                                    <span v-if="document.submittedBy">
+                                                                        {{ document.submittedBy.firstName }} {{ document.submittedBy.lastName }}</span><br/>
                                                                     {{ document.submittedOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ document.updatedBy.firstName }} {{ document.updatedBy.lastName }}<br/>
+                                                                <td>
+                                                                    <span v-if="document.updatedBy">
+                                                                        {{ document.updatedBy.firstName }} {{ document.updatedBy.lastName }}</span><br/>
                                                                     {{ document.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>
@@ -242,21 +249,29 @@
                                                                 <td> {{ countryName(documentDraft.owner.replace('country:', '') )}}</td>
                                                                 <td> {{ countryName(documentDraft.metadata.government)}}</td>
                                                                 <td>
-                                                                    {{ documentDraft.createdBy.firstName }} {{ documentDraft.createdBy.lastName }}<br/>
+                                                                    <span v-if="documentDraft.createdBy">
+                                                                        {{ documentDraft.createdBy.firstName }} {{ documentDraft.createdBy.lastName }}</span><br/>
                                                                     {{ documentDraft.createdOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ documentDraft.submittedBy.firstName }} {{ documentDraft.submittedBy.lastName }}<br/>
+                                                                <td>
+                                                                    <span v-if="documentDraft.submittedBy">
+                                                                        {{ documentDraft.submittedBy.firstName }} {{ documentDraft.submittedBy.lastName }}</span><br/>
                                                                     {{ documentDraft.submittedOn | formatDate }}
                                                                 </td>
-                                                                <td>{{ documentDraft.updatedBy.firstName }} {{ documentDraft.updatedBy.lastName }}<br/>
+                                                                <td>
+                                                                    <span v-if="documentDraft.updatedBy">
+                                                                        {{ documentDraft.updatedBy.firstName }} {{ documentDraft.updatedBy.lastName }}</span><br/>
                                                                     {{ documentDraft.updatedOn | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    <button class="btn btn-primary" 
+                                                                    <button class="btn btn-primary btn-sm" 
                                                                         @click="onShowJson(documentDraft)">Show JSON
                                                                     </button>
-                                                                    <button class="btn btn-danger" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
-                                                                         @click="restartWorkflow(documentDraft)" :class="{'disabled': loading}">Restart Workflow
+                                                                    <button class="btn btn-danger btn-sm" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
+                                                                         @click="restartWorkflow(documentDraft)" :class="{'disabled': loading}">Restart workflow
+                                                                    </button>
+                                                                    <button class="btn btn-danger btn-sm" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
+                                                                         @click="releaseWorkflow(documentDraft)" :class="{'disabled': loading}">Release workflow
                                                                     </button>
                                                                 </td>
                                                             </tr>
@@ -357,13 +372,18 @@
                                                                     <td> {{ countryName(documentRevision.owner.replace('country:', '') )}}</td>
                                                                     <td> {{ countryName(documentRevision.metadata.government)}}</td>
                                                                     <td>
-                                                                        {{ documentRevision.createdBy.firstName }} {{ documentRevision.createdBy.lastName }}<br/>
+                                                                        <span v-if="documentRevision.createdBy">
+                                                                            {{ documentRevision.createdBy.firstName }} {{ documentRevision.createdBy.lastName }}</span><br/>
                                                                         {{ documentRevision.createdOn | formatDate }}
                                                                     </td>
-                                                                    <td>{{ documentRevision.submittedBy.firstName }} {{ documentRevision.submittedBy.lastName }}<br/>
+                                                                    <td>
+                                                                        <span v-if="documentRevision.submittedBy">
+                                                                            {{ documentRevision.submittedBy.firstName }} {{ documentRevision.submittedBy.lastName }}</span><br/>
                                                                         {{ documentRevision.submittedOn | formatDate }}
                                                                     </td>
-                                                                    <td>{{ documentRevision.updatedBy.firstName }} {{ documentRevision.updatedBy.lastName }}<br/>
+                                                                    <td>
+                                                                        <span v-if="documentRevision.updatedBy">
+                                                                            {{ documentRevision.updatedBy.firstName }} {{ documentRevision.updatedBy.lastName }}</span><br/>
                                                                         {{ documentRevision.updatedOn | formatDate }}
                                                                     </td>
                                                                     <td>
@@ -444,7 +464,7 @@
                                                                                     <td> {{event.eventType}}</td>
                                                                                     <td> {{event.workflowExecutionFailedEventAttributes.decisionTaskCompletedEventId}}</td>
                                                                                     <td> 
-                                                                                        <pre >{{JSON.parse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
+                                                                                        <pre style="white-space: break-spaces;">{{JSON.parse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
                                                                                         </td>
                                                                                     <!-- <td style="white-space:break-spaces"> {{event.workflowExecutionFailedEventAttributes.reason}}</td> -->
                                                                                 </tr>
@@ -493,7 +513,9 @@
                                                                 </tr>
                                                                 <tr><th></th>
                                                                     <th>Created</th><td>
-                                                                        {{ workflow.createdBy_info.firstName }} {{ workflow.createdBy_info.lastName }}<br/>
+                                                                        <span v-if="workflow.createdBy_info">
+                                                                            {{ workflow.createdBy_info.firstName }} {{ workflow.createdBy_info.lastName }}
+                                                                        </span><br/>
                                                                         {{workflow.createdOn}} ({{workflow.createdBy}})
                                                                     </td>
                                                                     <th>Closed</th><td>
@@ -553,7 +575,8 @@
                                                                                             </span>
                                                                                         </td>
                                                                                         <td>
-                                                                                            {{ workflow.createdBy_info.firstName }} {{ workflow.createdBy_info.lastName }}<br/>
+                                                                                            <span v-if=" workflow.createdBy_info">
+                                                                                            {{ workflow.createdBy_info.firstName }} {{ workflow.createdBy_info.lastName }}</span><br/>
                                                                                             {{activity.createdOn}} ({{activity.createdBy}})
                                                                                         </td>
                                                                                         <td>
@@ -773,6 +796,31 @@ export default {
 
             if(confirm('Are you sure you want to restart the workflow?')){
                 await this.startNewWorkflow(documentDraft)
+                alert('Workflow restarted!!');
+                this.showHistory();
+            }
+        },
+        async releaseWorkflow(documentDraft){
+            
+            try{
+                if(confirm('Are you sure you want to release the lock?')){
+             
+                    this.$set(documentDraft, 'validationErrors', undefined);
+                    this.$set(documentDraft, 'failureProcessed', undefined);
+                    this.loading=true;
+
+                    await kmWorkflowsAPI.releaseWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''));
+                    alert('Workflow released!!');
+                    this.showHistory();
+                }
+            }
+            catch(err){
+                console.log(err)
+                this.errors.push(err)
+                this.showError(err);
+            }
+            finally{
+                this.loading=false;
             }
         }
     }
