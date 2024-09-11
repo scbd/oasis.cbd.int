@@ -217,6 +217,25 @@ import '~/components/scbd-angularjs-services/main';
 										   '	</oembed>' +
 											'</figure>'
 								}
+							},
+							{
+								name: 'googleDocs',
+								url: [
+									/docs\.google\.com\/document\/d\/(.*?)(?:\/|$)/,
+								],
+								html: function(matches){
+									const [,id] = matches;
+									const url = `https://docs.google.com/document/d/${ id }/pub?embedded=true`;
+
+									return (
+										`<oembed url="${url}">` + 
+											`<iframe src="${url}" ` +
+											'style="width:100%;height:1000px;border:none" ' +
+											'frameborder="0">' +
+											'</iframe>' +
+										`</oembed>`
+									);
+								}
 							}]
 						}
 					}
