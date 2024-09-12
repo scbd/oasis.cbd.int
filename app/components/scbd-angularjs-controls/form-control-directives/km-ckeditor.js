@@ -207,7 +207,9 @@ import '~/components/scbd-angularjs-services/main';
 									/cdn\.knightlab\.com\/libs\/storyline\/.*/,
 									/theydrawit\.mucollective\.co\/vis\/.*/,
 									/youtube\.com\/embed\/videoseries.*/,
-									/app\.tango\.us\/app\/workflow\/.*/
+									/app\.tango\.us\/app\/workflow\/.*/,
+									/docs\.google\.com\/document\/d\/(.*?)(?:\/|$)/,
+									/(.*\.)?cbd\.int\/.*/,
 									
 								],
 								html: function(id){
@@ -217,7 +219,8 @@ import '~/components/scbd-angularjs-services/main';
 										   '	</oembed>' +
 											'</figure>'
 								}
-							}]
+							}
+							]
 						}
 					}
 					
