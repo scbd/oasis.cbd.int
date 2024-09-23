@@ -208,9 +208,9 @@ import '~/components/scbd-angularjs-services/main';
 									/theydrawit\.mucollective\.co\/vis\/.*/,
 									/youtube\.com\/embed\/videoseries.*/,
 									/app\.tango\.us\/app\/workflow\/.*/,
-									/docs\.google\.com\/document\/d\/(.*?)(?:\/|$)/,
+									/docs\.google\.com\/document\/d\/.*/,
 									/(.*\.)?cbd\.int\/.*/,
-									
+									/(.*\.)?cbddev\.xyz\/.*/,									
 								],
 								html: function(id){
 									return '<figure class="media">' +
