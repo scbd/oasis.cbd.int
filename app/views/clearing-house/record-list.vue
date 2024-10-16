@@ -313,10 +313,12 @@ export default {
     async mounted(){
         this.realms = await realmConfApi.queryRealmConfigurations();
         const countries = await countriesAPI.queryCountries();
-        this.countries = countries.map(e=>{
+        this.countries = countries
+        .map(e=>{
             e.displayTitle = e.name.en
             return e;
-        });
+        })
+        .sort((a, b) => a.name.en.localeCompare(b.name.en));
 
         if(this.$route?.params?.realm){
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
