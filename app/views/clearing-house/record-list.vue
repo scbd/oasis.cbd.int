@@ -146,7 +146,11 @@
                                                                     {{ document.createdBy | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ document.index ? 'In index, DELETE FROM SOLR' : 'Not in index, TRIGGER REINDEX' }}
+                                                                    <span v-if="document.index">In index, DELETE FROM SOLR</span>
+                                                                    <span v-else>
+                                                                        Not in index, <button class="btn btn-sm btn-primary" @click="triggerReindex(document.metadata.schema, document.identifier)">REINDEX</button>
+                                                                    </span>
+
                                                                 </td>
                                                                 <td>
                                                                     <a target="_blank" :href="'clearing-house/records/history/'+ document.identifier">Record history
@@ -331,6 +335,14 @@ export default {
         }
     },
     methods : {
+        async triggerReindex(schema, identifier){
+            const params = {
+                'schema': schema, 
+                'identifier': identifier
+            }
+            const solrResponse = await solrIndexAPI.reIndex(params)
+            console.log("Re-index response :", solrResponse)
+        },
         onRealmSelect(selected){
             this.search.schema = undefined;
             
