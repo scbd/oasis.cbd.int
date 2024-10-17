@@ -87,6 +87,19 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" v-if="toastMessage.text!=''">
+                                        <div class="col-md-12">
+                                            <!-- ToDo: need to fix Vuetify Toast message here -->
+                                            {{ toastMessage.text }}
+                                            <v-snackbar v-if="toastMessage.text!=''" v-model="toastMessage.show" :color="toastMessage.color" :timeout="toastMessage.timeout">
+                                                {{ toastMessage.text }}
+                                                <v-btn color="primary" text @click="toastMessage.show = false">
+                                                    Close
+                                                </v-btn>
+                                            </v-snackbar>
+                                        </div>
+                                    </div>
+
                                     <div class="row" v-if="loading">
                                         <div class="col-md-12" style="margin:5px">
                                         <i class="fa fa-cog fa-spin fa-lg" style="margin-left: 50%;"></i> loading...</div>
@@ -147,11 +160,25 @@
                                                                 </td>
                                                                 <td>
                                                                     <span v-if="document.index">In index, DELETE FROM SOLR</span>
-                                                                    <span v-else>
-                                                                        Not in index, <button class="btn btn-sm btn-primary" @click="triggerReindex(document.metadata.schema, document.identifier)">REINDEX</button>
+                                                                    <span v-if="!document.isIndexed && !document.index">
+                                                                        Not in index, 
+                                                                        <button 
+                                                                            :disabled="document.loading" 
+                                                                            class="btn btn-sm btn-primary" 
+                                                                            @click="triggerReindex(document)"
+                                                                        >
+                                                                            <span v-if="document.loading">Reindexing...</span>
+                                                                            <span v-else>REINDEX</span>
+                                                                        </button>
                                                                     </span>
-
+                                                                    <span v-if="document.isIndexed">
+                                                                        Indexed, 
+                                                                        <button class="btn btn-sm btn-primary" @click="onShowDifference()">
+                                                                            Refresh
+                                                                        </button>
+                                                                    </span>
                                                                 </td>
+
                                                                 <td>
                                                                     <a target="_blank" :href="'clearing-house/records/history/'+ document.identifier">Record history
                                                                     </a>
@@ -274,7 +301,8 @@ import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
 import { isRealm }           from '~/services/utils';
 import SolrIndexAPI          from '~/services/api/solr-index';
-import { escape }            from '~/services/utils'
+import { escape }            from '~/services/utils';
+import '../../views/workflows/vue-wrapper.js';
 
 const realmConfApi    = new realmConfigurationAPI();
 const countriesAPI    = new CountriesAPI();
@@ -311,7 +339,13 @@ export default {
                 documents  : []
             },            
             loading     : false,
-            error       : undefined
+            error       : undefined,
+            toastMessage : {
+                text:'',
+                timeout:5000,
+                show:false,
+                color:'success'
+            }
         }
     },
     async mounted(){
@@ -335,13 +369,39 @@ export default {
         }
     },
     methods : {
-        async triggerReindex(schema, identifier){
-            const params = {
-                'schema': schema, 
-                'identifier': identifier
+        async triggerReindex(document) {
+
+            if (document.loading === undefined) {
+                this.$set(document, 'loading', false);
             }
-            const solrResponse = await solrIndexAPI.reIndex(params)
-            console.log("Re-index response :", solrResponse)
+            if (document.isIndexed === undefined) {
+                this.$set(document, 'isIndexed', false);
+            }
+
+            try {
+                document.isIndexed = true;// will remove after testing
+                document.loading = true; 
+                const solrResponse = await solrIndexAPI.reIndex(document.type, document.identifier);
+
+                if (solrResponse && solrResponse.success) {  
+                    this.showToast('Re-indexing successful!', 'success');
+                    document.isIndexed = true;
+                } else {
+                    throw new Error('Re-indexing failed');
+                }
+
+            } catch (error) {
+                this.showToast('Re-index error: ' + error.message, 'red');
+                // document.isIndexed = false; // enable after testing
+
+            } finally {
+                document.loading = false;
+            }
+        },
+        showToast(text, color){
+            this.toastMessage.show = true;
+            this.toastMessage.color= color||'success'
+            this.toastMessage.text = text;
         },
         onRealmSelect(selected){
             this.search.schema = undefined;
@@ -528,7 +588,7 @@ export default {
                             ...apiRecords.filter(e=>!solrResult.response.docs.find(s=>s.identifier_s == e.identifier)).map(e=>({...e, index : false})),
                             ...solrResult.response.docs.filter(s=>!apiRecords.find(e=>s.identifier_s == e.identifier)).map(e=>
                                             ({...e, metadata : {government : e.government}, createdBy : {userID : ''},
-                                            identifier:e.identifier_s, index : true}))
+                                            identifier:e.identifier_s, index : true, indexing: false, isIndexed: false }))
                         ];
                         this.showDifference.show = true;
                     }
