@@ -15,6 +15,14 @@
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="form-group">
+                                                <label>Environment</label>
+                                                <multiselect v-model="search.environment" :options="environments" :close-on-select="true" 
+                                                    label="title" placeholder="select Environment" @select="onEnvironmentSelect">
+                                                </multiselect>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
                                                 <label>Clearing-House</label>
                                                 <multiselect v-model="search.realm" :options="realms" :close-on-select="true" 
                                                     label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
@@ -324,7 +332,8 @@ export default {
                 realm : undefined,
                 schema: undefined,
                 country: undefined,
-                recordType : 'published' // Draft, public, request
+                recordType : 'published', // Draft, public, request
+                environments: []
             },
             realms : [],
             searchSchemas : [],
@@ -345,7 +354,24 @@ export default {
                 timeout:5000,
                 show:false,
                 color:'success'
-            }
+            },
+            environments : [
+                    {
+                        "key": "development",
+                        "type": "environment",
+                        "title": "Development Environment"
+                    },
+                    {
+                        "key": "production",
+                        "type": "environment",
+                        "title": "Production Environment"
+                    },
+                    {
+                        "key": "training",
+                        "type": "environment",
+                        "title": "Training Environment"
+                    }
+                ]
         }
     },
     async mounted(){
