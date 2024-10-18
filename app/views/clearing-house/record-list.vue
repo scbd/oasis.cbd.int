@@ -13,7 +13,7 @@
                                 </div>
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Environment</label>
                                                 <multiselect v-model="search.environment" :options="environments" :close-on-select="true" 
@@ -21,15 +21,16 @@
                                                 </multiselect>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Clearing-House</label>
+                                                <!-- ToDo :disabled="!search.environment" -->
                                                 <multiselect v-model="search.realm" :options="realms" :close-on-select="true" 
                                                     label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
                                                 </multiselect>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Schema</label>
                                                 <multiselect v-model="search.schema" :options="searchSchemas" :close-on-select="true"
@@ -45,7 +46,7 @@
                                                 </multiselect>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Country</label>
                                                 <multiselect v-model="search.government" :options="countries" :close-on-select="true" 
@@ -169,7 +170,6 @@
                                                                 <td>
                                                                     <span v-if="document.index">In index, DELETE FROM SOLR</span>
                                                                     <span v-if="!document.isIndexed && !document.index">
-                                                                        Not in index, 
                                                                         <button 
                                                                             :disabled="document.loading" 
                                                                             class="btn btn-sm btn-primary" 
@@ -180,7 +180,6 @@
                                                                         </button>
                                                                     </span>
                                                                     <span v-if="document.isIndexed">
-                                                                        Indexed, 
                                                                         <button class="btn btn-sm btn-primary" @click="onShowDifference()">
                                                                             Refresh
                                                                         </button>
@@ -333,7 +332,7 @@ export default {
                 schema: undefined,
                 country: undefined,
                 recordType : 'published', // Draft, public, request
-                environments: []
+                environment: undefined
             },
             realms : [],
             searchSchemas : [],
@@ -362,11 +361,6 @@ export default {
                         "title": "Development Environment"
                     },
                     {
-                        "key": "production",
-                        "type": "environment",
-                        "title": "Production Environment"
-                    },
-                    {
                         "key": "training",
                         "type": "environment",
                         "title": "Training Environment"
@@ -383,10 +377,9 @@ export default {
             return e;
         })
         .sort((a, b) => a.name.en.localeCompare(b.name.en));
-
         if(this.$route?.params?.realm){
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm);
+            this.onRealmSelect(this.search.realm); // ToDo: need to fix
 
             if(this.$route.params.schema){
                 this.search.schema = this.searchSchemas.find(e=>e.key == this.$route.params.schema);
@@ -405,7 +398,6 @@ export default {
             }
 
             try {
-                document.isIndexed = true;// will remove after testing
                 document.loading = true; 
                 const solrResponse = await solrIndexAPI.reIndex(document.type, document.identifier);
 
@@ -418,7 +410,7 @@ export default {
 
             } catch (error) {
                 this.showToast('Re-index error: ' + error.message, 'red');
-                // document.isIndexed = false; // enable after testing
+                document.isIndexed = false;
 
             } finally {
                 document.loading = false;
@@ -429,11 +421,22 @@ export default {
             this.toastMessage.color= color||'success'
             this.toastMessage.text = text;
         },
+        onEnvironmentSelect(selected){
+            this.$router.push({
+                // params: { realm: selected?.realm }  // Updated params
+                path: `clearing-house/records/${selected?.key}`
+            });
+        },
+
         onRealmSelect(selected){
+            // const env = this.$route.params.environment;
+            // this.$router.push({
+            //     path: `clearing-house/records/${env}/${selected?.realm}`
+            // });
             this.search.schema = undefined;
             
             let schemas =[];
-            for (const schema in selected.schemas) {
+            for (const schema in selected?.schemas) {
                 if (Object.hasOwnProperty.call(selected.schemas, schema)) {
                     
                     let displayTitle = lstring(selected.schemas[schema].titlePlural, 'en');
@@ -471,7 +474,12 @@ export default {
             }
             this.error = undefined;
         },
-        onSchemaSelect(){
+        onSchemaSelect(selected){
+            // const envParam = this.$route.params.environment;
+            // const realmParam = this.$route.params.realm;
+            // this.$router.push({
+            //     path: `clearing-house/records/${envParam}/${realmParam}/${selected?.key}`
+            // });
             
             this.result    = {
                 documents       : {},

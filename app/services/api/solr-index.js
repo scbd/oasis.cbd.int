@@ -46,10 +46,4 @@ export default class SolrIndexAPI extends ApiBase
       return fields;
   }
 
-  async reIndex(schema, identifier)  {
-    //ToDo: message: "Insufficient privileges to complete the operation."
-    return this.http.get(`api/v2022/documents/admin/schemas/${schema}/${identifier}/index-document`)
-    .then(res => res.data)
-    .catch(tryCastToApiError);
-  }
 }
