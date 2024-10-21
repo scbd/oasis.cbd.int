@@ -425,7 +425,7 @@ export default {
             //reset the existing
             this.search.realm = undefined;
             this.search.schema = undefined;
-            this.search.country = undefined;
+            this.search.government = undefined;
 
             this.result    = {
                 documents       : {},
@@ -481,7 +481,7 @@ export default {
                 path: `clearing-house/records/${env}/${selected?.realm}`
             });
         },
-        onCountrySelect(){
+        onCountrySelect(selected){
             
             this.result    = {
                 documents       : {},
@@ -493,6 +493,12 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            const envParam = this.$route.params.environment;
+            const realmParam = this.$route.params.realm;
+            const schemaParam = this.$route.params.schema;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}/${realmParam}/${schemaParam}/${selected?.code}`
+            });
         },
         onSchemaSelect(selected){
             
