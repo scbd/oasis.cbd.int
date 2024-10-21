@@ -24,8 +24,7 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Clearing-House</label>
-                                                <!-- ToDo :disabled="!search.environment" -->
-                                                <multiselect v-model="search.realm" :options="realms" :close-on-select="true" 
+                                                <multiselect v-model="search.realm" :options="realms" :close-on-select="true" :disabled="!search.environment"
                                                     label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
                                                 </multiselect>
                                             </div>
@@ -369,6 +368,7 @@ export default {
         }
     },
     async mounted(){
+        this.search.environment = this.environments[0]; // set default
         this.realms = await realmConfApi.queryRealmConfigurations();
         const countries = await countriesAPI.queryCountries();
         this.countries = countries
@@ -379,7 +379,7 @@ export default {
         .sort((a, b) => a.name.en.localeCompare(b.name.en));
         if(this.$route?.params?.realm){
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm); // ToDo: need to fix
+            this.onRealmSelect(this.search.realm);
 
             if(this.$route.params.schema){
                 this.search.schema = this.searchSchemas.find(e=>e.key == this.$route.params.schema);
@@ -422,17 +422,33 @@ export default {
             this.toastMessage.text = text;
         },
         onEnvironmentSelect(selected){
+            //reset the existing
+            this.search.realm = undefined;
+            this.search.schema = undefined;
+            this.search.country = undefined;
+
+            this.result    = {
+                documents       : {},
+                pageNumber      : 1,
+                recordsPerPage  : 25,
+            };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            };
+            this.error = undefined;
+            this.search.environment = {
+                        "key": selected.key,
+                        "type": selected.type,
+                        "title": selected.title
+                    }
             this.$router.push({
-                // params: { realm: selected?.realm }  // Updated params
                 path: `clearing-house/records/${selected?.key}`
             });
         },
 
         onRealmSelect(selected){
-            // const env = this.$route.params.environment;
-            // this.$router.push({
-            //     path: `clearing-house/records/${env}/${selected?.realm}`
-            // });
+            
             this.search.schema = undefined;
             
             let schemas =[];
@@ -460,6 +476,10 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            const env = this.$route?.params?.environment || this.search?.environment?.key;
+            this.$router.push({
+                path: `clearing-house/records/${env}/${selected?.realm}`
+            });
         },
         onCountrySelect(){
             
@@ -475,11 +495,6 @@ export default {
             this.error = undefined;
         },
         onSchemaSelect(selected){
-            // const envParam = this.$route.params.environment;
-            // const realmParam = this.$route.params.realm;
-            // this.$router.push({
-            //     path: `clearing-house/records/${envParam}/${realmParam}/${selected?.key}`
-            // });
             
             this.result    = {
                 documents       : {},
@@ -491,6 +506,11 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            const envParam = this.$route.params.environment;
+            const realmParam = this.$route.params.realm;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}/${realmParam}/${selected?.key}`
+            });
         },
         onReset(){
             this.search.realm = undefined;
