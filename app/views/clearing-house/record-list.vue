@@ -24,7 +24,7 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Clearing-House</label>
-                                                <multiselect v-model="search.realm" :options="realms" :close-on-select="true" :disabled="!search.environment"
+                                                <multiselect v-model="search.realm" :options="environmentRealms" :close-on-select="true" :disabled="!search.environment"
                                                     label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
                                                 </multiselect>
                                             </div>
@@ -97,14 +97,7 @@
                                     </div>
                                     <div class="row" v-if="toastMessage.text!=''">
                                         <div class="col-md-12">
-                                            <!-- ToDo: need to fix Vuetify Toast message here -->
-                                            {{ toastMessage.text }}
-                                            <v-snackbar v-if="toastMessage.text!=''" v-model="toastMessage.show" :color="toastMessage.color" :timeout="toastMessage.timeout">
-                                                {{ toastMessage.text }}
-                                                <v-btn color="primary" text @click="toastMessage.show = false">
-                                                    Close
-                                                </v-btn>
-                                            </v-snackbar>
+                                            <h3 :class="`text-${toastMessage.color}`">{{ toastMessage.text }}</h3>
                                         </div>
                                     </div>
 
@@ -353,22 +346,44 @@ export default {
                 show:false,
                 color:'success'
             },
-            environments : [
-                    {
-                        "key": "development",
-                        "type": "environment",
-                        "title": "Development Environment"
-                    },
-                    {
-                        "key": "training",
-                        "type": "environment",
-                        "title": "Training Environment"
-                    }
-                ]
+            environments :[]
+        }
+    },
+    computed : {
+        environmentRealms(){
+            return this.realms?.filter(e =>
+                    ~e.realm.indexOf(this.search?.environment?.realmSf) 
+                        || (this.search?.environment?.realmSf =="" && !e.realm.indexOf('-'))
+                    );
         }
     },
     async mounted(){
-        this.search.environment = this.environments[0]; // set default
+        
+        if(/\.cbd\.int$/i   .test(window.scbd.apiHost)) { 
+           this.environments =  
+                [
+                    {
+                        key: "production",
+                        title: "Production Environment",
+                        realmSf: ""
+                    },
+                    {
+                        key: "training",
+                        title: "Training Environment",
+                        realmSf: "-trg"
+                    }
+                ]
+        }
+        else {
+            this.environments = [
+                {
+                    key: "development",
+                    title: "Development Environment",
+                    realmSf: "DEV"
+                }
+            ]
+        }
+        this.search.environment = this.environments[0];
         this.realms = await realmConfApi.queryRealmConfigurations();
         const countries = await countriesAPI.queryCountries();
         this.countries = countries
@@ -409,7 +424,7 @@ export default {
                 }
 
             } catch (error) {
-                this.showToast('Re-index error: ' + error.message, 'red');
+                this.showToast('Re-index error: ' + error.message, 'danger');
                 document.isIndexed = false;
 
             } finally {
@@ -445,8 +460,6 @@ export default {
             this.$router.push({
                 path: `clearing-house/records/${selected?.key}`
             });
-            // ToDo: once the environment is available at backend 
-            // this.realms = this.realms.filter(e => e.environment == selected.key);
         },
 
         onRealmSelect(selected){
