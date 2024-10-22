@@ -399,7 +399,7 @@ export default {
 
             try {
                 document.loading = true; 
-                const solrResponse = await solrIndexAPI.reIndex(document.type, document.identifier);
+                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
 
                 if (solrResponse && solrResponse.success) {  
                     this.showToast('Re-indexing successful!', 'success');
@@ -445,6 +445,8 @@ export default {
             this.$router.push({
                 path: `clearing-house/records/${selected?.key}`
             });
+            // ToDo: once the environment is available at backend 
+            // this.realms = this.realms.filter(e => e.environment == selected.key);
         },
 
         onRealmSelect(selected){
