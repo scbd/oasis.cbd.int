@@ -25,7 +25,13 @@
                                             <div class="form-group">
                                                 <label>Clearing-House</label>
                                                 <multiselect v-model="search.realm" :options="environmentRealms" :close-on-select="true" :disabled="!search.environment"
-                                                    label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
+                                                    label="displayName" track-by="displayName" placeholder="select Clearing-House" @select="onRealmSelect($event, true)">
+                                                    <template slot="singleLabel"  slot-scope="props">
+                                                        {{ (props.option.displayName) }} ({{ props.option.realm }})                                                        
+                                                    </template>
+                                                    <template slot="option" slot-scope="props">
+                                                        {{ (props.option.displayName) }} ({{ props.option.realm }})                                                       
+                                                    </template>
                                                 </multiselect>
                                             </div>
                                         </div>
@@ -351,10 +357,12 @@ export default {
     },
     computed : {
         environmentRealms(){
-            return this.realms?.filter(e =>
-                    ~e.realm.indexOf(this.search?.environment?.realmSf) 
-                        || (this.search?.environment?.realmSf =="" && !e.realm.indexOf('-'))
-                    );
+            return this.realms?.filter(e =>{
+                const realm = e.realm?.toLowerCase();
+                const realmSuffix = this.search?.environment?.realmSuffix?.toLowerCase();
+                    return realm?.toLowerCase()?.indexOf(realmSuffix) > 0 
+                        || (realmSuffix == "" && realm.indexOf('-')<0)
+            })
         }
     },
     async mounted(){
@@ -365,12 +373,12 @@ export default {
                     {
                         key: "production",
                         title: "Production Environment",
-                        realmSf: ""
+                        realmSuffix: ""
                     },
                     {
                         key: "training",
                         title: "Training Environment",
-                        realmSf: "-trg"
+                        realmSuffix: "-trg"
                     }
                 ]
         }
@@ -379,26 +387,39 @@ export default {
                 {
                     key: "development",
                     title: "Development Environment",
-                    realmSf: "DEV"
+                    realmSuffix: "DEV"
                 }
             ]
         }
-        this.search.environment = this.environments[0];
-        this.realms = await realmConfApi.queryRealmConfigurations();
-        const countries = await countriesAPI.queryCountries();
-        this.countries = countries
-        .map(e=>{
-            e.displayTitle = e.name.en
-            return e;
-        })
-        .sort((a, b) => a.name.en.localeCompare(b.name.en));
-        if(this.$route?.params?.realm){
-            this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm);
+              this.realms             = await realmConfApi.queryRealmConfigurations();
+        const countries               = await countriesAPI.queryCountries();
+              this.countries          = countries .map(e=>{
+                                        e.displayTitle = e.name.en
+                                        return e;
+                                    })
+                                    .sort((a, b) => a.name.en.localeCompare(b.name.en));
 
-            if(this.$route.params.schema){
-                this.search.schema = this.searchSchemas.find(e=>e.key == this.$route.params.schema);
+        if(this.$route?.params?.environment)
+            this.search.environment = this.environments.find(e=>e.key == this.$route?.params?.environment);
+        else
+            this.search.environment = this.environments[0];
+        
+        if(this.$route?.params?.realm){
+            this.search.realm = this.realms.find(e=>e.realm == this.$route?.params?.realm);
+        }
+        
+        if(this.$route?.params?.realm){
+            const schema = this.$route.params.schema;
+            const government = this.$route?.params?.government;
+            this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
+            this.onRealmSelect(this.search.realm, false);
+
+            if(schema){
+                this.search.schema = this.searchSchemas.find(e=>e.key == schema);
             }
+            if(government)
+                this.search.government     = this.countries.find(e=>e.code == government);
+
             this.loadDocuments('published');
         }
     },
@@ -462,7 +483,7 @@ export default {
             });
         },
 
-        onRealmSelect(selected){
+        onRealmSelect(selected, updateRoute = true){
             
             this.search.schema = undefined;
             
@@ -491,10 +512,12 @@ export default {
                 documents  : []
             }
             this.error = undefined;
-            const env = this.$route?.params?.environment || this.search?.environment?.key;
-            this.$router.push({
-                path: `clearing-house/records/${env}/${selected?.realm}`
-            });
+            if(updateRoute){
+                const env = this.$route?.params?.environment || this.search?.environment?.key;
+                this.$router.push({
+                    path: `clearing-house/records/${env}/${selected?.realm}`
+                });
+            }
         },
         onCountrySelect(selected){
             
@@ -536,7 +559,7 @@ export default {
         onReset(){
             this.search.realm = undefined;
             this.search.schema = undefined;
-            this.search.country = undefined;
+            this.search.government = undefined;
             this.search.recordType = undefined;
             this.searchSchemas = []
             this.result    = {
@@ -549,6 +572,9 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}`
+            });
         },
         onChangePage(pageNumber){
             this.result.pageNumber = pageNumber;
@@ -618,7 +644,7 @@ export default {
                         query : q, 
                         rowsPerPage  : 0
                     }
-                    const solrReq = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    const solrReq = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.error(e))
                     this.result.indexCount = solrReq.response.numFound;
                     this.result.solrQuery  = solrQuery
                 }
@@ -645,7 +671,7 @@ export default {
                         fields : 'identifier_s, type:schema_s, title:title_EN_s,government:government_s',
                         rowsPerPage : this.result.indexCount
                     }
-                    const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.error(e))
                     let apiRecords = []
                     for (let i = 0; i < pages; i++) {
                         const lQuery = {...this.result.query}
