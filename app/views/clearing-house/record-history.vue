@@ -76,7 +76,7 @@
                                                                 <th>Updated By</th>
                                                                 <td></td>
                                                             </tr>
-                                                            <tr v-if="!loading && identifier && !document">
+                                                            <tr v-if="!loading && identifier && hasSearched && !document">
                                                                 <td colspan="9">
                                                                     <div class="alert alert-info" >                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
@@ -160,7 +160,7 @@
                                                                 <th>Updated By</th>
                                                                 <td></td>
                                                             </tr>
-                                                            <tr v-if="!loading && identifier && !documentIndex">
+                                                            <tr v-if="!loading && identifier && hasSearched && !documentIndex">
                                                                 <td colspan="9">
                                                                     <div class="alert alert-info" >                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
@@ -226,7 +226,7 @@
                                                                 <th>Updated By</th>
                                                                 <th></th>
                                                             </tr>
-                                                            <tr v-if="!loading && identifier && !documentDraft">
+                                                            <tr v-if="!loading && identifier && hasSearched && !documentDraft">
                                                                 <td colspan="9">
                                                                     <div class="alert alert-info" >                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
@@ -339,7 +339,7 @@
                                                                 <th></th>
                                                             </tr>
 
-                                                            <tr v-if="!loading && identifier && !(documentRevisions||{}).Count">
+                                                            <tr v-if="!loading && identifier && hasSearched && !(documentRevisions||{}).Count">
                                                                 <td colspan="9">
                                                                     <div class="alert alert-info" >                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
@@ -421,7 +421,7 @@
                                                 <div class="box-body">
                                                     <table class="table table-bordered table-hover">
                                                             <tbody>                                                            
-                                                                <tr v-if="!loading && identifier && !(documentWorkflows||{}).length">
+                                                                <tr v-if="!loading && identifier && hasSearched && !(documentWorkflows||{}).length">
                                                                     <td colspan="9">
                                                                         <div class="alert alert-info" >                            
                                                                             <h4><i class="icon fa fa-ban"></i> Info!</h4>
@@ -679,6 +679,9 @@ export default {
     computed:{
         apiUrl(){
             return window.scbd.apiUrl;
+        },
+        hasSearched(){
+            return this.identifier == this.$route.params.identifier;
         }
     },
     methods : {        
@@ -691,11 +694,19 @@ export default {
             this.documentWorkflows  = undefined;
             this.loading      = false;
             this.error        = undefined;
+
+            this.$router.push({
+                path: `clearing-house/records/history`
+            });
         },
         async showHistory(){
             try{
                 if(!this.identifier)
                     return;
+
+                this.$router.push({
+                    path: `clearing-house/records/history/${this.identifier}`
+                });
 
                 this.document = undefined;
                 this.error = undefined;
