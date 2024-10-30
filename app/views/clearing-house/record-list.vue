@@ -454,7 +454,6 @@ export default {
             this.error = undefined;
             this.search.environment = {
                         "key": selected.key,
-                        "type": selected.type,
                         "title": selected.title
                     }
             this.$router.push({

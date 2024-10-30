@@ -87,6 +87,12 @@
                         <div class="col-md-12">
                             <div class="box">
                                 <div class="box-header with-border">
+                                    <div class="form-group">
+                                        <label>Environment</label>
+                                        <multiselect v-model="environment" :options="environments" :close-on-select="true" 
+                                            label="title" placeholder="select Environment" @select="onEnvironmentSelect">
+                                        </multiselect>
+                                    </div>
                                     <h3 class="box-title">Realms</h3>
                                     <a class="pull-right btn btn-primary" :href="`/clearing-house/realms`">
                                         View realm (list)
@@ -96,7 +102,7 @@
                                 <div class="box-body">
 
                                     <div class="row">
-                                        <div class="col-md-4" v-for="realm in realmConfigurations">
+                                        <div class="col-md-4" v-for="realm in environmentRealms">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <a :href="realm.baseURL">
@@ -121,7 +127,7 @@
                                                             <tr v-for="(schema, name, index) in realm.schemas">
                                                                 <td>{{index+1}}</td>
                                                                 <td>
-                                                                    <a :href="'clearing-house/records/' + realm.realm + '/' + name">{{schema.title.en}} ({{ name }})</a>
+                                                                    <a :href="'clearing-house/records/' + environment.key + '/' +realm.realm + '/' + name">{{schema.title.en}} ({{ name }})</a>
                                                                 </td>
                                                                 <td>{{ schema.type }}</td>
                                                             </tr>
@@ -152,19 +158,52 @@
 
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
+import Multiselect from 'vue-multiselect';
+import environmentsData from '../../app-data/environments.json';
+const isProduction = /\.cbd\.int$/i.test(window.scbd.apiHost);
 
 export default {
+    components : {
+        Multiselect
+    },
     data(){
         return {
-            realmConfigurations : []
+            realmConfigurations : [],
+            environment:undefined
+        }
+    },
+    computed :{
+        environmentRealms(){
+            return this.realmConfigurations?.filter(e =>{
+                return e.environment == this.environment?.key;
+            })
+        },
+        environments() {
+            return environmentsData.filter(e => 
+                isProduction ? e.key !== 'development' : e.key === 'development'
+            );
         }
     },
     async mounted(){
         const realmConfApi = new realmConfigurationAPI();
 
         this.realmConfigurations = await realmConfApi.queryRealmConfigurations();
+
+        if(this.$route?.params?.environment)
+            this.environment = this.environments.find(e=>e.key == this.$route?.params?.environment);
+        else
+            this.environment = this.environments[0];
     },
     methods : {
+        onEnvironmentSelect(selected){
+            this.environment = {
+                        "key": selected.key,
+                        "title": selected.title
+                    }
+            this.$router.push({
+                path: `clearing-house/${selected?.key}`
+            });
+        }
 
     }
 }
