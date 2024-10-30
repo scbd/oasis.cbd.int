@@ -308,11 +308,13 @@ import { isRealm }           from '~/services/utils';
 import SolrIndexAPI          from '~/services/api/solr-index';
 import { escape }            from '~/services/utils';
 import '../../views/workflows/vue-wrapper.js';
+import environmentsData from '../../app-data/environments.json'
 
 const realmConfApi    = new realmConfigurationAPI();
 const countriesAPI    = new CountriesAPI();
 const kmDocumentsAPI  = new KMDocumentsAPI();
 const solrIndexAPI    = new SolrIndexAPI();
+const isProduction = /\.cbd\.int$/i.test(window.scbd.apiHost);
 
 export default {
     components : {
@@ -351,49 +353,26 @@ export default {
                 timeout:5000,
                 show:false,
                 color:'success'
-            },
-            environments :[]
+            }
         }
     },
     computed : {
         environmentRealms(){
             return this.realms?.filter(e =>{
-                const realm = e.realm?.toLowerCase();
-                const realmSuffix = this.search?.environment?.realmSuffix?.toLowerCase();
-                    return realm?.toLowerCase()?.indexOf(realmSuffix) > 0 
-                        || (realmSuffix == "" && realm.indexOf('-')<0)
+                return e.environment == this.search?.environment?.key;
             })
+        },
+        environments() {
+            return environmentsData.filter(e => 
+                isProduction ? e.key !== 'development' : e.key === 'development'
+            );
         }
     },
     async mounted(){
         
-        if(/\.cbd\.int$/i   .test(window.scbd.apiHost)) { 
-           this.environments =  
-                [
-                    {
-                        key: "production",
-                        title: "Production Environment",
-                        realmSuffix: ""
-                    },
-                    {
-                        key: "training",
-                        title: "Training Environment",
-                        realmSuffix: "-trg"
-                    }
-                ]
-        }
-        else {
-            this.environments = [
-                {
-                    key: "development",
-                    title: "Development Environment",
-                    realmSuffix: "DEV"
-                }
-            ]
-        }
-              this.realms             = await realmConfApi.queryRealmConfigurations();
+        this.realms             = await realmConfApi.queryRealmConfigurations();
         const countries               = await countriesAPI.queryCountries();
-              this.countries          = countries .map(e=>{
+        this.countries          = countries .map(e=>{
                                         e.displayTitle = e.name.en
                                         return e;
                                     })
