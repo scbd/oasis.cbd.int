@@ -133,7 +133,7 @@
                                                         <tbody>
                                                             <tr v-for="(schema, key) in realmDetails.schemas" :key="key">
                                                                 <td>
-                                                                    <a :href="'clearing-house/records/' + realmDetails.realm + '/' + key">{{ key }}</a>
+                                                                    <a :href="'clearing-house/records/'+ environment +'/' + realmDetails.realm + '/' + key">{{ key }}</a>
                                                                     </td>
                                                                 <td>
                                                                     {{ schema.title.en }}<br>
@@ -227,7 +227,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                <!-- <section Notification/Env message-->
+                                    <!-- <section Notification/Env message-->
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
@@ -255,7 +255,30 @@
                                             </div>
                                         </div>
                                     </div>
-
+                                    <!-- <section Show JSON start-->
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="box box-default box-solid">
+                                                <div class="box-header with-border">
+                                                    <button class="btn btn-primary" @click="toggleShowJson" style="color:white !important;">
+                                                        {{ showJson ? 'Hide JSON' : 'Show JSON' }}
+                                                    </button>
+                                                </div>
+                                                <div class="box-body">
+                                                    <table class="table table-bordered">  
+                                                        <tbody>
+                                                            <tr v-if="showJson">
+                                                                <td>
+                                                                    <pre style="white-space: break-spaces;">{{ realmDetails }}</pre>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- <section Show JSON End-->
                                 </div>
                             </div>
                         </div>
@@ -282,7 +305,8 @@ export default {
             realmDetails: [],
             userRoleNames: undefined,
             loading: false,
-            error: undefined
+            error: undefined,
+            showJson: false
         };
     },
     async mounted() {
@@ -300,9 +324,15 @@ export default {
     computed : {
         roleCodes () {
             return [...(this.realmDetails.adminRoles || []),...(this.realmDetails.nfpRoles || []),...Object.values(this.realmDetails.roles || {}).flat()];
+        },
+        environment(){
+            return this.$route?.params?.environment;
         }
     },
     methods :{
+        toggleShowJson() {
+            this.showJson = !this.showJson;
+        },
         camelCaseToUpperCase(str) {
             return str.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
         },
