@@ -54,7 +54,7 @@
                                                                 </td>
                                                                 <td>{{ realm.email }}</td>
                                                                 <td style="text-align: center;">
-                                                                    <a :href="'/clearing-house/realms/' + encodeURIComponent(realm.hosts[0])"><i class="fa fa-search" aria-hidden="true"></i></a>
+                                                                    <a :href="'/clearing-house/realms/'+ environment + '/' + encodeURIComponent(realm.hosts[0])"><i class="fa fa-search" aria-hidden="true"></i></a>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -86,6 +86,11 @@ export default {
             loading: false,
             error: undefined
         };
+    },
+    computed: {
+        environment(){
+            return this.$route?.params?.environment;
+        }
     },
     async mounted() {
         this.loading = true;

@@ -94,7 +94,7 @@
                                         </multiselect>
                                     </div>
                                     <h3 class="box-title">Realms</h3>
-                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms`">
+                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/list`">
                                         View realm (list)
                                     </a>
                                 </div>
@@ -102,7 +102,7 @@
                                 <div class="box-body">
 
                                     <div class="row">
-                                        <div class="col-md-4" v-for="realm in environmentRealms">
+                                        <div class="col-md-4" v-for="realm in environmentRealms" :key="realm">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <a :href="realm.baseURL">
@@ -114,7 +114,7 @@
                                                 </div>
 
                                                 <div class="box-body">
-                                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${encodeURIComponent(realm.hosts[0])}`">
+                                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/${encodeURIComponent(realm.hosts[0])}`">
                                                         View realm details
                                                     </a>
                                                     <table class="table table-bordered">
