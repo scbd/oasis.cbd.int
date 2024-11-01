@@ -94,7 +94,7 @@
                                         </multiselect>
                                     </div>
                                     <h3 class="box-title">Realms</h3>
-                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/list`">
+                                    <a v-if="environment && environment.key" class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/list`">
                                         View realm (list)
                                     </a>
                                 </div>
@@ -124,7 +124,7 @@
                                                                 <th>Schema</th>
                                                                 <th>Type</th>
                                                             </tr>
-                                                            <tr v-for="(schema, name, index) in realm.schemas">
+                                                            <tr v-for="(schema, name, index) in realm.schemas" :key="index">
                                                                 <td>{{index+1}}</td>
                                                                 <td>
                                                                     <a :href="'clearing-house/records/' + environment.key + '/' +realm.realm + '/' + name">{{schema.title.en}} ({{ name }})</a>
@@ -201,7 +201,7 @@ export default {
                         "title": selected.title
                     }
             this.$router.push({
-                path: `clearing-house/${selected?.key}`
+                path: `clearing-house/realms/${selected?.key}`
             });
         }
 
