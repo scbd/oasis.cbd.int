@@ -27,7 +27,7 @@
                                             <i class="fa fa-cog fa-spin fa-lg"></i> loading...
                                         </div>
                                     </div>
-                                    <div class="row" v-for="realm in realms" :key="realm.id">
+                                    <div class="row" v-for="realm in environmentRealms" :key="realm.id">
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
@@ -88,6 +88,11 @@ export default {
         };
     },
     computed: {
+        environmentRealms(){
+            return this.realms?.filter(e =>{
+                return e.environment == this.$route?.params?.environment;
+            })
+        },
         environment(){
             return this.$route?.params?.environment;
         }

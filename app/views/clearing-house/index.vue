@@ -102,7 +102,7 @@
                                 <div class="box-body">
 
                                     <div class="row">
-                                        <div class="col-md-4" v-for="realm in environmentRealms" :key="realm">
+                                        <div class="col-md-4" v-for="realm in environmentRealms" :key="realm.id">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <a :href="realm.baseURL">
