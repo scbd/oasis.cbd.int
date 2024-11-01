@@ -27,7 +27,7 @@
                                             <i class="fa fa-cog fa-spin fa-lg"></i> loading...
                                         </div>
                                     </div>
-                                    <div class="row" v-for="realm in realms" :key="realm.id">
+                                    <div class="row" v-for="realm in environmentRealms" :key="realm.id">
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
@@ -54,7 +54,7 @@
                                                                 </td>
                                                                 <td>{{ realm.email }}</td>
                                                                 <td style="text-align: center;">
-                                                                    <a :href="'/clearing-house/realms/' + encodeURIComponent(realm.hosts[0])"><i class="fa fa-search" aria-hidden="true"></i></a>
+                                                                    <a :href="'/clearing-house/realms/'+ environment + '/' + encodeURIComponent(realm.hosts[0])"><i class="fa fa-search" aria-hidden="true"></i></a>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -86,6 +86,16 @@ export default {
             loading: false,
             error: undefined
         };
+    },
+    computed: {
+        environmentRealms(){
+            return this.realms?.filter(e =>{
+                return e.environment == this.$route?.params?.environment;
+            })
+        },
+        environment(){
+            return this.$route?.params?.environment;
+        }
     },
     async mounted() {
         this.loading = true;

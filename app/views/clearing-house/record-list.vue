@@ -13,15 +13,29 @@
                                 </div>
                                 <div class="box-body">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
-                                                <label>Clearing-House</label>
-                                                <multiselect v-model="search.realm" :options="realms" :close-on-select="true" 
-                                                    label="displayName" placeholder="select Clearing-House" @select="onRealmSelect">
+                                                <label>Environment</label>
+                                                <multiselect v-model="search.environment" :options="environments" :close-on-select="true" 
+                                                    label="title" placeholder="select Environment" @select="onEnvironmentSelect">
                                                 </multiselect>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Clearing-House</label>
+                                                <multiselect v-model="search.realm" :options="environmentRealms" :close-on-select="true" :disabled="!search.environment"
+                                                    label="displayName" track-by="displayName" placeholder="select Clearing-House" @select="onRealmSelect($event, true)">
+                                                    <template slot="singleLabel"  slot-scope="props">
+                                                        {{ (props.option.displayName) }} ({{ props.option.realm }})                                                        
+                                                    </template>
+                                                    <template slot="option" slot-scope="props">
+                                                        {{ (props.option.displayName) }} ({{ props.option.realm }})                                                       
+                                                    </template>
+                                                </multiselect>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Schema</label>
                                                 <multiselect v-model="search.schema" :options="searchSchemas" :close-on-select="true"
@@ -37,7 +51,7 @@
                                                 </multiselect>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Country</label>
                                                 <multiselect v-model="search.government" :options="countries" :close-on-select="true" 
@@ -87,6 +101,12 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" v-if="toastMessage.text!=''">
+                                        <div class="col-md-12">
+                                            <h3 :class="`text-${toastMessage.color}`">{{ toastMessage.text }}</h3>
+                                        </div>
+                                    </div>
+
                                     <div class="row" v-if="loading">
                                         <div class="col-md-12" style="margin:5px">
                                         <i class="fa fa-cog fa-spin fa-lg" style="margin-left: 50%;"></i> loading...</div>
@@ -146,8 +166,24 @@
                                                                     {{ document.createdBy | formatDate }}
                                                                 </td>
                                                                 <td>
-                                                                    {{ document.index ? 'In index, DELETE FROM SOLR' : 'Not in index, TRIGGER REINDEX' }}
+                                                                    <span v-if="document.index">In index, DELETE FROM SOLR</span>
+                                                                    <span v-if="!document.isIndexed && !document.index">
+                                                                        <button 
+                                                                            :disabled="document.loading" 
+                                                                            class="btn btn-sm btn-primary" 
+                                                                            @click="triggerReindex(document)"
+                                                                        >
+                                                                            <span v-if="document.loading">Reindexing...</span>
+                                                                            <span v-else>REINDEX</span>
+                                                                        </button>
+                                                                    </span>
+                                                                    <span v-if="document.isIndexed">
+                                                                        <button class="btn btn-sm btn-primary" @click="onShowDifference()">
+                                                                            Refresh
+                                                                        </button>
+                                                                    </span>
                                                                 </td>
+
                                                                 <td>
                                                                     <a target="_blank" :href="'clearing-house/records/history/'+ document.identifier">Record history
                                                                     </a>
@@ -270,12 +306,15 @@ import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
 import { isRealm }           from '~/services/utils';
 import SolrIndexAPI          from '~/services/api/solr-index';
-import { escape }            from '~/services/utils'
+import { escape }            from '~/services/utils';
+import '../../views/workflows/vue-wrapper.js';
+import environmentsData from '../../app-data/environments.json'
 
 const realmConfApi    = new realmConfigurationAPI();
 const countriesAPI    = new CountriesAPI();
 const kmDocumentsAPI  = new KMDocumentsAPI();
 const solrIndexAPI    = new SolrIndexAPI();
+const isProduction = /\.cbd\.int$/i.test(window.scbd.apiHost);
 
 export default {
     components : {
@@ -292,7 +331,8 @@ export default {
                 realm : undefined,
                 schema: undefined,
                 country: undefined,
-                recordType : 'published' // Draft, public, request
+                recordType : 'published', // Draft, public, request
+                environment: undefined
             },
             realms : [],
             searchSchemas : [],
@@ -307,33 +347,126 @@ export default {
                 documents  : []
             },            
             loading     : false,
-            error       : undefined
+            error       : undefined,
+            toastMessage : {
+                text:'',
+                timeout:5000,
+                show:false,
+                color:'success'
+            }
+        }
+    },
+    computed : {
+        environmentRealms(){
+            return this.realms?.filter(e =>{
+                return e.environment == this.search?.environment?.key;
+            })
+        },
+        environments() {
+            return environmentsData.filter(e => 
+                isProduction ? e.key !== 'development' : e.key === 'development'
+            );
         }
     },
     async mounted(){
-        this.realms = await realmConfApi.queryRealmConfigurations();
-        const countries = await countriesAPI.queryCountries();
-        this.countries = countries.map(e=>{
-            e.displayTitle = e.name.en
-            return e;
-        });
+        
+        this.realms             = await realmConfApi.queryRealmConfigurations();
+        const countries               = await countriesAPI.queryCountries();
+        this.countries          = countries .map(e=>{
+                                        e.displayTitle = e.name.en
+                                        return e;
+                                    })
+                                    .sort((a, b) => a.name.en.localeCompare(b.name.en));
 
+        if(this.$route?.params?.environment)
+            this.search.environment = this.environments.find(e=>e.key == this.$route?.params?.environment);
+        else
+            this.search.environment = this.environments[0];
+        
         if(this.$route?.params?.realm){
+            this.search.realm = this.realms.find(e=>e.realm == this.$route?.params?.realm);
+        }
+        
+        if(this.$route?.params?.realm){
+            const schema = this.$route.params.schema;
+            const government = this.$route?.params?.government;
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm);
+            this.onRealmSelect(this.search.realm, false);
 
-            if(this.$route.params.schema){
-                this.search.schema = this.searchSchemas.find(e=>e.key == this.$route.params.schema);
+            if(schema){
+                this.search.schema = this.searchSchemas.find(e=>e.key == schema);
             }
+            if(government)
+                this.search.government     = this.countries.find(e=>e.code == government);
+
             this.loadDocuments('published');
         }
     },
     methods : {
-        onRealmSelect(selected){
+        async triggerReindex(document) {
+
+            if (document.loading === undefined) {
+                this.$set(document, 'loading', false);
+            }
+            if (document.isIndexed === undefined) {
+                this.$set(document, 'isIndexed', false);
+            }
+
+            try {
+                document.loading = true; 
+                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
+
+                if (solrResponse && solrResponse.success) {  
+                    this.showToast('Re-indexing successful!', 'success');
+                    document.isIndexed = true;
+                } else {
+                    throw new Error('Re-indexing failed');
+                }
+
+            } catch (error) {
+                this.showToast('Re-index error: ' + error.message, 'danger');
+                document.isIndexed = false;
+
+            } finally {
+                document.loading = false;
+            }
+        },
+        showToast(text, color){
+            this.toastMessage.show = true;
+            this.toastMessage.color= color||'success'
+            this.toastMessage.text = text;
+        },
+        onEnvironmentSelect(selected){
+            //reset the existing
+            this.search.realm = undefined;
+            this.search.schema = undefined;
+            this.search.government = undefined;
+
+            this.result    = {
+                documents       : {},
+                pageNumber      : 1,
+                recordsPerPage  : 25,
+            };
+            this.showDifference = {
+                loading : false,
+                documents  : []
+            };
+            this.error = undefined;
+            this.search.environment = {
+                        "key": selected.key,
+                        "title": selected.title
+                    }
+            this.$router.push({
+                path: `clearing-house/records/${selected?.key}`
+            });
+        },
+
+        onRealmSelect(selected, updateRoute = true){
+            
             this.search.schema = undefined;
             
             let schemas =[];
-            for (const schema in selected.schemas) {
+            for (const schema in selected?.schemas) {
                 if (Object.hasOwnProperty.call(selected.schemas, schema)) {
                     
                     let displayTitle = lstring(selected.schemas[schema].titlePlural, 'en');
@@ -357,8 +490,14 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            if(updateRoute){
+                const env = this.$route?.params?.environment || this.search?.environment?.key;
+                this.$router.push({
+                    path: `clearing-house/records/${env}/${selected?.realm}`
+                });
+            }
         },
-        onCountrySelect(){
+        onCountrySelect(selected){
             
             this.result    = {
                 documents       : {},
@@ -370,8 +509,14 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            const envParam = this.$route.params.environment;
+            const realmParam = this.$route.params.realm;
+            const schemaParam = this.$route.params.schema;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}/${realmParam}/${schemaParam}/${selected?.code}`
+            });
         },
-        onSchemaSelect(){
+        onSchemaSelect(selected){
             
             this.result    = {
                 documents       : {},
@@ -383,11 +528,16 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            const envParam = this.$route.params.environment;
+            const realmParam = this.$route.params.realm;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}/${realmParam}/${selected?.key}`
+            });
         },
         onReset(){
             this.search.realm = undefined;
             this.search.schema = undefined;
-            this.search.country = undefined;
+            this.search.government = undefined;
             this.search.recordType = undefined;
             this.searchSchemas = []
             this.result    = {
@@ -400,6 +550,9 @@ export default {
                 documents  : []
             }
             this.error = undefined;
+            this.$router.push({
+                path: `clearing-house/records/${envParam}`
+            });
         },
         onChangePage(pageNumber){
             this.result.pageNumber = pageNumber;
@@ -469,7 +622,7 @@ export default {
                         query : q, 
                         rowsPerPage  : 0
                     }
-                    const solrReq = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    const solrReq = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.error(e))
                     this.result.indexCount = solrReq.response.numFound;
                     this.result.solrQuery  = solrQuery
                 }
@@ -496,7 +649,7 @@ export default {
                         fields : 'identifier_s, type:schema_s, title:title_EN_s,government:government_s',
                         rowsPerPage : this.result.indexCount
                     }
-                    const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e))
+                    const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.error(e))
                     let apiRecords = []
                     for (let i = 0; i < pages; i++) {
                         const lQuery = {...this.result.query}
@@ -514,7 +667,7 @@ export default {
                             ...apiRecords.filter(e=>!solrResult.response.docs.find(s=>s.identifier_s == e.identifier)).map(e=>({...e, index : false})),
                             ...solrResult.response.docs.filter(s=>!apiRecords.find(e=>s.identifier_s == e.identifier)).map(e=>
                                             ({...e, metadata : {government : e.government}, createdBy : {userID : ''},
-                                            identifier:e.identifier_s, index : true}))
+                                            identifier:e.identifier_s, index : true, indexing: false, isIndexed: false }))
                         ];
                         this.showDifference.show = true;
                     }

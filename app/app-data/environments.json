@@ -1,0 +1,14 @@
+[
+    {
+        "key": "production",
+        "title": "Production Environment"
+    },
+    {
+        "key": "training",
+        "title": "Training Environment"
+    },
+    {
+        "key": "development",
+        "title": "Development Environment"
+    }
+]
