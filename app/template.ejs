@@ -203,32 +203,33 @@ class="hold-transition skin-blue sidebar-mini">
               <span>Dashboard</span>
             </a>
           </li>
-          <li>
+          <li ng-if="isInRole(roles.OASIS_TRANSLATION_EDITOR)">
             <a href="<%=baseUrl%>projects">
               <i class="fa fa-th"></i>
               <span>Projects - repos</span>
             </a>
           </li>
-          <li>
+          <li ng-if="isInRole(roles.OASIS_TRANSLATION_EDITOR)">
             <a href="<%=baseUrl%>translation">
               <i class="fa fa-th"></i>
               <span>Translation</span>
             </a>
           </li>
-          <li>
+          <li ng-if="isInRole(roles.OASIS_ARTICLE_EDITOR)">
             <a href="<%=baseUrl%>articles">
               <i class="fa fa-th"></i>
               <span>Articles</span>
             </a>
           </li>          
-           <li class="treeview menu-open">
+          
+           <li class="treeview menu-open" ng-if="isInRole(chmAdminRoles)">
             <a href="<%=baseUrl%>clearing-house">
               <i class="fa fa-database"></i> <span>Clearing-House</span>
               <span class="pull-right-container">
                 <i class="fa fa-angle-left pull-right"></i>
               </span>
             </a>
-            <ul class="treeview-menu" style="display: block;">
+            <ul class="treeview-menu" style="display: block;" >
               <li><a href="<%=baseUrl%>clearing-house"><i class="fa fa-cogs"></i><span>Realms</span></a></li>
               <li><a href="<%=baseUrl%>clearing-house/records"><i class="fa fa-list-ol"></i><span>Records</span></a></li>
               <li><a href="<%=baseUrl%>clearing-house/records/history"><i class="fa  fa-history"></i><span>Record History</span></a></li>
@@ -236,7 +237,7 @@ class="hold-transition skin-blue sidebar-mini">
             </ul>
           </li>
           <li>
-            <a href="<%=baseUrl%>widgets">
+            <a href="<%=baseUrl%>widgets" ng-if="isInRole(roles.OASIS_WIDGETS_EDITOR)">
               <i class="fa fa-th"></i>
               <span>Widgets</span>
             </a>

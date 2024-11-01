@@ -4,10 +4,16 @@ import '~/components/scbd-angularjs-services/main';
 import 'angular-vue';
 import 'ng-breadcrumbs'
 import _ from 'lodash';
+import { ROLES } from '~/utils/constants';
+import realmConfigurations from 'realmConf';
+
     
 
     app.controller('TemplateController', ['$scope', '$rootScope', 'authentication', '$q', '$location', 'breadcrumbs',
         function($scope, $rootScope, authentication, $q, $location, breadcrumbs){
+
+          $scope.roles = ROLES;
+          $scope.chmAdminRoles = realmConfigurations.map(e=>e.roles.administrator).flat()
 
           $q.when(authentication.getUser())
           .then(function(data){
@@ -34,6 +40,10 @@ import _ from 'lodash';
 
           $scope.getBreadcrumbs = function(){
             return _.uniqBy(breadcrumbs.get(), item => { return item.path; });
+          }
+
+          $scope.isInRole = function(...roles){            
+            return authentication.isInRole($scope.user, [...roles, ROLES.ADMINISTRATOR].flat())
           }
         }
     ]);
