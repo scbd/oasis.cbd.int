@@ -200,7 +200,7 @@
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
-                                                    <a :href="search.realm.baseURL + '/register/'+ search.schema.shortCode">
+                                                    <a v-if="search.schema && search.schema.shortCode" :href="search.realm.baseURL + '/register/'+ search.schema.shortCode">
                                                         <h3 class="box-title">
                                                             {{ (search.schema.titlePlural || search.schema.title).en }}                                                    
                                                         </h3>
@@ -304,7 +304,7 @@ import CountriesAPI          from '~/services/api/countries';
 import KMDocumentsAPI        from '~/services/api/km-documents';
 import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
-import { isRealm }           from '~/services/utils';
+import { isRealm, isRealmAdmin }           from '~/services/utils';
 import SolrIndexAPI          from '~/services/api/solr-index';
 import { escape }            from '~/services/utils';
 import '../../views/workflows/vue-wrapper.js';
@@ -358,9 +358,9 @@ export default {
     },
     computed : {
         environmentRealms(){
-            return this.realms?.filter(e =>{
-                return e.environment == this.search?.environment?.key;
-            })
+            return this.realms?.filter(e =>{return e.environment == this.search?.environment?.key;})
+                .map(e => ({...e,isAdmin: isRealmAdmin(e.roles?.administrator)})
+            );
         },
         environments() {
             return environmentsData.filter(e => 
@@ -391,7 +391,7 @@ export default {
             const schema = this.$route.params.schema;
             const government = this.$route?.params?.government;
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm, false);
+            this.onRealmSelect(this.search.realm, false); //ToDo: we should use watch here or any other ....
 
             if(schema){
                 this.search.schema = this.searchSchemas.find(e=>e.key == schema);
@@ -462,10 +462,18 @@ export default {
         },
 
         onRealmSelect(selected, updateRoute = true){
+
+            if(!selected.isAdmin)
+            {
+                this.searchSchemas= [];
+                return
+            }
             
             this.search.schema = undefined;
             
             let schemas =[];
+
+
             for (const schema in selected?.schemas) {
                 if (Object.hasOwnProperty.call(selected.schemas, schema)) {
                     
@@ -575,6 +583,10 @@ export default {
 
                 if(!this.search.schema){
                     this.error = 'Please select a Schema';
+                    if(!isRealmAdmin(this.search?.realm?.roles?.administrator))
+                    {
+                        this.error = 'You are not administrator for this realm!';
+                    }
                     return;
                 }
 

@@ -70,3 +70,11 @@ export function andOr(query, sep) {
 export function localizeFields (field, locale){
     return field.replace(/_EN_/ig, `_${locale.toUpperCase()}_`);
 }
+
+export function isRealmAdmin(realmRoles){
+    const userRoles = ["AbsAdministrator-dev", "BchAdministrator-dev"]; // ToDo: get user roles dynamically
+     if (realmRoles) {
+        return realmRoles.some(role => userRoles.includes(role));
+    }    
+    return false;
+}

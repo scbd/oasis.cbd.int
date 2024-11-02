@@ -8,7 +8,8 @@
                             <div class="box">
                                 <div class="box-header with-border">
                                     <h3 class="box-title">
-                                        <strong> {{ realmDetails.realm }} Details </strong>
+                                        <strong> {{ realmDetails.realm }} Details </strong> 
+                                        |  <rolesStatus :isRealmAdmin="isRealmAdmin" />
                                     </h3>
                                 </div>
 
@@ -294,12 +295,17 @@
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
 import UserRolesApi from '~/services/api/user-roles';
+import rolesStatus from '../../shared/roles-status.vue';
+import { isRealmAdmin } from '../../../services/utils';
 
 
 const realmConfApi = new realmConfigurationAPI();
 const userRolesApi = new UserRolesApi();
 
 export default {
+    components : {
+        rolesStatus
+    },
     data() {
         return {
             realmDetails: [],
@@ -327,6 +333,10 @@ export default {
         },
         environment(){
             return this.$route?.params?.environment;
+        },
+        isRealmAdmin()
+        {
+            return isRealmAdmin(this.realmDetails?.roles?.administrator)
         }
     },
     methods :{
