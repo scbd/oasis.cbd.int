@@ -32,8 +32,7 @@
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <strong>{{ realm.realm }}</strong> |
-                                                    <roleStatus :isRealmAdmin="isRealmAdmin(realm.roles.administrator)" />
-                                                    <!-- <span>{{ isRealmAdmin(realm.roles.administrator) ? "You are Administrator" : "You are not Administrator" }}</span> -->
+                                                    <roleStatus :adminRoles="(realm.roles.administrator)" />
                                                 </div>
 
                                                 <div class="box-body">
@@ -78,7 +77,6 @@
 
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
-import { isRealmAdmin }   from '~/services/utils';
 import roleStatus from '../../shared/roles-status.vue';
 
 const realmConfApi = new realmConfigurationAPI();
@@ -105,7 +103,6 @@ export default {
         }
     },
     async mounted() {
-        this.isRealmAdmin = isRealmAdmin;
         this.loading = true;
         try {
             this.realms = await realmConfApi.queryRealmConfigurations();
