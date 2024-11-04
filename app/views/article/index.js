@@ -5,6 +5,7 @@ import 'angular-ui-select2';
 import 'angulargrid';
 import '~/components/scbd-angularjs-controls/form-control-directives/ng-enter';
 import '~/services/local-storage-service';
+import { ROLES } from '../../utils/constants';
     
 // 'ngInfiniteScroll',
 export { default as template } from './index.html';
@@ -325,7 +326,7 @@ export { default as template } from './index.html';
                 $q.all([authentication.getUser()])
                     .then(function (results) {
                         var user = results[0];
-                        if(~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor'))
+                        if(~user.roles.indexOf(ROLES.ADMINISTRATOR) || ~user.roles.indexOf(ROLES.OASIS_ARTICLE_EDITOR))
                             $scope.isAuthorizedForActions = true;
                         $scope.searchArticles($scope.search);
                 });;

@@ -13,6 +13,7 @@ import crypto       from 'crypto';
 
 import * as url from 'url';
 import { sleep } from './utils.js';
+import { ROLES } from '../utils/constants.js';
 const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
 
 const basePath     = __dirname + 'repositories/';
@@ -77,7 +78,7 @@ function gitQuery(options){
     function authorized(req, res, next){
         try{
 
-            if(!req.user || !authenticate.isInRole(req.user, ['Administrator', 'oasisArticleEditor'])){
+            if(!req.user || !authenticate.isInRole(req.user, [ROLES.ADMINISTRATOR, ROLES.OASIS_ARTICLE_EDITOR])){
                 return res.status(403).send('You are not authorized to access this resource');
             }
             

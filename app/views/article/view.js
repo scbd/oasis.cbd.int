@@ -3,6 +3,7 @@ import { cssEscape } from '~/services/css.escape';
 import '~/components/scbd-angularjs-services/main';
 import 'ck-editor-content-css';
 import '~/services/local-storage-service';
+import { ROLES } from '../../utils/constants';
     
 export { default as template } from './view.html';
     export default ['$scope', 'IGenericService', '$q', '$route', '$rootScope', '$timeout', '$http', '$location', 'localStorageService',
@@ -12,7 +13,7 @@ export { default as template } from './view.html';
             $scope.activeLocale = 'en';
 
             const user = $rootScope.user;
-            $scope.canEdit = ~user.roles.indexOf('Administrator') || ~user.roles.indexOf('oasisArticleEditor');
+            $scope.canEdit = ~user.roles.indexOf(ROLES.ADMINISTRATOR) || ~user.roles.indexOf(ROLES.OASIS_ARTICLE_EDITOR);
             var editor;
             $q.when(genericService.get('v2017', 'articles', $route.current.params.id))
                 .then(function (data) {
