@@ -200,7 +200,7 @@
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
-                                                    <a :href="search.realm.baseURL + '/register/'+ search.schema.shortCode">
+                                                    <a v-if="search.schema && search.schema.shortCode" :href="search.realm.baseURL + '/register/'+ search.schema.shortCode">
                                                         <h3 class="box-title">
                                                             {{ (search.schema.titlePlural || search.schema.title).en }}                                                    
                                                         </h3>
@@ -305,6 +305,7 @@ import KMDocumentsAPI        from '~/services/api/km-documents';
 import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
 import { isRealm }           from '~/services/utils';
+import { isAdministrator }   from '~/services/roles';
 import SolrIndexAPI          from '~/services/api/solr-index';
 import { escape }            from '~/services/utils';
 import '../../views/workflows/vue-wrapper.js';
@@ -358,9 +359,8 @@ export default {
     },
     computed : {
         environmentRealms(){
-            return this.realms?.filter(e =>{
-                return e.environment == this.search?.environment?.key;
-            })
+            return this.realms?.filter(e =>{return e.environment == this.search?.environment?.key;})
+                
         },
         environments() {
             return environmentsData.filter(e => 
@@ -370,7 +370,8 @@ export default {
     },
     async mounted(){
         
-        this.realms             = await realmConfApi.queryRealmConfigurations();
+        const realmConfigurations = await realmConfApi.queryRealmConfigurations()
+        this.realms  = realmConfigurations.map(e => ({...e,isAdmin: isAdministrator(e.roles?.administrator, this.$auth.user.roles)}));
         const countries               = await countriesAPI.queryCountries();
         this.countries          = countries .map(e=>{
                                         e.displayTitle = e.name.en
@@ -462,10 +463,18 @@ export default {
         },
 
         onRealmSelect(selected, updateRoute = true){
+            if(!selected.isAdmin)
+            {
+                this.searchSchemas= [];
+                this.search.schema = undefined;
+                return
+            }
             
             this.search.schema = undefined;
             
             let schemas =[];
+
+
             for (const schema in selected?.schemas) {
                 if (Object.hasOwnProperty.call(selected.schemas, schema)) {
                     
@@ -575,6 +584,10 @@ export default {
 
                 if(!this.search.schema){
                     this.error = 'Please select a Schema';
+                    if(!this.search?.realm?.isAdmin)
+                    {
+                        this.error = 'You are not administrator for this realm!';
+                    }
                     return;
                 }
 

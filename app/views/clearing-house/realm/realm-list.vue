@@ -31,7 +31,8 @@
                                         <div class="col-md-12">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
-                                                    <strong>{{ realm.realm }}</strong>
+                                                    <strong>{{ realm.realm }}</strong> |
+                                                    <role-status :admin-roles="(realm.roles.administrator)"></role-status>
                                                 </div>
 
                                                 <div class="box-body">
@@ -76,10 +77,14 @@
 
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
+import roleStatus from '../../shared/roles-status.vue';
 
 const realmConfApi = new realmConfigurationAPI();
 
 export default {
+    components : {
+        roleStatus
+    },
     data() {
         return {
             realms: [],

@@ -111,6 +111,7 @@
                                                         </h3>
                                                         <i class="fa fa-external-link"></i>
                                                     </a>
+                                                    <roles-status :admin-roles="realm.roles.administrator"></roles-status>
                                                 </div>
 
                                                 <div class="box-body">
@@ -160,11 +161,13 @@
 import realmConfigurationAPI from '~/services/api/realm-configuration';
 import Multiselect from 'vue-multiselect';
 import environmentsData from '../../app-data/environments.json';
+import rolesStatus from '../shared/roles-status.vue';
 const isProduction = /\.cbd\.int$/i.test(window.scbd.apiHost);
 
 export default {
     components : {
-        Multiselect
+        Multiselect,
+        rolesStatus
     },
     data(){
         return {
@@ -174,9 +177,7 @@ export default {
     },
     computed :{
         environmentRealms(){
-            return this.realmConfigurations?.filter(e =>{
-                return e.environment == this.environment?.key;
-            })
+            return this.realmConfigurations?.filter(e => e.environment === this.environment?.key)
         },
         environments() {
             return environmentsData.filter(e => 
