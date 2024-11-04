@@ -3,14 +3,10 @@
 </template>
 
 <script>
-import { isRealmAdmin as checkRealmAdmin } from '~/services/utils';
+import { isAdministrator } from '~/services/roles';
 
 export default {
   props: {
-    isRealmAdmin: {
-      type: Boolean,
-      required: false
-    },
     adminRoles: {
       type: Array,
       required: false
@@ -18,13 +14,7 @@ export default {
   },
   computed: {
     isAdmin() {
-      if (this.isRealmAdmin) {
-        return true;
-      }
-      if (this.adminRoles) {
-        return checkRealmAdmin(this.adminRoles, this.$auth?.user.roles);
-      }
-      return false;
+      return isAdministrator(this.adminRoles||[], this.$auth?.user.roles);
     }
   }
 };

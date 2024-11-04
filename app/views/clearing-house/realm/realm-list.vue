@@ -32,7 +32,7 @@
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <strong>{{ realm.realm }}</strong> |
-                                                    <roleStatus :adminRoles="(realm.roles.administrator)" />
+                                                    <role-status :admin-roles="(realm.roles.administrator)"></role-status>
                                                 </div>
 
                                                 <div class="box-body">

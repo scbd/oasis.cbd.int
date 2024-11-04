@@ -9,7 +9,7 @@
                                 <div class="box-header with-border">
                                     <h3 class="box-title">
                                         <strong> {{ realmDetails.realm }} Details </strong> 
-                                        |  <rolesStatus  :adminRoles="adminRoles" />
+                                        |   <roles-status  :admin-roles="adminRoles"></roles-status>
                                     </h3>
                                 </div>
 
