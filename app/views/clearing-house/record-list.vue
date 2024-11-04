@@ -391,7 +391,7 @@ export default {
             const schema = this.$route.params.schema;
             const government = this.$route?.params?.government;
             this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
-            this.onRealmSelect(this.search.realm, false); //ToDo: we should use watch here or any other ....
+            this.onRealmSelect(this.search.realm, false);
 
             if(schema){
                 this.search.schema = this.searchSchemas.find(e=>e.key == schema);
@@ -462,8 +462,8 @@ export default {
         },
 
         onRealmSelect(selected, updateRoute = true){
-
-            if(!selected.isAdmin)
+            const isAdmin = isRealmAdmin(selected.roles?.administrator);
+            if(!isAdmin)
             {
                 this.searchSchemas= [];
                 return
