@@ -181,7 +181,7 @@ export default {
             return this.realmConfigurations?.filter(e => e.environment === this.environment?.key)
                 .map(e => ({
                     ...e,
-                    isAdmin:isRealmAdmin(e.roles.administrator)
+                    isAdmin:isRealmAdmin(e.roles.administrator, this.$auth.user.roles)
                 }));
         },
         environments() {

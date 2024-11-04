@@ -22,7 +22,7 @@ export default {
         return true;
       }
       if (this.adminRoles) {
-        return checkRealmAdmin(this.adminRoles);
+        return checkRealmAdmin(this.adminRoles, this.$auth?.user.roles);
       }
       return false;
     }

@@ -359,7 +359,7 @@ export default {
     computed : {
         environmentRealms(){
             return this.realms?.filter(e =>{return e.environment == this.search?.environment?.key;})
-                .map(e => ({...e,isAdmin: isRealmAdmin(e.roles?.administrator)})
+                .map(e => ({...e,isAdmin: isRealmAdmin(e.roles?.administrator, this.$auth.user.roles)})
             );
         },
         environments() {
@@ -462,7 +462,7 @@ export default {
         },
 
         onRealmSelect(selected, updateRoute = true){
-            const isAdmin = isRealmAdmin(selected.roles?.administrator);
+            const isAdmin = isRealmAdmin(selected.roles?.administrator, this.$auth?.user.roles);
             if(!isAdmin)
             {
                 this.searchSchemas= [];
@@ -583,7 +583,7 @@ export default {
 
                 if(!this.search.schema){
                     this.error = 'Please select a Schema';
-                    if(!isRealmAdmin(this.search?.realm?.roles?.administrator))
+                    if(!isRealmAdmin(this.search?.realm?.roles?.administrator, this.$auth?.user.roles))
                     {
                         this.error = 'You are not administrator for this realm!';
                     }

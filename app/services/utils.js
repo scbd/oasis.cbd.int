@@ -71,8 +71,7 @@ export function localizeFields (field, locale){
     return field.replace(/_EN_/ig, `_${locale.toUpperCase()}_`);
 }
 
-export function isRealmAdmin(realmRoles){
-    const userRoles = ["AbsAdministrator-dev", "BchAdministrator-dev"]; // ToDo: get user roles dynamically
+export function isRealmAdmin(realmRoles, userRoles){
      if (realmRoles) {
         return realmRoles.some(role => userRoles.includes(role));
     }    
