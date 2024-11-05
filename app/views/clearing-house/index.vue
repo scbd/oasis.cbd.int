@@ -87,8 +87,14 @@
                         <div class="col-md-12">
                             <div class="box">
                                 <div class="box-header with-border">
+                                    <div class="form-group">
+                                        <label>Environment</label>
+                                        <multiselect v-model="environment" :options="environments" :close-on-select="true" 
+                                            label="title" placeholder="select Environment" @select="onEnvironmentSelect">
+                                        </multiselect>
+                                    </div>
                                     <h3 class="box-title">Realms</h3>
-                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms`">
+                                    <a v-if="environment && environment.key" class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/list`">
                                         View realm (list)
                                     </a>
                                 </div>
@@ -96,7 +102,7 @@
                                 <div class="box-body">
 
                                     <div class="row">
-                                        <div class="col-md-4" v-for="realm in realmConfigurations">
+                                        <div class="col-md-4" v-for="realm in environmentRealms" :key="realm.id">
                                             <div class="box box-default box-solid">
                                                 <div class="box-header with-border">
                                                     <a :href="realm.baseURL">
@@ -105,10 +111,11 @@
                                                         </h3>
                                                         <i class="fa fa-external-link"></i>
                                                     </a>
+                                                    <roles-status :admin-roles="realm.roles.administrator"></roles-status>
                                                 </div>
 
                                                 <div class="box-body">
-                                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${encodeURIComponent(realm.hosts[0])}`">
+                                                    <a class="pull-right btn btn-primary" :href="`/clearing-house/realms/${environment.key}/${encodeURIComponent(realm.hosts[0])}`">
                                                         View realm details
                                                     </a>
                                                     <table class="table table-bordered">
@@ -118,10 +125,10 @@
                                                                 <th>Schema</th>
                                                                 <th>Type</th>
                                                             </tr>
-                                                            <tr v-for="(schema, name, index) in realm.schemas">
+                                                            <tr v-for="(schema, name, index) in realm.schemas" :key="index">
                                                                 <td>{{index+1}}</td>
                                                                 <td>
-                                                                    <a :href="'clearing-house/records/' + realm.realm + '/' + name">{{schema.title.en}} ({{ name }})</a>
+                                                                    <a :href="'clearing-house/records/' + environment.key + '/' +realm.realm + '/' + name">{{schema.title.en}} ({{ name }})</a>
                                                                 </td>
                                                                 <td>{{ schema.type }}</td>
                                                             </tr>
@@ -152,19 +159,52 @@
 
 <script>
 import realmConfigurationAPI from '~/services/api/realm-configuration';
+import Multiselect from 'vue-multiselect';
+import environmentsData from '../../app-data/environments.json';
+import rolesStatus from '../shared/roles-status.vue';
+const isProduction = /\.cbd\.int$/i.test(window.scbd.apiHost);
 
 export default {
+    components : {
+        Multiselect,
+        rolesStatus
+    },
     data(){
         return {
-            realmConfigurations : []
+            realmConfigurations : [],
+            environment:undefined
+        }
+    },
+    computed :{
+        environmentRealms(){
+            return this.realmConfigurations?.filter(e => e.environment === this.environment?.key)
+        },
+        environments() {
+            return environmentsData.filter(e => 
+                isProduction ? e.key !== 'development' : e.key === 'development'
+            );
         }
     },
     async mounted(){
         const realmConfApi = new realmConfigurationAPI();
 
         this.realmConfigurations = await realmConfApi.queryRealmConfigurations();
+
+        if(this.$route?.params?.environment)
+            this.environment = this.environments.find(e=>e.key == this.$route?.params?.environment);
+        else
+            this.environment = this.environments[0];
     },
     methods : {
+        onEnvironmentSelect(selected){
+            this.environment = {
+                        "key": selected.key,
+                        "title": selected.title
+                    }
+            this.$router.push({
+                path: `clearing-house/realms/${selected?.key}`
+            });
+        }
 
     }
 }
