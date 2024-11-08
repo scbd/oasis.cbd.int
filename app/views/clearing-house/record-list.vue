@@ -385,13 +385,13 @@ export default {
             this.search.environment = this.environments[0];
         
         if(this.$route?.params?.realm){
-            this.search.realm = this.realms.find(e=>e.realm == this.$route?.params?.realm);
+            this.search.realm = this.realms.find(e=>e.realm == this.$route?.params?.realm.toUpperCase());
         }
         
         if(this.$route?.params?.realm){
             const schema = this.$route.params.schema;
             const government = this.$route?.params?.government;
-            this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm);
+            this.search.realm  = this.realms.find(e=>e.realm == this.$route.params.realm.toUpperCase());
             this.onRealmSelect(this.search.realm, false);
 
             if(schema){
