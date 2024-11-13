@@ -744,14 +744,15 @@ export default {
         appDocumentUrl(document, recordType){
 
             let realm = {};
+            const documentRealm = document.realm||document.Realm;
 
-            if(document.realm){
+            if(documentRealm){
                 
-                if(Array.isArray(document.realm)){
-                    realm = this.realms.find(e=>document.realm.includes(e.realm));
+                if(Array.isArray(documentRealm)){
+                    realm = this.realms.find(e=>documentRealm.includes(e.realm.toUpperCase()));
                 }
                 else 
-                    realm = this.realms.find(e=>e.realm == document.realm);
+                    realm = this.realms.find(e=>e.realm == documentRealm.toUpperCase());
 
                 if(isRealm('ABS', realm.realm) || isRealm('BCH', realm.realm)){
                     
