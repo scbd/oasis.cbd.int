@@ -4,7 +4,7 @@ import app from '~/app';
 
 
             function devApiUrl(url) {
-                return window.scbd.apiUrl;
+                return window.scbd.apiHost;
             }
 
             function devAccountsUrl() {
