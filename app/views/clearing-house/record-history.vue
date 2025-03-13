@@ -684,7 +684,7 @@ export default {
     },
     computed:{
         apiUrl(){
-            return window.scbd.apiUrl;
+            return window.scbd.apiHost;
         },
         hasSearched(){
             return this.identifier == this.$route.params.identifier;
@@ -865,7 +865,7 @@ export default {
                     const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
 
                     if (solrResponse?.status == 200) {  
-                        await sleep(1000)
+                        await sleep(5000)
                         alert('Re-indexing successful! please give few seconds before reloading the information.', 'success');
                         this.showHistory();
                     } else {
