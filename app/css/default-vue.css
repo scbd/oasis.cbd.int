@@ -7,3 +7,6 @@
 .v-snack:not(.v-snack--absolute){
     z-index: 1000000;
 }
+.v-menu__content.theme--light.menuable__content__active{
+    position: fixed!important;
+}

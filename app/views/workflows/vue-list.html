@@ -1,4 +1,4 @@
-﻿<div >
+<div >
     <template>
         <v-card>
             <v-container fluid>
@@ -155,7 +155,7 @@
                                             </div>
                                         <v-card-actions  v-if="!item.failureProcessed">
                                             <v-btn color="primary" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="showProcessWorkflow(item)">No Action required</v-btn> &nbsp;
-                                            <v-btn color="warning" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="">Delete record lock</v-btn> &nbsp;
+                                            <v-btn color="warning" :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="alert('Function not implemented')">Delete record lock</v-btn> &nbsp;
                                             <v-btn color="danger"  :disabled="failedRecords.updatingAction" :loading="failedRecords.updatingAction" @click="confirm(item)">Start new workflow</v-btn> &nbsp;                                    
                                         </v-card-actions>
                                     </v-card>
@@ -209,5 +209,4 @@
         <input type="number" v-model="angularVueValue" v-on:input="countUpdated" />
         <button v-on:click="increment" type="button">+</button>
     </div> -->
-
 </div> 

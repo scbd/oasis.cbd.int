@@ -6,7 +6,7 @@ import './apiUrl';
     app.factory('socketioService', ['$rootScope', '$http', '$q', 'realm', "authentication", "apiUrl",
     function ($rootScope, $http, $q, realm, authentication, apiUrl) {
         return new function () {
-            var apiServer = window.scbd.apiUrl
+            var apiServer = window.scbd.apiHost
 
             var socket;
 
