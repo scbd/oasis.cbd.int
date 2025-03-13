@@ -124,7 +124,7 @@
                                                         <div class="col-md-12" style="margin:5px">
                                                             <i class="fa fa-cog fa-spin fa-lg" style="margin-left: 40%;"></i> 
                                                             Validating missing records from index
-                                                            <strong> Please wait this can will time</strong>
+                                                            <strong> Please wait this can take time</strong>
                                                         </div>
                                                     </div>
 
@@ -417,7 +417,7 @@ export default {
                 document.loading = true; 
                 const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
 
-                if (solrResponse && solrResponse.success) {  
+                if (solrResponse?.status == 200) {  
                     this.showToast('Re-indexing successful!', 'success');
                     document.isIndexed = true;
                 } else {
@@ -665,6 +665,7 @@ export default {
                     const solrResult = await solrIndexAPI.querySolr(solrQuery).catch(e=>console.error(e))
                     let apiRecords = []
                     for (let i = 0; i < pages; i++) {
+                        this.showDifference.validated = `Validated ${i * rowsPerPage} of ${this.result.count} records`
                         const lQuery = {...this.result.query}
                         lQuery.$skip = i * rowsPerPage;
                         lQuery.$top  = rowsPerPage;

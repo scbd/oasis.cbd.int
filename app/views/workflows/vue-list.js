@@ -180,7 +180,7 @@ export { default as template } from './vue-list.html';
                 self.failedRecords.updatingAction = true;
                 self.processWorkflowModel.show = false;
                 axios.put('/api/v2013/workflows/failed-workflows/' + workflow._id + 
-                            '/processed', {action:self.processWorkflowModel.action})
+                            '/processed', {action:self.processWorkflowModel.action}, {params :{ realm:workflow.data.realm}})
                 .then(function(response){
                     if(response.status == 200){
                         workflow.failureProcessed = {
@@ -202,7 +202,7 @@ export { default as template } from './vue-list.html';
             startNewWorkflow: function(workflow){
                 var self = this;
                 self.failedRecords.updatingAction = true;
-                axios.put('/api/v2013/workflows/failed-workflows/' + workflow._id + '/new-workflow')
+                axios.put('/api/v2013/workflows/failed-workflows/' + workflow._id + '/new-workflow', null, {params : {realm:workflow?.data?.realm}})
                 .then(function(response){
                     if(response.status == 200){
                         if(response.data.errors){
