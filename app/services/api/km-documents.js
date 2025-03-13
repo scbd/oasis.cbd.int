@@ -15,7 +15,7 @@ export default class KMDocumentsApi extends ApiBase
 
   async getDocumentById(id, headers)  {
 
-    return this.http.get(`api/v2013/documents/${id}/info`, { headers})
+    return this.http.get(`api/v2013/documents/${encodeURIComponent(id)}/info`, { headers})
                     .then(res => res.data)
                     .catch(tryCastToApiError);
   }
@@ -43,13 +43,13 @@ export default class KMDocumentsApi extends ApiBase
 
   async getDocumentRevisionById(id, version, headers)  {
 
-    return this.http.get(`api/v2013/documents/${id}/versions/${version}/info`, {headers})
+    return this.http.get(`api/v2013/documents/${encodeURIComponent(id)}/versions/${version}/info`, {headers})
                     .then(res => res.data)
                     .catch(tryCastToApiError);
   }
 
   async reIndex(schema, identifier)  {
-    return this.http.put(`api/v2022/documents/admin/schemas/${schema}/${identifier}/index-document`)
+    return this.http.put(`api/v2022/documents/admin/schemas/${encodeURIComponent(schema)}/${encodeURIComponent(identifier)}/index-document`)
     .catch(tryCastToApiError);
   }
 
