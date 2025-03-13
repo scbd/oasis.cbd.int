@@ -9,7 +9,8 @@ export { default as template } from './project.html';
 
             var repository          = $routeParams.repository;
             var repositoryQuery     = $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository));
-            var releaseQuery        = $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases');
+            var releaseQueries      =[$http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases?page=1').catch(()=>({ data: [] })),
+                                      $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases?page=2').catch(()=>({ data: [] }))]
             var latestReleaseQuery  = $http.get('https://api.github.com/repos/scbd/' + encodeURIComponent(repository) +'/releases/latest');
 
             $scope.translation = {
@@ -20,12 +21,12 @@ export { default as template } from './project.html';
                 allowedExtensions : ".json"
             };
 
-            $q.all([repositoryQuery, latestReleaseQuery, releaseQuery])
+            $q.all([repositoryQuery, latestReleaseQuery, ...releaseQueries])
             .then(function(result){
 
                 $scope.project          = result[0].data;
                 $scope.latestRelease    = result[1].data;
-                $scope.releases         = result[2].data;
+                $scope.releases         = [...result[2].data, ...result[3].data];
 
             });
 

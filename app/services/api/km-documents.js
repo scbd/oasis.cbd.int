@@ -49,8 +49,7 @@ export default class KMDocumentsApi extends ApiBase
   }
 
   async reIndex(schema, identifier)  {
-    return this.http.get(`api/v2022/documents/admin/schemas/${schema}/${identifier}/index-document`)
-    .then(res => res.data)
+    return this.http.put(`api/v2022/documents/admin/schemas/${schema}/${identifier}/index-document`)
     .catch(tryCastToApiError);
   }
 

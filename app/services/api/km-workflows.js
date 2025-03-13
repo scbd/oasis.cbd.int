@@ -21,16 +21,16 @@ export default class KMWorkflowsApi extends ApiBase
                     .catch(tryCastToApiError);
   }
 
-  async startNewWorkflow(workflowId){
+  async startNewWorkflow(workflowId, realm){
 
-    return this.http.put(`/api/v2013/workflows/failed-workflows/${workflowId}/new-workflow`)
+    return this.http.put(`/api/v2013/workflows/failed-workflows/${workflowId}/new-workflow`, null, {params : {realm}})
                     .then(res => res.data)
                     .catch(tryCastToApiError);
 
   }
 
-  async releaseWorkflow(workflowId){
-    return this.http.put(`/api/v2013/workflows/failed-workflows/${workflowId}/release-workflow`)
+  async releaseWorkflow(workflowId, realm){
+    return this.http.put(`/api/v2013/workflows/failed-workflows/${workflowId}/release-workflow`, null, {params:{realm}})
                     .then(res => res.data)
                     .catch(tryCastToApiError);
   }

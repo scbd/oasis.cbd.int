@@ -165,7 +165,11 @@
                                                                     <div class="alert alert-info" >                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
                                                                         No indexed document found for {{ identifier }}
+                                                                        <p v-if="document && document.identifier" style="margin-top:20px">
+                                                                            <button class="btn btn-danger" @click="reindexRecord(document)">Request Re-indexing</button>
+                                                                        </p>
                                                                     </div>
+
                                                                 </td>
                                                             </tr>
                                                             <tr  v-if="documentIndex">
@@ -173,11 +177,13 @@
                                                                 <td>{{ documentIndex.realm.join(', ') }}</td>
                                                                 <td>
                                                                     <strong>
+                                                                        {{ (documentIndex.uniqueIdentifier_s||'').toUpperCase() }}
                                                                         <a target="_blank" :href="appDocumentUrl(documentIndex, 'published')">
-                                                                            {{documentIndex.title}} 
+                                                                            {{documentIndex.title}}
                                                                             <i class="fa fa-external-link"></i>
-                                                                        </a>
-                                                                    </strong><br/>
+                                                                        </a>                                                                        
+                                                                    </strong>
+                                                                    <br/>
                                                                     <small v-html="documentIndex.summary"></small>
                                                                 </td>
                                                                 <td> {{ countryName(documentIndex.owner.replace('country:', '')) }}</td>
@@ -267,10 +273,10 @@
                                                                     <button class="btn btn-primary btn-sm" 
                                                                         @click="onShowJson(documentDraft)">Show JSON
                                                                     </button>
-                                                                    <button class="btn btn-danger btn-sm" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
+                                                                    <button class="btn btn-danger btn-sm" :disabled="!(documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed)" 
                                                                          @click="restartWorkflow(documentDraft)" :class="{'disabled': loading}">Restart workflow
                                                                     </button>
-                                                                    <button class="btn btn-danger btn-sm" v-if="documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed" 
+                                                                    <button class="btn btn-danger btn-sm" :disabled="!(documentDraft.workingDocumentLock && documentDraft.workingDocumentLock.lockID && !documentDraft.failureProcessed)" 
                                                                          @click="releaseWorkflow(documentDraft)" :class="{'disabled': loading}">Release workflow
                                                                     </button>
                                                                 </td>
@@ -635,7 +641,7 @@ import KMWorkflowsAPI        from '~/services/api/km-workflows';
 import SolrIndexAPI          from '~/services/api/solr-index';
 import { lstring, formatDate } from '~/services/filters'
 import paginate              from '../../components/vue/pagination.vue';
-import { isRealm }           from '~/services/utils'
+import { isRealm, sleep }           from '~/services/utils'
 
 
 const realmConfApi    = new realmConfigurationAPI();
@@ -711,27 +717,41 @@ export default {
                 this.document = undefined;
                 this.error = undefined;
                 this.loading = true
+                const documentUidRegex = /^(?:[a-z]+(?:-dev|trg)?)-(?:[a-z]+)-(?:[a-z]+)-([0-9]+)(?:-[0-9]+)?$/i
+                const documentId = this.identifier.match(documentUidRegex);
 
+                let identifierToSearch = this.identifier;
+                const mongoQuery = { $or : [{"data.identifier" : this.identifier} ]};
                 const solrQuery = {
                     query : `identifier_s:${this.identifier}`, 
                     fields: 'realm:realm_ss,identifier:identifier_s,type:schema_s,title:title_EN_t, summary:summary_EN_t, createdOn:createdDate_dt, updatedOn:updatedDate_dt, owner:_ownership_s,'+
-                        'submittedOn:submittedDate_dt, createdBy:createdBy_s, updatedBy:updatedBy_s,submittedBy:submittedBy_s, government:government_EN_s, indexedOn:indexedDate_dt'
+                        'uniqueIdentifier_s,submittedOn:submittedDate_dt, createdBy:createdBy_s, updatedBy:updatedBy_s,submittedBy:submittedBy_s, government:government_EN_s, indexedOn:indexedDate_dt'
                 }
+
+                if((documentId?.length && Number.isInteger(Number(documentId[1]))) || 
+                    Number.isInteger(Number(this.identifier))){
+
+                    identifierToSearch = Number(documentId&&documentId[1]||this.identifier);
+                    solrQuery.query = `_documentId_i:${identifierToSearch}`;
+                    mongoQuery.$or = [{"data.documentID": identifierToSearch||''}]
+                    
+                }   
+
                 const queries = [
-                    kmDocumentsAPI.getDocumentById(this.identifier).catch(e=>console.log(e)),
-                    kmDocumentsAPI.getDocumentDraftById(this.identifier).catch(e=>console.log(e)),
-                    kmDocumentsAPI.getDocumentRevisions(this.identifier).catch(e=>console.log(e)),
-                    kmWorkflowsAPI.getWorkflowHistory({q : {"data.identifier" : this.identifier}}),
+                    kmDocumentsAPI.getDocumentById(identifierToSearch).catch(e=>console.log(e)),
+                    kmDocumentsAPI.getDocumentRevisions(identifierToSearch).catch(e=>console.log(e)),
+                    kmWorkflowsAPI.getWorkflowHistory({q : mongoQuery}).catch(e=>console.log(e)),
                     solrIndexAPI.querySolr(solrQuery).catch(e=>console.log(e)),
                 ];
 
                 const result = await Promise.all(queries);
 
                 this.document = result[0];
-                this.documentDraft = result[1]
-                this.documentRevisions = result[2]
-                this.documentWorkflows = result[3]
-                this.documentIndex     = result[4]?.response?.docs[0];
+                this.documentRevisions = result[1]
+                this.documentWorkflows = result[2]
+                this.documentIndex     = result[3]?.response?.docs[0];
+
+                this.documentDraft = await kmDocumentsAPI.getDocumentDraftById(this.document?.identifier || identifierToSearch).catch(e=>console.log(e))
                 
             }
             catch(e){
@@ -744,14 +764,15 @@ export default {
         appDocumentUrl(document, recordType){
 
             let realm = {};
+            const documentRealm = document.realm||document.Realm;
 
-            if(document.realm){
+            if(documentRealm){
                 
-                if(Array.isArray(document.realm)){
-                    realm = this.realms.find(e=>document.realm.includes(e.realm));
+                if(Array.isArray(documentRealm)){
+                    realm = this.realms.find(e=>documentRealm.includes(e.realm.toUpperCase()));
                 }
                 else 
-                    realm = this.realms.find(e=>e.realm == document.realm);
+                    realm = this.realms.find(e=>e.realm == documentRealm.toUpperCase());
 
                 if(isRealm('ABS', realm.realm) || isRealm('BCH', realm.realm)){
                     
@@ -783,7 +804,7 @@ export default {
                 this.$set(documentDraft, 'failureProcessed', undefined);
                 this.loading=true;
 
-                const response = await kmWorkflowsAPI.startNewWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''))
+                const response = await kmWorkflowsAPI.startNewWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''), documentDraft?.realm)
             
                 if(response?.errors){
                     this.$set(documentDraft, 'validationErrors', response.errors);
@@ -802,6 +823,7 @@ export default {
             }
         },
         async restartWorkflow(documentDraft){
+            console.log(documentDraft)
             if(!documentDraft?.workingDocumentLock)
                 return;
 
@@ -820,9 +842,35 @@ export default {
                     this.$set(documentDraft, 'failureProcessed', undefined);
                     this.loading=true;
 
-                    await kmWorkflowsAPI.releaseWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''));
+                    await kmWorkflowsAPI.releaseWorkflow(documentDraft?.workingDocumentLock?.lockID.replace('workflow-', ''), documentDraft?.realm);
                     alert('Workflow released!!');
                     this.showHistory();
+                }
+            }
+            catch(err){
+                console.log(err)
+                this.errors.push(err)
+                this.showError(err);
+            }
+            finally{
+                this.loading=false;
+            }
+        },
+        async reindexRecord(document){
+            try{
+                if(confirm('Are you sure you want to re-index this record?')){
+             
+                    this.loading=true;
+
+                    const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
+
+                    if (solrResponse?.status == 200) {  
+                        await sleep(1000)
+                        alert('Re-indexing successful! please give few seconds before reloading the information.', 'success');
+                        this.showHistory();
+                    } else {
+                        throw new Error('Re-indexing failed');
+                    }
                 }
             }
             catch(err){
