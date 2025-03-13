@@ -1,9 +1,10 @@
-﻿import Vue from 'vue';
+import Vue from 'vue';
 import template from './vue-list.html';
 import axios from 'axios';
 import './vue-base-service';
 import './vue-wrapper';
 import _ from 'lodash';
+import "css!~/css/default-vue.css"
 
 export { default as template } from './vue-list.html';
     Vue.component('failed-workflows', {

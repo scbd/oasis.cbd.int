@@ -70,3 +70,6 @@ export function andOr(query, sep) {
 export function localizeFields (field, locale){
     return field.replace(/_EN_/ig, `_${locale.toUpperCase()}_`);
 }
+
+
+export const sleep = (ms)=>new Promise((resolve)=>setTimeout(resolve, ms));
