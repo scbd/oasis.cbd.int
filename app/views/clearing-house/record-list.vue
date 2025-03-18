@@ -416,7 +416,7 @@ export default {
 
             try {
                 document.loading = true; 
-                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
+                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier, document.realm);
 
                 if (solrResponse?.status == 200) {  
                     await sleep(5000);
