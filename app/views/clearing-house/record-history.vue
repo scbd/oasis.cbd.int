@@ -470,7 +470,7 @@
                                                                                     <td> {{event.eventType}}</td>
                                                                                     <td> {{event.workflowExecutionFailedEventAttributes.decisionTaskCompletedEventId}}</td>
                                                                                     <td> 
-                                                                                        <pre style="white-space: break-spaces;">{{JSON.parse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
+                                                                                        <pre style="white-space: break-spaces;">{{tryParse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
                                                                                         </td>
                                                                                     <!-- <td style="white-space:break-spaces"> {{event.workflowExecutionFailedEventAttributes.reason}}</td> -->
                                                                                 </tr>
@@ -880,6 +880,14 @@ export default {
             }
             finally{
                 this.loading=false;
+            }
+        },
+        tryParse(data){
+            try{
+                return JSON.parse(data);
+            }
+            catch(e){
+                return data;
             }
         }
     }
