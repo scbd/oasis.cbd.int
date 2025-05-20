@@ -144,9 +144,10 @@
                                                 <div class="box-header with-border">
                                                     Index Record
                                                     <strong v-if="documentIndex">(Indexed on : {{  documentIndex.indexedOn | formatDate}})</strong>
+                                                    <button v-if="document && document.identifier" class="btn btn-danger pull-right" @click="reindexRecord(document)">Request Re-indexing</button>
                                                 </div>
 
-                                                <div class="box-body">
+                                                <div class="box-body">                                                    
                                                     <table class="table table-bordered">
                                                         <tbody>
                                                             <tr>
@@ -160,9 +161,9 @@
                                                                 <th>Updated By</th>
                                                                 <td></td>
                                                             </tr>
-                                                            <tr v-if="!loading && identifier && hasSearched && !documentIndex">
+                                                            <tr v-if="!loading && identifier && hasSearched">
                                                                 <td colspan="9">
-                                                                    <div class="alert alert-info" >                            
+                                                                    <div class="alert alert-info"  v-if="!documentIndex">                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
                                                                         No indexed document found for {{ identifier }}
                                                                         <p v-if="document && document.identifier" style="margin-top:20px">
@@ -470,7 +471,7 @@
                                                                                     <td> {{event.eventType}}</td>
                                                                                     <td> {{event.workflowExecutionFailedEventAttributes.decisionTaskCompletedEventId}}</td>
                                                                                     <td> 
-                                                                                        <pre style="white-space: break-spaces;">{{JSON.parse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
+                                                                                        <pre style="white-space: break-spaces;">{{tryParse(event.workflowExecutionFailedEventAttributes.details)}}</pre>
                                                                                         </td>
                                                                                     <!-- <td style="white-space:break-spaces"> {{event.workflowExecutionFailedEventAttributes.reason}}</td> -->
                                                                                 </tr>
@@ -684,7 +685,7 @@ export default {
     },
     computed:{
         apiUrl(){
-            return window.scbd.apiUrl;
+            return window.scbd.apiHost;
         },
         hasSearched(){
             return this.identifier == this.$route.params.identifier;
@@ -862,10 +863,10 @@ export default {
              
                     this.loading=true;
 
-                    const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
+                    const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier, document.realm);
 
                     if (solrResponse?.status == 200) {  
-                        await sleep(1000)
+                        await sleep(5000)
                         alert('Re-indexing successful! please give few seconds before reloading the information.', 'success');
                         this.showHistory();
                     } else {
@@ -880,6 +881,14 @@ export default {
             }
             finally{
                 this.loading=false;
+            }
+        },
+        tryParse(data){
+            try{
+                return JSON.parse(data);
+            }
+            catch(e){
+                return data;
             }
         }
     }

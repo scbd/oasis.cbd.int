@@ -310,6 +310,7 @@ import SolrIndexAPI          from '~/services/api/solr-index';
 import { escape }            from '~/services/utils';
 import '../../views/workflows/vue-wrapper.js';
 import environmentsData from '../../app-data/environments.json'
+import { sleep } from '../../services/utils.js';
 
 const realmConfApi    = new realmConfigurationAPI();
 const countriesAPI    = new CountriesAPI();
@@ -415,9 +416,10 @@ export default {
 
             try {
                 document.loading = true; 
-                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier);
+                const solrResponse = await kmDocumentsAPI.reIndex(document.type, document.identifier, document.realm);
 
                 if (solrResponse?.status == 200) {  
+                    await sleep(5000);
                     this.showToast('Re-indexing successful!', 'success');
                     document.isIndexed = true;
                 } else {
@@ -653,6 +655,7 @@ export default {
             if(this.result.query && this.result.count > 0){
                 this.showDifference.loading = true;
                 try{
+                    this.showDifference.documents = []
                     const rowsPerPage = 100;
                     const pages = Math.ceil(this.result.count / rowsPerPage)+1
                     
@@ -675,8 +678,9 @@ export default {
                             apiRecords = [...apiRecords, ...result.Items];
                         }                        
                     }
-
+                    this.result.indexCount = solrResult.response.numFound;
                     if(solrResult.response.docs.length != apiRecords.length){
+
                         this.showDifference.documents = [
                             ...apiRecords.filter(e=>!solrResult.response.docs.find(s=>s.identifier_s == e.identifier)).map(e=>({...e, index : false})),
                             ...solrResult.response.docs.filter(s=>!apiRecords.find(e=>s.identifier_s == e.identifier)).map(e=>
