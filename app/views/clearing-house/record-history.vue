@@ -144,9 +144,10 @@
                                                 <div class="box-header with-border">
                                                     Index Record
                                                     <strong v-if="documentIndex">(Indexed on : {{  documentIndex.indexedOn | formatDate}})</strong>
+                                                    <button v-if="document && document.identifier" class="btn btn-danger pull-right" @click="reindexRecord(document)">Request Re-indexing</button>
                                                 </div>
 
-                                                <div class="box-body">
+                                                <div class="box-body">                                                    
                                                     <table class="table table-bordered">
                                                         <tbody>
                                                             <tr>
@@ -160,16 +161,12 @@
                                                                 <th>Updated By</th>
                                                                 <td></td>
                                                             </tr>
-                                                            <tr v-if="!loading && identifier && hasSearched && !documentIndex">
+                                                            <tr v-if="!loading && identifier && hasSearched">
                                                                 <td colspan="9">
-                                                                    <div class="alert alert-info" >                            
+                                                                    <div class="alert alert-info"  v-if="!documentIndex">                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
                                                                         No indexed document found for {{ identifier }}
-                                                                        <p v-if="document && document.identifier" style="margin-top:20px">
-                                                                            <button class="btn btn-danger" @click="reindexRecord(document)">Request Re-indexing</button>
-                                                                        </p>
                                                                     </div>
-
                                                                 </td>
                                                             </tr>
                                                             <tr  v-if="documentIndex">
