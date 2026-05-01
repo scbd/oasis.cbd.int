@@ -41,5 +41,12 @@ export default defineNuxtConfig({
     config: {
       stylistic: false
     }
+  },
+
+  vite: {
+    server: {
+      // Workaround for "Vite Node IPC socket path not configured" on Node 22+
+      watch: {}
+    }
   }
 })
