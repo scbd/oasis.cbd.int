@@ -1,69 +1,28 @@
 <template>
-  <div class="antialiased">
-    <!-- Top navbar -->
-    <header class="navbar navbar-expand-md navbar-dark d-print-none">
-      <div class="container-xl">
+  <div class="page">
+    <!-- Vertical sidebar -->
+    <aside class="navbar navbar-vertical navbar-expand-lg" data-bs-theme="dark">
+      <div class="container-fluid">
         <button
           class="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbar-menu"
-          aria-controls="navbar-menu"
+          data-bs-target="#sidebar-menu"
+          aria-controls="sidebar-menu"
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon" />
         </button>
 
-        <NuxtLink
-          to="/"
-          class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3"
-        >
+        <NuxtLink to="/" class="navbar-brand navbar-brand-autodark">
           <span class="fw-bold">SCBD</span>
         </NuxtLink>
 
-        <div class="navbar-nav flex-row order-md-last">
-          <div v-if="auth.isAuthenticated" class="nav-item dropdown">
-            <a
-              href="#"
-              class="nav-link d-flex lh-1 text-reset p-0"
-              data-bs-toggle="dropdown"
-              aria-label="Open user menu"
-            >
-              <span class="avatar avatar-sm">
-                {{ auth.initials }}
-              </span>
-              <div class="d-none d-xl-block ps-2">
-                <div>{{ auth.user?.name }}</div>
-                <div class="mt-1 small text-secondary">{{ auth.user?.email }}</div>
-              </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-              <a href="#" class="dropdown-item">Profile</a>
-              <div class="dropdown-divider" />
-              <button class="dropdown-item" @click="auth.signOut()">Sign out</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Vertical sidebar -->
-    <div id="navbar-menu" class="navbar-vertical navbar-expand-lg">
-      <div class="container-xl">
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbar-menu"
-        >
-          <span class="navbar-toggler-icon" />
-        </button>
-
-        <div class="collapse navbar-collapse">
+        <div id="sidebar-menu" class="collapse navbar-collapse">
           <ul class="navbar-nav pt-lg-3">
             <li class="nav-item">
-              <NuxtLink to="/" class="nav-link" active-class="active">
+              <NuxtLink to="/" class="nav-link" :class="{ active: route.path === '/' }">
                 <IconLayoutDashboard class="nav-link-icon" />
                 <span class="nav-link-title">Dashboard</span>
               </NuxtLink>
@@ -86,18 +45,21 @@
                 <span class="nav-link-title">Articles</span>
               </NuxtLink>
             </li>
-            <li class="nav-item dropdown">
+            <li class="nav-item">
               <a
                 class="nav-link dropdown-toggle"
                 href="#sidebar-clearing-house"
                 data-bs-toggle="collapse"
-                role="button"
-                aria-expanded="false"
+                :aria-expanded="route.path.startsWith('/clearing-house')"
               >
                 <IconDatabase class="nav-link-icon" />
                 <span class="nav-link-title">Clearing-House</span>
               </a>
-              <div id="sidebar-clearing-house" class="dropdown-menu">
+              <div
+                id="sidebar-clearing-house"
+                class="dropdown-menu"
+                :class="{ show: route.path.startsWith('/clearing-house') }"
+              >
                 <div class="dropdown-menu-columns">
                   <div class="dropdown-menu-column">
                     <NuxtLink to="/clearing-house" class="dropdown-item" active-class="active"
@@ -140,32 +102,62 @@
           </ul>
         </div>
       </div>
-    </div>
+    </aside>
 
     <!-- Page wrapper -->
     <div class="page-wrapper">
-      <!-- Breadcrumbs -->
+      <!-- Top navbar -->
+      <div class="navbar navbar-expand-md d-print-none">
+        <div class="container-xl">
+          <div class="d-flex align-items-center gap-3 w-100">
+            <!-- Breadcrumbs -->
+            <ol class="breadcrumb mb-0 flex-fill" aria-label="breadcrumbs">
+              <li class="breadcrumb-item">
+                <a href="https://www.cbd.int" target="_blank" rel="noopener">CBD</a>
+              </li>
+              <li
+                v-for="(crumb, i) in breadcrumbs"
+                :key="crumb.path"
+                class="breadcrumb-item"
+                :class="{ active: i === breadcrumbs.length - 1 }"
+              >
+                <NuxtLink v-if="i < breadcrumbs.length - 1" :to="crumb.path">{{
+                  crumb.label
+                }}</NuxtLink>
+                <span v-else>{{ crumb.label }}</span>
+              </li>
+            </ol>
+
+            <!-- User menu -->
+            <div v-if="auth.isAuthenticated" class="nav-item dropdown ms-auto">
+              <a
+                href="#"
+                class="nav-link d-flex lh-1 text-reset p-0"
+                data-bs-toggle="dropdown"
+                aria-label="Open user menu"
+              >
+                <span class="avatar avatar-sm">{{ auth.initials }}</span>
+                <div class="d-none d-xl-block ps-2">
+                  <div class="small fw-medium">{{ auth.user?.name }}</div>
+                  <div class="small text-secondary">{{ auth.user?.email }}</div>
+                </div>
+              </a>
+              <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <a href="#" class="dropdown-item">Profile</a>
+                <div class="dropdown-divider" />
+                <button class="dropdown-item" @click="auth.signOut()">Sign out</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Page header -->
       <div class="page-header d-print-none">
         <div class="container-xl">
           <div class="row g-2 align-items-center">
             <div class="col">
-              <ol class="breadcrumb" aria-label="breadcrumbs">
-                <li class="breadcrumb-item">
-                  <a href="https://www.cbd.int" target="_blank" rel="noopener">CBD</a>
-                </li>
-                <li
-                  v-for="(crumb, i) in breadcrumbs"
-                  :key="crumb.path"
-                  class="breadcrumb-item"
-                  :class="{ active: i === breadcrumbs.length - 1 }"
-                >
-                  <NuxtLink v-if="i < breadcrumbs.length - 1" :to="crumb.path">{{
-                    crumb.label
-                  }}</NuxtLink>
-                  <span v-else>{{ crumb.label }}</span>
-                </li>
-              </ol>
-              <h2 v-if="pageTitle" class="page-title mt-1">{{ pageTitle }}</h2>
+              <h2 v-if="pageTitle" class="page-title">{{ pageTitle }}</h2>
             </div>
           </div>
         </div>
@@ -178,12 +170,13 @@
         </div>
       </div>
 
+      <!-- Footer -->
       <footer class="footer footer-transparent d-print-none">
         <div class="container-xl">
-          <div class="row text-center align-items-center flex-row-reverse">
+          <div class="row text-center align-items-center">
             <div class="col-12 col-lg-auto">
               <ul class="list-inline list-inline-dots mb-0">
-                <li class="list-inline-item">v{{ appVersion }}</li>
+                <li class="list-inline-item text-secondary small">v{{ appVersion }}</li>
               </ul>
             </div>
           </div>
