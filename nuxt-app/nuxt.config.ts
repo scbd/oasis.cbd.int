@@ -43,10 +43,11 @@ export default defineNuxtConfig({
     }
   },
 
-  vite: {
-    server: {
-      // Workaround for "Vite Node IPC socket path not configured" on Node 22+
-      watch: {}
-    }
+  experimental: {
+    // With ssr:false, no SSR Vite server is created so vite:serverCreated(ctx.isServer)
+    // never fires — NUXT_VITE_NODE_OPTIONS is never set and the renderer throws
+    // "Vite Node IPC socket path not configured". viteEnvironmentApi:true resolves
+    // the socket from the client server immediately, bypassing that code path.
+    viteEnvironmentApi: true
   }
 })
