@@ -1,0 +1,5 @@
+/* Application-level overrides on top of Tabler */
+
+.page-wrapper {
+  min-height: 100vh;
+}

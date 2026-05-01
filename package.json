@@ -43,7 +43,8 @@
     "build": "rm -rf ./dist && rm -rf ./i18n-build && npx rollup -c",
     "dev": "rm -rf ./dist && rm -rf ./i18n-build && npx rollup -c --watch",
     "eslint": "npx eslint . --fix",
-    "clean-reinstall": "rm -rf ./node_modules && yarn install"
+    "clean-reinstall": "rm -rf ./node_modules && yarn install",
+    "prepare": "husky"
   },
   "version": "0.0.0",
   "type": "module"
