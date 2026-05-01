@@ -23,8 +23,41 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Versioned CBD API endpoints — proxied to CBD_API_HOST (defaults to production)
-    '/api/v20**': {
-      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v20**` }
+    '/api/v2013/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2013/**` }
+    },
+    '/api/v2015/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2015/**` }
+    },
+    '/api/v2016/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2016/**` }
+    },
+    '/api/v2017/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2017/**` }
+    },
+    '/api/v2018/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2018/**` }
+    },
+    '/api/v2019/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2019/**` }
+    },
+    '/api/v2020/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2020/**` }
+    },
+    '/api/v2021/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2021/**` }
+    },
+    '/api/v2022/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2022/**` }
+    },
+    '/api/v2023/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2023/**` }
+    },
+    '/api/v2024/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2024/**` }
+    },
+    '/api/v2025/**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v2025/**` }
     },
     // All other /api/* — proxied to API_HOST (defaults to dev/staging)
     '/api/**': { proxy: { to: `${process.env.API_HOST ?? 'https://api.cbddev.xyz'}/**` } },
