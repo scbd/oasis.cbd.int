@@ -22,7 +22,13 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
+    // Versioned CBD API endpoints — proxied to CBD_API_HOST (defaults to production)
+    '/api/v20**': {
+      proxy: { to: `${process.env.CBD_API_HOST ?? 'https://api.cbd.int'}/api/v20**` }
+    },
+    // All other /api/* — proxied to API_HOST (defaults to dev/staging)
     '/api/**': { proxy: { to: `${process.env.API_HOST ?? 'https://api.cbddev.xyz'}/**` } },
+    // Translation API — proxied to the local Express server
     '/translation-api/**': {
       proxy: {
         to: `${process.env.TRANSLATION_API_HOST ?? 'http://localhost:2012'}/translation-api/**`
