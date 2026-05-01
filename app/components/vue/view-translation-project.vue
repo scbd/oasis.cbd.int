@@ -4,32 +4,46 @@
         <div class="row">
 
             <div class="col-md-12">
-                <div class="container" style="width:100%" id="articlesContainer">
+                <div class="container" style="width:100%">
                     <div class="row">
                         <div class="col-md-12">
                             <div class="box box-default">
                                 <div class="box-header with-border">
-                                    <h3 class="box-title">Import from translations : {{ $route.params.table }}</h3>
+                                    <h3 class="box-title">Translation project</h3>
                                 </div>
                                 <div class="box-body">
+                                    {{ document }}
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
-                                                <label>Language of file(s)</label>
-                                                <multiselect v-model="fileLanguage" :options="languages" :close-on-select="true" 
-                                                    label="title" placeholder="select Language">
-                                                </multiselect>
+                                                <label class="control-label " for="name">Name</label>
+                                                {{document.name}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Application</label>
+                                                {{document.application}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Description<span class="color-red">*</span></label>
+                                                {{document.description}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Languages<span class="color-red">*</span></label>
+                                                {{document.languages}}
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <!-- <label>Clearing-House ID</label>
-                                                <input type="text" class="form-control" v-model="identifier"> -->
-
                                                 <uploader :options="options" class="uploader-example"
-                                                :auto-start="false" :categoryMap="categoryMap" ref="uploader"
+                                                :auto-start="true" :categoryMap="categoryMap" ref="uploader"
                                                 @file-added="onFileAdded" @file-success="onFileSuccess"
                                                 @file-error="onFileError">
                                                     <uploader-unsupport></uploader-unsupport>
@@ -44,7 +58,7 @@
                                     </div>
                                 </div>
                                 <div class="box-footer">
-                                    <button class="btn btn-sm btn-primary" :disabled="loading" @click="onUploadAll()">Upload All</button>
+                                    <button class="btn btn-sm btn-primary" :disabled="loading" @click="onUploadAll()">Save</button>
                                     <button class="btn btn-sm btn-danger"  :disabled="loading" @click="onReset()">Clear</button>
                                 </div>
                                 <div class="box-footer" v-if="loading">
@@ -108,31 +122,6 @@
                                 </div>
                             </div>
                     </div>
-
-                    <div class="row" v-show="logs.length">
-                            
-                            <div class="col-md-12">
-                                <div class="box box-default">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title">Logs</h3>
-                                    </div>                                    
-                                    <div class="box-body">
-                                        <div class="list-container logs">
-                                            <virtual-list class="stream scroll-touch" ref="vsl"
-                                            :data-key="'uid'"
-                                            :data-sources="logs"
-                                            :data-component="itemComponent"
-                                            :item-class="'stream-item'"
-                                            :keeps="logs.length"
-                                            :estimate-size="logs.length"
-                                            >
-                                            </virtual-list>                                                    
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                    </div>
                 </div>
 
             </div>
@@ -145,10 +134,10 @@
 import VirtualList from 'vue-virtual-scroll-list'
 import simpleUpload from 'vue-simple-uploader'
 import   Multiselect         from 'vue-multiselect'
-import LogItem from './log-item.vue'
+import { addProject, updateProject, updateProjectStatus } from '~/api/translation-project';
 import { languages } from '~/app-data/laguages';
-
 const sleep = (ms)=>new Promise((resolve)=>setTimeout(resolve, ms));
+
 
 export default {
     components: {
@@ -165,18 +154,9 @@ export default {
     data () {
       return {
         options: {
-            autoStart:false,
-            target: (file,request,c)=>{
-                const urls = {
-                    'application/zip'  : `/translation-api/database-table/${encodeURIComponent(this.$route.params.table)}/import/zip`,
-                    'application/json' : `/translation-api/database-table/${encodeURIComponent(this.$route.params.table)}/import/json`
-                }
-                let url = urls[file.fileType];
-                
-                if(this.fileLanguage?.code)
-                    url = `${url}/${encodeURIComponent(this.fileLanguage.code)}`;
-
-                return url
+            autoStart:true,
+            target: (file,request,c)=>{            
+                return '/api/v2015/temporary-files'
             },
             testChunks: false,
             chunkSize: 20971520 * 1024, //20G
@@ -185,52 +165,54 @@ export default {
             }
         },
         attrs: {
-          accept: 'application/zip,application/json'
+          accept: 'application/zip,application/json,sdlppx'
         },
         categoryMap : {
-            document : ['zip', 'json']
+            document : ['zip', 'json', 'sdlppx']
         },         
         logs :[],
         fileStatus:[],
-        itemComponent:LogItem,
-        languages : languages.filter(e=>e.code!='en'),
-        fileLanguage : undefined,
-        loading:false
+        languages : languages,
+        loading:false,
+        document: {
+            name: '',
+            application: '',
+            description: '',
+            targetLocales: [],
+            sourceFileUrls:[]
+        },
+        targetLocales: languages,
       }
     },
     methods:{
         onFileAdded(rootFile, file,a,b){
-            console.log(rootFile.fileType)
-            if(!this._data.attrs.accept.split(',').map(e=>e.trim()).includes(rootFile.fileType)){
+            const fileType = rootFile.fileType || rootFile.getExtension();
+            console.log(fileType)
+            if(!this._data.attrs.accept.split(',').map(e=>e.trim()).includes(fileType)){
                 this.$refs.uploader.uploader.removeFile(rootFile)
-                return false;
             }
         },
 
         async onFileSuccess(rootFile, uploadedFile,response, chunk){
 
-            const jsonResponse = JSON.parse(response);
-            if(jsonResponse){
-                for (let i = 0; i < jsonResponse.length; i++) {
-                    const file = jsonResponse[i];      
 
-                    if(file.success){
-                        let isFolder = false
-                        let {fileName, success } = file;
-                        const { relativePath, fileType }     = uploadedFile
-                        if(~relativePath.indexOf('/')){
-                            fileName = relativePath.substr(0, relativePath.indexOf('/'));
-                            isFolder = true
-                        }
-                        this.fileStatus.push({fileName, files:success, fileType, isFolder })
-                    }
-                    if(file.console){
-                        await this.formatLogs(file.console, 'console', file?.fileName)
-                    }
-                    if(file.errors){
-                        await this.formatLogs(file.errors, 'errors', file?.fileName)
-                    }
-                };
+            let jsonResponse = JSON.parse(response);
+            if(jsonResponse){
+                
+                let isFolder = false   
+                const { name:fileName } = uploadedFile;
+                const { url,  hash, uid, contentType, size} = jsonResponse;
+                const { relativePath, fileType } = uploadedFile
+                isFolder = relativePath.indexOf('/') > -1;
+
+                const fileObject = {fileName, files:uploadedFile, fileType, isFolder, folderPath:relativePath };
+                this.fileStatus.push(fileObject)
+                this.document.sourceFileUrls.push({
+                    contentType, hash,
+                    fileName, folderPath:relativePath,
+                    size, uid, url,
+                    })
+                
             }
             if(rootFile.completed)
                 this.loading = false;
@@ -238,21 +220,53 @@ export default {
         onFileError(rootFile, file,response, chunk){
             console.log(rootFile, file,response, chunk)
         },
-        onUploadAll(){
+        async onUploadAll(){
             const uploader = this.$refs.uploader.uploader;
-            if(!this.fileLanguage){
-                alert('Select translation language')
+            if(!this.document?.name){
+                alert('Please provide a name for the translation project')
                 return;
             }
-            if(!uploader?.fileList?.length){
-                alert('Add at least one file to process translation')
+            if(!this.document?.application){
+                alert('Please provide an application name for the translation project')
                 return;
             }
-           
-            if(uploader?.fileList?.length){
-                this.loading = true;
-                uploader.resume();
+            if(!this.targetLocales?.length){
+                alert('Please select at least one target language for the translation project')
+                return;
             }
+            if(!this.document?.description){
+                alert('Please provide a description for the translation project')
+                return;
+            }
+            if(!this.document.sourceFileUrls?.length){
+                alert('Please add files to upload')
+                return;
+            }
+
+            this.loading = true;
+            try{
+                const userToken = {
+                    token: this.$auth.strategy?.token?.get()
+                }
+                this.document.targetLocales = this.targetLocales.map(e=>e.code);
+                if(this.document._id)
+                    await updateProject(this.document._id, this.document, userToken);
+                else{
+                    const id = await addProject(this.document, userToken);
+                    this.document._id = id;
+                }
+                // this.document.targetLocales = this.document.targetLocales.map(e=>e.code);
+                
+                this.$router.push({path: '/translation/trados-projects'});
+            }
+            catch(e){
+                console.error(e);
+                alert('An error occurred while saving the translation project. Please try again later.')
+            }
+            finally{
+                this.loading = false;
+            }
+
         },
         onReset(){
             const uploader = this.$refs.uploader.uploader;
@@ -303,5 +317,8 @@ export default {
     .uploader-drop{
         min-height: 250px;
         padding-left: 45%;
+    }
+    .color-red{
+        color: red;
     }
 </style>

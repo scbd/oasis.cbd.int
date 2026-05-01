@@ -54,9 +54,9 @@ function gitQuery(options){
             let files = await getUpdatesFiles(repositoryName, q.branch, q.date, q.ignoreFiles, q.allowedExtensions, q.ignoreFolders, q.includeFolders);
 
             if(files && files.length > 0){
-                
-                newDestination  = await hashJsonKeys(repositoryName, files, q.branch);
-                let compressedFiles = await zipFile(repositoryName, files, q.branch, newDestination);
+                let newFileList = [];
+                [newDestination, newFileList ] = await hashJsonKeys(repositoryName, files, q.branch);
+                let compressedFiles = await zipFile(repositoryName, newFileList, q.branch, newDestination);
                 let zip4 = new EasyZip();
                 return zip4.batchAdd(compressedFiles, function(){
                     return zip4.writeToResponse(res,`${q.branch}`);
@@ -191,6 +191,7 @@ function gitQuery(options){
 
     async function hashJsonKeys(repositoryName, files, branch){
         
+        let newFileList = [];
         const destinationDir = `${exportDir}/${new Date().getTime()}`
         for (let i = 0; i < files.length; i++) {
             let file = files[i];
@@ -206,18 +207,26 @@ function gitQuery(options){
                 await confirmDir(path.dirname(destinationFle));
 
                 if(path.extname(filePath) == '.json'){
-                    
-                    const jsonFileKeys = (await import(sourceFile, { assert: { type: 'json' }})).default;
-                    delete jsonFileKeys['#meta']
-                    const hashedKeys   = buildKeyHashes(jsonFileKeys);
-                    jsonFileKeys['#meta'] = {
-                        hashedOn : new Date(),
-                        algorithm:'md5',
-                        branch,
-                        hashes : hashedKeys
-                    }
+                    try{
+                        const jsonFileKeys = (await import(sourceFile, { with: { type: 'json' }})).default;
+                        delete jsonFileKeys['#meta']
+                        const hashedKeys   = buildKeyHashes(jsonFileKeys);
+                        if(!hashedKeys || Object.keys(hashedKeys).length == 0)
+                            continue;
+                        jsonFileKeys['#meta'] = {
+                            hashedOn : new Date(),
+                            algorithm:'md5',
+                            branch,
+                            hashes : hashedKeys
+                        }
+                        newFileList.push(file);
 
-                    await fs.writeFile(`${destinationFle}`, JSON.stringify(jsonFileKeys, undefined, 2));
+                        await fs.writeFile(`${destinationFle}`, JSON.stringify(jsonFileKeys, undefined, 2));
+                    }
+                    catch(ex){
+                        console.error(`Error processing file`, file, ex);
+                        await fs.copyFile(sourceFile, `${destinationFle}`);
+                    }
                 }
                 else{
                     await fs.copyFile(sourceFile, `${destinationFle}`);
@@ -228,7 +237,7 @@ function gitQuery(options){
             }
         }
 
-        return destinationDir;
+        return [destinationDir, newFileList];
     }
 
     function buildKeyHashes(jsonFileKeys){

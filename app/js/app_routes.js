@@ -44,6 +44,8 @@ const routeTemplates = {
     views_chm_record_history                : { component: ()=>import('~/views/clearing-house/record-history.vue').catch(logError) }, 
     views_chm_realm_list                    : { component: ()=>import('~/views/clearing-house/realm/realm-list.vue').catch(logError) },
     views_chm_realm_details                 : { component: ()=>import('~/views/clearing-house/realm/realm-details.vue').catch(logError) },
+    views_trados_projects                   : { component: ()=>import('~/views/translation/trados-projects.vue').catch(logError) },
+    views_trados_project                    : { component: ()=>import('~/views/translation/trados-project.vue').catch(logError) },
 };
 
 app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $locationProvider) {
@@ -85,7 +87,9 @@ app.config(["$routeProvider", '$locationProvider', function ($routeProvider, $lo
         when('/clearing-house/realms/:environment?',        { ...mapView(vueViewWrapper)    , label:'Clearing-House Management',   resolveUser : true, resolve : { ...routeTemplates.views_chm_index            , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).
         when('/clearing-house/realms/:environment/list',    { ...mapView(vueViewWrapper)    , label:'Realms'                   ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_realm_list       , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
         when('/clearing-house/realms/:environment/:realm',  { ...mapView(vueViewWrapper)    , label:'Realm Details'            ,   resolveUser : true, resolve : { ...routeTemplates.views_chm_realm_details    , securized : securize([...chmAdminRoles, 'Administrator'], null, true) }}).        
-
+        when('/translation/trados-projects',      { ...mapView(vueViewWrapper)    , label:'Translation projects'       ,   resolveUser : true, resolve : { ...routeTemplates.views_trados_projects   , securized : securize(['oasisTranslationManager', 'Administrator'], null, true) }}).        
+        when('/translation/trados-projects/new',  { ...mapView(vueViewWrapper)    , label:'New translation project'    ,   resolveUser : true, resolve : { ...routeTemplates.views_trados_project    , securized : securize(['oasisTranslationManager', 'Administrator'], null, true) }}).        
+        when('/translation/trados-projects/:id',  { ...mapView(vueViewWrapper)    , label:'Translation project'        ,   resolveUser : true, resolve : { ...routeTemplates.views_trados_project    , securized : securize(['oasisTranslationManager', 'Administrator'], null, true) }}).
         when('/403'     ,{ ...mapView(angularViewWrapper), label:'Unauthorized Access',   resolveUser : true, resolve : { ...routeTemplates.views_shared_403 }}).        
         otherwise(       {...mapView(angularViewWrapper) , label:'404 Error', resolveUser : true, resolve : { ...routeTemplates.views_shared_404 }});
 
