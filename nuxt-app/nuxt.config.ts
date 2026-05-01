@@ -22,7 +22,12 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    '/api/**': { proxy: { to: `${process.env.API_HOST ?? 'https://api.cbddev.xyz'}/**` } }
+    '/api/**': { proxy: { to: `${process.env.API_HOST ?? 'https://api.cbddev.xyz'}/**` } },
+    '/translation-api/**': {
+      proxy: {
+        to: `${process.env.TRANSLATION_API_HOST ?? 'http://localhost:2012'}/translation-api/**`
+      }
+    }
   },
 
   css: ['@tabler/core/dist/css/tabler.min.css', '~/assets/css/app.css'],
