@@ -132,13 +132,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { Article } from '~/composables/useArticlesApi'
+  import { articlesApi, filesApi } from '~/api'
+  import type { Article } from '~/api'
 
   const props = defineProps<{ initial?: Partial<Article> }>()
   const emit = defineEmits<{ saved: [id: string] }>()
 
   const router = useRouter()
-  const articlesApi = useArticlesApi()
 
   const locales = ['en', 'ar', 'es', 'fr', 'ru', 'zh']
   const coverPositions = ['center', 'bottom', 'left', 'right', 'top', 'none']
@@ -178,12 +178,7 @@
   async function uploadImage(file: File): Promise<string> {
     uploadingImage.value = true
     try {
-      const fd = new FormData()
-      fd.append('file', file)
-      const res = await $fetch<{ url: string }>('/api/v2015/temporary-files', {
-        method: 'POST',
-        body: fd
-      })
+      const res = await filesApi.uploadTemporaryFile(file)
       return res.url
     } finally {
       uploadingImage.value = false

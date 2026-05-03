@@ -350,7 +350,8 @@
 <script setup lang="ts">
   import { IconExternalLink } from '@tabler/icons-vue'
   import { lstring, formatDate, isRealm, sleep } from '~/composables/useUtils'
-  import type { KMDocument, Country, RealmConfig } from '~/composables/useClearingHouseApi'
+  import { clearingHouseApi as api } from '~/api'
+  import type { KMDocument, Country, RealmConfig } from '~/api'
 
   definePageMeta({
     title: 'Record History',
@@ -382,7 +383,6 @@
 
   const route = useRoute()
   const router = useRouter()
-  const api = useClearingHouseApi()
   const config = useRuntimeConfig()
 
   const apiHost = config.public.apiBase ?? ''
@@ -466,7 +466,7 @@
       }
 
       const [doc, revisions, , solr] = await Promise.all([
-        api.getDocumentById(idToSearch),
+        api.getDocument(idToSearch),
         api.getDocumentRevisions(idToSearch),
         api.getWorkflowHistory({ q: mongoQuery }),
         api.querySolr(solrQuery).catch(() => null)
@@ -478,7 +478,7 @@
       documentIndex.value = (solr?.response.docs[0] as Record<string, unknown>) ?? null
 
       if (doc?.identifier) {
-        documentDraft.value = (await api.getDocumentDraftById(doc.identifier)) ?? null
+        documentDraft.value = (await api.getDocumentDraft(doc.identifier)) ?? null
       }
     } catch (e) {
       error.value = e
@@ -559,8 +559,8 @@
 
   onMounted(async () => {
     const [realmConfigs, countryList] = await Promise.all([
-      api.queryRealmConfigurations(),
-      api.queryCountries()
+      api.getRealmConfigurations(),
+      api.getCountries()
     ])
     realms.value = realmConfigs
     countries.value = countryList

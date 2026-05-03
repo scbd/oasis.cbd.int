@@ -101,14 +101,13 @@
 </template>
 
 <script setup lang="ts">
-  import { useWidgetsApi } from '~/composables/useWidgetsApi'
-  import type { Widget } from '~/composables/useWidgetsApi'
+  import { widgetsApi } from '~/api'
+  import type { Widget } from '~/api'
 
   const props = defineProps<{ initial?: Partial<Widget> }>()
   const emit = defineEmits<{ saved: [id: string] }>()
 
   const router = useRouter()
-  const widgetsApi = useWidgetsApi()
 
   const contentTypes = ['text/html', 'application/json']
   const methods = ['GET', 'POST', 'PUT']

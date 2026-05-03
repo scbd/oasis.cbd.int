@@ -256,12 +256,12 @@
 
 <script setup lang="ts">
   import { lstring, camelCaseToWords } from '~/composables/useUtils'
-  import type { RealmConfig, UserRole } from '~/composables/useClearingHouseApi'
+  import { clearingHouseApi as api } from '~/api'
+  import type { RealmConfig, UserRole } from '~/api'
 
   const route = useRoute()
   const environment = route.params.environment as string
   const realmParam = route.params.realm as string
-  const api = useClearingHouseApi()
 
   definePageMeta({
     title: 'Realm Details',
@@ -301,7 +301,7 @@
     try {
       details.value = (await api.getRealmConfigurationByHost(realmParam)) ?? null
       if (roleCodes.value.length) {
-        userRoles.value = await api.getUserRoleNames([...new Set(roleCodes.value)])
+        userRoles.value = await api.getUserRoles([...new Set(roleCodes.value)])
       }
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to load realm'

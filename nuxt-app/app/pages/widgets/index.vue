@@ -68,15 +68,13 @@
 
 <script setup lang="ts">
   import { formatDate } from '~/composables/useUtils'
-  import { useWidgetsApi } from '~/composables/useWidgetsApi'
-  import type { Widget } from '~/composables/useWidgetsApi'
+  import { widgetsApi } from '~/api'
+  import type { Widget } from '~/api'
 
   definePageMeta({
     title: 'Widgets',
     breadcrumbs: [{ label: 'Widgets', path: '/widgets' }]
   })
-
-  const widgetsApi = useWidgetsApi()
   const widgets = ref<Widget[]>([])
   const loading = ref(true)
   const error = ref<string | null>(null)

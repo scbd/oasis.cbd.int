@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-  import { useArticlesApi } from '~/composables/useArticlesApi'
-  import type { Article } from '~/composables/useArticlesApi'
+  import { articlesApi } from '~/api'
+  import type { Article } from '~/api'
 
   const route = useRoute()
 
@@ -19,8 +19,6 @@
       { label: 'Edit', path: '' }
     ]
   })
-
-  const articlesApi = useArticlesApi()
   const article = ref<Article | null>(null)
   const loading = ref(true)
   const error = ref<string | null>(null)

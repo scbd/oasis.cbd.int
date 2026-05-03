@@ -168,18 +168,13 @@
     IconEdit
   } from '@tabler/icons-vue'
   import { lstring, formatDate } from '~/composables/useUtils'
-  import { useArticlesApi } from '~/composables/useArticlesApi'
-  import { useWidgetsApi } from '~/composables/useWidgetsApi'
-  import type { Article } from '~/composables/useArticlesApi'
-  import type { Widget } from '~/composables/useWidgetsApi'
+  import { articlesApi, widgetsApi, githubApi, clearingHouseApi } from '~/api'
+  import type { Article, Widget } from '~/api'
 
   definePageMeta({
     title: 'Dashboard',
     breadcrumbs: [{ label: 'Dashboard', path: '/' }]
   })
-
-  const articlesApi = useArticlesApi()
-  const widgetsApi = useWidgetsApi()
 
   const counts = reactive<Record<string, number | undefined>>({
     articles: undefined,
@@ -195,18 +190,12 @@
 
   onMounted(() => {
     Promise.all([
-      $fetch<Array<{ count?: number }>>('/api/v2017/articles', {
-        params: { q: JSON.stringify({ ag: [{ $count: 'count' }] }) }
-      }).then((r) => (counts.articles = r[0]?.count ?? 0)),
-      $fetch<Array<{ count?: number }>>('/api/v2020/widgets', {
-        params: { q: JSON.stringify({ ag: [{ $count: 'count' }] }) }
-      }).then((r) => (counts.widgets = r[0]?.count ?? 0)),
-      $fetch<{ public_repos?: number }>('https://api.github.com/orgs/scbd').then(
-        (r) => (counts.projects = r.public_repos)
-      ),
-      $fetch<Array<{ count?: number }>>('/api/v2013/workflows/failed-workflows', {
-        params: { q: JSON.stringify({ ag: [{ $count: 'count' }] }) }
-      }).then((r) => (counts.failedWorkflows = r[0]?.count ?? 0))
+      articlesApi.countArticles().then((n) => (counts.articles = n)),
+      widgetsApi.countWidgets().then((n) => (counts.widgets = n)),
+      githubApi.getOrg('scbd').then((r) => (counts.projects = r.public_repos)),
+      clearingHouseApi
+        .getWorkflowHistory({ q: JSON.stringify({ ag: [{ $count: 'count' }] }) })
+        .then((r) => (counts.failedWorkflows = (r as Array<{ count?: number }>)[0]?.count ?? 0))
     ])
 
     articlesApi

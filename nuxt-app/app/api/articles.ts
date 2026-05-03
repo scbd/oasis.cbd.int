@@ -23,8 +23,8 @@ export interface ArticleTag {
   title: Record<string, string>
 }
 
-export function useArticlesApi() {
-  async function getArticles(params?: Record<string, unknown>): Promise<Article[]> {
+export class ArticlesApi {
+  async getArticles(params?: Record<string, unknown>): Promise<Article[]> {
     const query = params ?? {
       pageNumber: 0,
       pageLength: 25,
@@ -38,37 +38,35 @@ export function useArticlesApi() {
       }
     }
     return $fetch<Article[]>('/api/v2017/articles', {
-      method: 'GET',
       params: { q: JSON.stringify(query) }
     })
   }
 
-  async function countArticles(filter?: Record<string, unknown>): Promise<number> {
+  async countArticles(filter?: Record<string, unknown>): Promise<number> {
     const query = { ag: [{ $count: 'count' }, ...(filter ? [{ $match: filter }] : [])] }
     const result = await $fetch<Array<{ count?: number }>>('/api/v2017/articles', {
-      method: 'GET',
       params: { q: JSON.stringify(query) }
     })
     return result[0]?.count ?? 0
   }
 
-  async function getArticle(id: string): Promise<Article> {
+  async getArticle(id: string): Promise<Article> {
     return $fetch<Article>(`/api/v2017/articles/${id}`)
   }
 
-  async function createArticle(data: Partial<Article>): Promise<{ id: string }> {
+  async createArticle(data: Partial<Article>): Promise<{ id: string }> {
     return $fetch<{ id: string }>('/api/v2017/articles', { method: 'POST', body: data })
   }
 
-  async function updateArticle(id: string, data: Partial<Article>): Promise<void> {
+  async updateArticle(id: string, data: Partial<Article>): Promise<void> {
     await $fetch(`/api/v2017/articles/${id}`, { method: 'PUT', body: data })
   }
 
-  async function deleteArticle(id: string): Promise<void> {
+  async deleteArticle(id: string): Promise<void> {
     await $fetch(`/api/v2017/articles/${id}`, { method: 'DELETE' })
   }
 
-  async function searchArticleTags(schema: string, query: string): Promise<ArticleTag[]> {
+  async searchTags(schema: string, query: string): Promise<ArticleTag[]> {
     const q = {
       query: { 'title.en': { $$startsWith: query } },
       pageNumber: 0,
@@ -76,18 +74,7 @@ export function useArticlesApi() {
       fields: { _id: 1, 'title.en': 1 }
     }
     return $fetch<ArticleTag[]>(`/api/v2017/${schema}`, {
-      method: 'GET',
       params: { q: JSON.stringify(q) }
     })
-  }
-
-  return {
-    getArticles,
-    countArticles,
-    getArticle,
-    createArticle,
-    updateArticle,
-    deleteArticle,
-    searchArticleTags
   }
 }

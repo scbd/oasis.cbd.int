@@ -29,8 +29,8 @@ export interface Widget {
   }
 }
 
-export function useWidgetsApi() {
-  async function getWidgets(): Promise<Widget[]> {
+export class WidgetsApi {
+  async getWidgets(): Promise<Widget[]> {
     return $fetch<Widget[]>('/api/v2020/widgets', {
       params: {
         f: JSON.stringify({
@@ -47,21 +47,27 @@ export function useWidgetsApi() {
     })
   }
 
-  async function getWidget(id: string): Promise<Widget> {
+  async getWidget(id: string): Promise<Widget> {
     return $fetch<Widget>(`/api/v2020/widgets/${encodeURIComponent(id)}`)
   }
 
-  async function createWidget(data: Omit<Widget, '_id'>): Promise<{ id: string }> {
+  async createWidget(data: Omit<Widget, '_id'>): Promise<{ id: string }> {
     return $fetch<{ id: string }>('/api/v2020/widgets', { method: 'POST', body: data })
   }
 
-  async function updateWidget(id: string, data: Widget): Promise<void> {
+  async updateWidget(id: string, data: Widget): Promise<void> {
     await $fetch(`/api/v2020/widgets/${encodeURIComponent(id)}`, { method: 'PUT', body: data })
   }
 
-  async function deleteWidget(id: string): Promise<void> {
+  async deleteWidget(id: string): Promise<void> {
     await $fetch(`/api/v2020/widgets/${encodeURIComponent(id)}`, { method: 'DELETE' })
   }
 
-  return { getWidgets, getWidget, createWidget, updateWidget, deleteWidget }
+  async countWidgets(): Promise<number> {
+    const query = { ag: [{ $count: 'count' }] }
+    const result = await $fetch<Array<{ count?: number }>>('/api/v2020/widgets', {
+      params: { q: JSON.stringify(query) }
+    })
+    return result[0]?.count ?? 0
+  }
 }

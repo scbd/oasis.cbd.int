@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
   import { IconEdit, IconTrash } from '@tabler/icons-vue'
-  import type { WidgetParam } from '~/composables/useWidgetsApi'
+  import type { WidgetParam } from '~/api'
 
   type ParamMap = Record<string, Omit<WidgetParam, 'name'>>
 

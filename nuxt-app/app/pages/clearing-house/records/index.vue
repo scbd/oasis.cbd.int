@@ -216,7 +216,8 @@
   import { IconExternalLink } from '@tabler/icons-vue'
   import { getEnvironments } from '~/data/environments'
   import { lstring, formatDate, isRealm } from '~/composables/useUtils'
-  import type { RealmConfig, Country, KMDocument } from '~/composables/useClearingHouseApi'
+  import { clearingHouseApi as api } from '~/api'
+  import type { RealmConfig, Country, KMDocument } from '~/api'
 
   definePageMeta({
     title: 'Records',
@@ -228,7 +229,6 @@
 
   const route = useRoute()
   const router = useRouter()
-  const api = useClearingHouseApi()
   const config = useRuntimeConfig()
 
   const isProduction = /\.cbd\.int$/i.test(config.public.apiBase ?? '')
@@ -396,8 +396,8 @@
 
   onMounted(async () => {
     const [realmConfigs, countryList] = await Promise.all([
-      api.queryRealmConfigurations(),
-      api.queryCountries()
+      api.getRealmConfigurations(),
+      api.getCountries()
     ])
 
     realms.value = realmConfigs

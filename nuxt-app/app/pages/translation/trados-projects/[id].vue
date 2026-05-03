@@ -14,10 +14,10 @@
 
 <script setup lang="ts">
   import type { TranslationProject } from '~/types/translation'
+  import { translationApi as api } from '~/api'
 
   const route = useRoute()
   const router = useRouter()
-  const api = useTranslationApi()
 
   const id = route.params.id as string
 

@@ -105,15 +105,13 @@
 
 <script setup lang="ts">
   import { lstring, formatDate } from '~/composables/useUtils'
-  import { useArticlesApi } from '~/composables/useArticlesApi'
-  import type { Article } from '~/composables/useArticlesApi'
+  import { articlesApi } from '~/api'
+  import type { Article } from '~/api'
 
   definePageMeta({
     title: 'Articles',
     breadcrumbs: [{ label: 'Articles', path: '/articles' }]
   })
-
-  const articlesApi = useArticlesApi()
 
   const search = ref('')
   const articles = ref<Article[]>([])
@@ -130,30 +128,20 @@
       const filter = search.value ? { 'title.en': { $$contains: search.value } } : undefined
 
       const [items, count] = await Promise.all([
-        $fetch<Article[]>('/api/v2017/articles', {
-          params: {
-            q: JSON.stringify({
-              query: filter,
-              pageNumber: page.value - 1,
-              pageLength: pageSize,
-              sort: { 'meta.modifiedOn': -1 },
-              fields: {
-                _id: 1,
-                'title.en': 1,
-                'meta.modifiedOn': 1,
-                'meta.modifiedBy': 1,
-                'meta.modifiedByInfo': 1
-              }
-            })
+        articlesApi.getArticles({
+          query: filter,
+          pageNumber: page.value - 1,
+          pageLength: pageSize,
+          sort: { 'meta.modifiedOn': -1 },
+          fields: {
+            _id: 1,
+            'title.en': 1,
+            'meta.modifiedOn': 1,
+            'meta.modifiedBy': 1,
+            'meta.modifiedByInfo': 1
           }
         }),
-        $fetch<Array<{ count?: number }>>('/api/v2017/articles', {
-          params: {
-            q: JSON.stringify({
-              ag: [...(filter ? [{ $match: filter }] : []), { $count: 'count' }]
-            })
-          }
-        }).then((r) => r[0]?.count ?? 0)
+        articlesApi.countArticles(filter)
       ])
       articles.value = items
       total.value = count

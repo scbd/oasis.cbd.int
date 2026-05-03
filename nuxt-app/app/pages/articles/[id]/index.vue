@@ -63,11 +63,10 @@
 
 <script setup lang="ts">
   import { lstring, formatDate } from '~/composables/useUtils'
-  import { useArticlesApi } from '~/composables/useArticlesApi'
-  import type { Article } from '~/composables/useArticlesApi'
+  import { articlesApi } from '~/api'
+  import type { Article } from '~/api'
 
   const route = useRoute()
-  const articlesApi = useArticlesApi()
 
   definePageMeta({
     title: 'Article',

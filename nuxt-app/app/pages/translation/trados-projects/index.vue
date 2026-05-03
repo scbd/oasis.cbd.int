@@ -84,6 +84,8 @@
   import { IconPlus } from '@tabler/icons-vue'
   import type { TranslationProject } from '~/types/translation'
 
+  import { translationApi as api } from '~/api'
+
   definePageMeta({
     title: 'Trados Projects',
     breadcrumbs: [
@@ -91,8 +93,6 @@
       { label: 'Trados Projects', path: '/translation/trados-projects' }
     ]
   })
-
-  const api = useTranslationApi()
 
   const projects = ref<TranslationProject[]>([])
   const loading = ref(false)

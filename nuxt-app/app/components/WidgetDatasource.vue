@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
   import { IconEdit, IconTrash } from '@tabler/icons-vue'
-  import type { WidgetDatasource } from '~/composables/useWidgetsApi'
+  import type { WidgetDatasource } from '~/api'
 
   const props = defineProps<{ modelValue?: WidgetDatasource[] }>()
   const emit = defineEmits<{ 'update:modelValue': [v: WidgetDatasource[]] }>()

@@ -81,89 +81,75 @@ export interface UserRole {
   roleId: string
 }
 
-export function useClearingHouseApi() {
-  const auth = useAuthStore()
+export interface SolrResponse {
+  response: { numFound: number; docs: Record<string, unknown>[] }
+}
 
-  async function headers() {
-    const t = await auth.fetchToken()
-    return t ? { Authorization: `Ticket ${t.token}` } : {}
+export class ClearingHouseApi {
+  async getRealmConfigurations(): Promise<RealmConfig[]> {
+    return $fetch<RealmConfig[]>('/api/v2018/realm-configurations')
   }
 
-  async function queryRealmConfigurations(): Promise<RealmConfig[]> {
-    return $fetch<RealmConfig[]>('/api/v2018/realm-configurations', { headers: await headers() })
-  }
-
-  async function getRealmConfigurationByHost(host: string): Promise<RealmConfig | undefined> {
+  async getRealmConfigurationByHost(host: string): Promise<RealmConfig | undefined> {
     const result = await $fetch<RealmConfig[]>(
-      `/api/v2018/realm-configurations/${encodeURIComponent(host)}`,
-      {
-        headers: await headers()
-      }
+      `/api/v2018/realm-configurations/${encodeURIComponent(host)}`
     )
     return result?.[0]
   }
 
-  async function queryCountries(): Promise<Country[]> {
-    return $fetch<Country[]>('/api/v2013/countries', { headers: await headers() })
+  async getCountries(): Promise<Country[]> {
+    return $fetch<Country[]>('/api/v2013/countries')
   }
 
-  async function queryDocuments(
+  async queryDocuments(
     params: Record<string, unknown>,
     realmHeaders: { realm: string }
   ): Promise<{ Items: KMDocument[]; Count: number }> {
     return $fetch('/api/v2013/documents', {
-      headers: { ...(await headers()), ...realmHeaders },
+      headers: realmHeaders,
       query: params
     })
   }
 
-  async function getDocumentById(id: string | number): Promise<KMDocument | undefined> {
-    return $fetch<KMDocument>(`/api/v2013/documents/${encodeURIComponent(String(id))}/info`, {
-      headers: await headers()
-    }).catch(() => undefined)
+  async getDocument(id: string | number): Promise<KMDocument | undefined> {
+    return $fetch<KMDocument>(`/api/v2013/documents/${encodeURIComponent(String(id))}/info`).catch(
+      () => undefined
+    )
   }
 
-  async function getDocumentDraftById(id: string | number): Promise<KMDocument | undefined> {
+  async getDocumentDraft(id: string | number): Promise<KMDocument | undefined> {
     return $fetch<KMDocument>(
-      `/api/v2013/documents/${encodeURIComponent(String(id))}/versions/draft/info`,
-      {
-        headers: await headers()
-      }
+      `/api/v2013/documents/${encodeURIComponent(String(id))}/versions/draft/info`
     ).catch(() => undefined)
   }
 
-  async function getDocumentRevisions(
+  async getDocumentRevisions(
     id: string | number
   ): Promise<{ Items: KMDocument[]; Count: number } | undefined> {
-    return $fetch(`/api/v2013/documents/${encodeURIComponent(String(id))}/versions`, {
-      headers: await headers()
-    }).catch(() => undefined)
+    return $fetch<{ Items: KMDocument[]; Count: number }>(
+      `/api/v2013/documents/${encodeURIComponent(String(id))}/versions`
+    ).catch(() => undefined)
   }
 
-  async function reIndexDocument(
+  async reIndexDocument(
     schema: string,
     identifier: string,
     realm: string
   ): Promise<{ status: number }> {
     return $fetch(
       `/api/v2022/documents/admin/schemas/${encodeURIComponent(schema)}/${encodeURIComponent(identifier)}/index-document`,
-      {
-        method: 'PUT',
-        headers: await headers(),
-        query: { realm }
-      }
+      { method: 'PUT', query: { realm } }
     )
   }
 
-  async function querySolr(params: {
+  async querySolr(params: {
     query: string
     fields?: string
     rowsPerPage?: number
     start?: number
-  }): Promise<{ response: { numFound: number; docs: Record<string, unknown>[] } }> {
+  }): Promise<SolrResponse> {
     return $fetch('/api/v2013/index/select', {
       method: 'POST',
-      headers: await headers(),
       body: {
         q: params.query,
         fl: params.fields,
@@ -174,51 +160,27 @@ export function useClearingHouseApi() {
     })
   }
 
-  async function getWorkflowHistory(
-    params: Record<string, unknown>
-  ): Promise<KMDocument[] | undefined> {
-    return $fetch('/api/v2013/workflows', {
-      headers: await headers(),
-      query: params
-    }).catch(() => undefined)
+  async getWorkflowHistory(params: Record<string, unknown>): Promise<KMDocument[] | undefined> {
+    return $fetch<KMDocument[]>('/api/v2013/workflows', { query: params }).catch(() => undefined)
   }
 
-  async function startNewWorkflow(workflowId: string, realm: string): Promise<unknown> {
+  async startNewWorkflow(workflowId: string, realm: string): Promise<unknown> {
     return $fetch(`/api/v2013/workflows/failed-workflows/${workflowId}/new-workflow`, {
       method: 'PUT',
-      headers: await headers(),
       query: { realm }
     })
   }
 
-  async function releaseWorkflow(workflowId: string, realm: string): Promise<void> {
+  async releaseWorkflow(workflowId: string, realm: string): Promise<void> {
     await $fetch(`/api/v2013/workflows/failed-workflows/${workflowId}/release-workflow`, {
       method: 'PUT',
-      headers: await headers(),
       query: { realm }
     })
   }
 
-  async function getUserRoleNames(roleCodes: string[]): Promise<UserRole[]> {
+  async getUserRoles(roleCodes: string[]): Promise<UserRole[]> {
     return $fetch('/api/v2013/roles', {
-      headers: await headers(),
       query: { q: JSON.stringify({ roles: roleCodes.map(encodeURIComponent) }) }
     })
-  }
-
-  return {
-    queryRealmConfigurations,
-    getRealmConfigurationByHost,
-    queryCountries,
-    queryDocuments,
-    getDocumentById,
-    getDocumentDraftById,
-    getDocumentRevisions,
-    reIndexDocument,
-    querySolr,
-    getWorkflowHistory,
-    startNewWorkflow,
-    releaseWorkflow,
-    getUserRoleNames
   }
 }

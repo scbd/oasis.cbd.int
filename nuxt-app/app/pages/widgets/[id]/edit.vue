@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-  import { useWidgetsApi } from '~/composables/useWidgetsApi'
-  import type { Widget } from '~/composables/useWidgetsApi'
+  import { widgetsApi } from '~/api'
+  import type { Widget } from '~/api'
 
   const route = useRoute()
 
@@ -19,8 +19,6 @@
       { label: 'Edit', path: '' }
     ]
   })
-
-  const widgetsApi = useWidgetsApi()
   const widget = ref<Widget | null>(null)
   const loading = ref(true)
   const error = ref<string | null>(null)

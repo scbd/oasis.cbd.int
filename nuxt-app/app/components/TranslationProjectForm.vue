@@ -107,6 +107,7 @@
 <script setup lang="ts">
   import { IconUpload, IconFile, IconCheck, IconX } from '@tabler/icons-vue'
   import { languages } from '~/data/languages'
+  import { translationApi as api, filesApi } from '~/api'
   import type { TranslationProject, SourceFileUrl } from '~/types/translation'
 
   const props = defineProps<{
@@ -118,7 +119,6 @@
   }>()
 
   const router = useRouter()
-  const api = useTranslationApi()
 
   interface QueueItem {
     name: string
@@ -163,7 +163,7 @@
     for (const item of pending) {
       item.status = 'uploading'
       try {
-        const result = await api.uploadTempFile(item.file)
+        const result = await filesApi.uploadTemporaryFile(item.file)
         item.result = {
           contentType: result.contentType,
           hash: result.hash,

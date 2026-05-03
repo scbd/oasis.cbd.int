@@ -142,7 +142,8 @@
   import { IconListNumbers, IconHistory, IconHourglass, IconExternalLink } from '@tabler/icons-vue'
   import { getEnvironments } from '~/data/environments'
   import { lstring } from '~/composables/useUtils'
-  import type { RealmConfig } from '~/composables/useClearingHouseApi'
+  import type { RealmConfig } from '~/api'
+  import { clearingHouseApi as api } from '~/api'
 
   definePageMeta({
     title: 'Clearing-House',
@@ -150,8 +151,8 @@
   })
 
   const route = useRoute()
+
   const router = useRouter()
-  const api = useClearingHouseApi()
   const config = useRuntimeConfig()
 
   const isProduction = computed(() => /\.cbd\.int$/i.test(config.public.apiBase ?? ''))
@@ -174,7 +175,7 @@
   onMounted(async () => {
     loading.value = true
     try {
-      realmConfigurations.value = await api.queryRealmConfigurations()
+      realmConfigurations.value = await api.getRealmConfigurations()
       if (route.params.environment) {
         selectedEnvKey.value = route.params.environment as string
       }

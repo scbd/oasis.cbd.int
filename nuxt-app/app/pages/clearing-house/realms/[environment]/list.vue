@@ -55,11 +55,11 @@
 
 <script setup lang="ts">
   import { IconSearch } from '@tabler/icons-vue'
-  import type { RealmConfig } from '~/composables/useClearingHouseApi'
+  import { clearingHouseApi as api } from '~/api'
+  import type { RealmConfig } from '~/api'
 
   const route = useRoute()
   const environment = route.params.environment as string
-  const api = useClearingHouseApi()
 
   definePageMeta({
     title: 'Realms List',
@@ -80,7 +80,7 @@
   onMounted(async () => {
     loading.value = true
     try {
-      realms.value = await api.queryRealmConfigurations()
+      realms.value = await api.getRealmConfigurations()
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to load realms'
     } finally {
