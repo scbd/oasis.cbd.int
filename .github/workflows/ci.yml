@@ -111,3 +111,4 @@ jobs:
         uses: newarifrh/portainer-service-webhook@v1
         with:
           webhook_url: ${{ secrets.WEBHOOK_URL_DEV }}
+          
