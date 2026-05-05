@@ -1,4 +1,4 @@
-﻿import { recordApiEndpoint, importWorkingFolder, createDir,
+import { recordApiEndpoint, importWorkingFolder, createDir,
          importTranslationFromZip, deleteFromDisk, importFromFile } from './import-translation.js';
 import { httpStatusCodes, importLogType, logStep } from './utils.js';
 import multer from 'multer';
