@@ -52,7 +52,7 @@ export { default as template } from './view.html';
                                 var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + data.html +'</div>'
                                 element.insertAdjacentHTML("afterend", embedHtml);
                                 if(data?.resources?.length){
-                                    loadResources(response.data.resources)
+                                    loadResources(data.resources)
                                 }
                             })
                         });
