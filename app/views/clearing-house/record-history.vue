@@ -166,11 +166,7 @@
                                                                     <div class="alert alert-info"  v-if="!documentIndex">                            
                                                                         <h4><i class="icon fa fa-ban"></i> Info!</h4>
                                                                         No indexed document found for {{ identifier }}
-                                                                        <p v-if="document && document.identifier" style="margin-top:20px">
-                                                                            <button class="btn btn-danger" @click="reindexRecord(document)">Request Re-indexing</button>
-                                                                        </p>
                                                                     </div>
-
                                                                 </td>
                                                             </tr>
                                                             <tr  v-if="documentIndex">

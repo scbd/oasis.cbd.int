@@ -6,10 +6,10 @@ FROM node:18.0
 ARG BRANCH='master'
 ENV BRANCH $BRANCH
 
-ARG VERSION
-ENV VERSION $VERSION
+ARG GIT_COMMIT
+ENV GIT_COMMIT $GIT_COMMIT
 
-RUN echo 'running on branch ' $VERSION
+RUN echo 'running on branch ' $GIT_COMMIT
 
 WORKDIR /usr/src/app
 

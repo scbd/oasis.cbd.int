@@ -29,8 +29,8 @@ if(!process.env.API_HOST) {
     console.warn('warning: evironment API_HOST not set. USING default (https://api.cbddev.xyz)');
 }
 
-var gitVersion = (process.env.VERSION || 'UNKNOWN').substr(0, 7);
-let appVersion = process.env.TAG      || gitVersion;
+var gitVersion = (process.env.GIT_COMMIT || 'UNKNOWN').substr(0, 7);
+let appVersion = process.env.TAG         || gitVersion;
 
 console.info(`info: www.cbd.int/management`);
 console.info(`info: Git commit:  ${gitVersion}`);
