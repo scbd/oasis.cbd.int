@@ -52,17 +52,20 @@ jobs:
             echo "EOF"                >> $GITHUB_OUTPUT
             echo "push=true"          >> $GITHUB_OUTPUT
             echo "branch="            >> $GITHUB_OUTPUT
+            echo "build_tag=${TAG}"   >> $GITHUB_OUTPUT
 
           elif [[ "${REF}" =~ ^refs/heads/(master|dev)$ ]]; then
             BRANCH="${BASH_REMATCH[1]}"
             echo "tags=${IMAGE}:${BRANCH}" >> $GITHUB_OUTPUT
             echo "push=true"               >> $GITHUB_OUTPUT
             echo "branch=${BRANCH}"        >> $GITHUB_OUTPUT
+            echo "build_tag="              >> $GITHUB_OUTPUT
 
           else
             echo "tags=${IMAGE}:build-${SHORT_SHA}" >> $GITHUB_OUTPUT
             echo "push=false"                        >> $GITHUB_OUTPUT
             echo "branch="                           >> $GITHUB_OUTPUT
+            echo "build_tag="                        >> $GITHUB_OUTPUT
           fi
 
       - name: Log in to Docker Hub
@@ -77,7 +80,7 @@ jobs:
         with:
           build-args: 
             COMMIT=${{ github.sha }}
-            BRANCH=${{ steps.meta.outputs.build_branch }}
+            BRANCH=${{ steps.meta.outputs.branch }}
             TAG=${{ steps.meta.outputs.build_tag }}
           load: true
           tags: ci-build:local
