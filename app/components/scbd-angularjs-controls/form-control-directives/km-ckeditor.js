@@ -210,7 +210,8 @@ import '~/components/scbd-angularjs-services/main';
 									/app\.tango\.us\/app\/workflow\/.*/,
 									/docs\.google\.com\/document\/d\/.*/,
 									/(.*\.)?cbd\.int\/.*/,
-									/(.*\.)?cbddev\.xyz\/.*/,									
+									/(.*\.)?cbddev\.xyz\/.*/,
+									
 								],
 								html: function(id){
 									return '<figure class="media">' +
