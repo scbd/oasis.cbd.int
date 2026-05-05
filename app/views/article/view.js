@@ -51,7 +51,7 @@ export { default as template } from './view.html';
                             .then(function({data}){
                                 var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + data.html +'</div>'
                                 element.insertAdjacentHTML("afterend", embedHtml);
-                                if(response.data.resources?.length){
+                                if(data?.resources?.length){
                                     loadResources(response.data.resources)
                                 }
                             })
