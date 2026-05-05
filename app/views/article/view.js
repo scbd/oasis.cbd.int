@@ -51,6 +51,7 @@ export { default as template } from './view.html';
                             .then(function(response){
                                 var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + response.data.html +'</div>'
                                 element.insertAdjacentHTML("afterend", embedHtml);
+                                loadResources(response.data.resources)
                             })
                         });
 
@@ -94,6 +95,32 @@ export { default as template } from './view.html';
                 return articles?.find(x => x._id==row._id);
             }
 
+            async function loadResources(resources) {
+
+                const loadedScripts = new Map();
+                const jsResources = (resources || []).filter(r => r.type === 'javascript');
+                await Promise.all(jsResources.map(r => loadScript(r.src)));
+
+                function loadScript(src) {
+                    if (loadedScripts.has(src)) return loadedScripts.get(src);
+
+                    const promise = new Promise((resolve, reject) => {
+                        if (document.querySelector(`script[src="${src}"]`)) {
+                            resolve();
+                            return;
+                        }
+                        const s = document.createElement('script');
+                        s.src = src;
+                        s.async = true;
+                        s.onload = () => resolve();
+                        s.onerror = () => reject(new Error(`Failed to load ${src}`));
+                        document.head.appendChild(s);
+                    });
+
+                    loadedScripts.set(src, promise);
+                    return promise;
+                }
+            }
             $scope.cssEscape = cssEscape
         }
     ]
