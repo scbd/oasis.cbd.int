@@ -207,7 +207,7 @@ function gitQuery(options){
 
                 if(path.extname(filePath) == '.json'){
                     
-                    const jsonFileKeys = (await import(sourceFile, { assert: { type: 'json' }})).default;
+                    const jsonFileKeys = (await import(sourceFile, { with: { type: 'json' }})).default;
                     delete jsonFileKeys['#meta']
                     const hashedKeys   = buildKeyHashes(jsonFileKeys);
                     jsonFileKeys['#meta'] = {

@@ -13,7 +13,7 @@ import request        from 'superagent';
 import winston        from './logger.js';
 import crypto         from 'crypto';
 import express        from 'express';
-import databaseTables from '../views/translation/database-tables.json' with { type: 'json'}
+import databaseTables from '../views/translation/database-tables.json' with { type: 'json' }
 import authenticate   from './authentication.js';
 import config         from './config.js';
 import signedUrl      from './signed-url.js';
