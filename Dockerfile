@@ -1,4 +1,4 @@
-FROM node:18.0
+FROM node:20.0
 # -alpine
 # RUN apk update && apk upgrade && \
 #     apk add --no-cache bash git
@@ -6,10 +6,13 @@ FROM node:18.0
 ARG BRANCH='master'
 ENV BRANCH $BRANCH
 
-ARG GIT_COMMIT
-ENV GIT_COMMIT $GIT_COMMIT
+ARG COMMIT
+ENV COMMIT $COMMIT
 
-RUN echo 'running on branch ' $GIT_COMMIT
+ARG TAG
+ENV TAG $TAG
+
+RUN echo 'running on branch ' $BRANCH 'tag:' $TAG 'commit:' $COMMIT
 
 WORKDIR /usr/src/app
 
@@ -31,10 +34,5 @@ ENV PORT 8000
 
 EXPOSE 8000
 
-ARG TAG
-ENV TAG $TAG
-
-ARG COMMIT
-ENV COMMIT $COMMIT
 
 CMD [ "node", "server" ]
