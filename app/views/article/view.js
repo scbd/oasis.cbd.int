@@ -118,7 +118,7 @@ export { default as template } from './view.html';
                                 }
                                 else{
                                     remoteResource.rel = 'stylesheet';
-                                    link.href = resource.src
+                                    remoteResource.href = resource.src
                                 }
 
                                 head.appendChild(remoteResource);
