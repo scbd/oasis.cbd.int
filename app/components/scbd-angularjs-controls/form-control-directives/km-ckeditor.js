@@ -72,9 +72,9 @@ import '~/components/scbd-angularjs-services/main';
 							'indent', 'outdent','alignment', '|',
 							'bulletedList', 'numberedList', 'blockQuote', '|', 
 							'highlight', 'insertTable', '|', 
-							'imageInsert', 'mediaEmbed', '|', 
+							'imageUpload', 'mediaEmbed', '|', 
 							'horizontalLine', '|',
-							'removeFormat', 'undo', 'redo', '|', 'pageBreak', 'brBreak'
+							'removeFormat', 'undo', 'redo', '|', 'pageBreak', 'brBreak', 'alert'
 						],
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
@@ -222,7 +222,8 @@ import '~/components/scbd-angularjs-services/main';
 								}
 							}
 							]
-						}
+						},
+						licenseKey: 'GPL'
 					}
 					
 					classicEditor.create($element.find('#km-inline-editor_'+lang)[0], editorOptions)
