@@ -51,6 +51,9 @@ export { default as template } from './view.html';
                             .then(function(response){
                                 var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + response.data.html +'</div>'
                                 element.insertAdjacentHTML("afterend", embedHtml);
+                                if(data?.resources?.length){
+                                    loadResources(data.resources)
+                                }
                             })
                         });
 
@@ -94,6 +97,36 @@ export { default as template } from './view.html';
                 return articles?.find(x => x._id==row._id);
             }
 
+            async function loadResources(resources) {
+
+                if(resources?.length){
+                    resources.forEach(resource=>{
+
+                        const parsedUrl = new URL(resource.src);
+                        
+                        if(/cbd.int$/.test(parsedUrl.hostname) || /cbddev.xyz$/.test(parsedUrl.hostname)){
+                            if(['css', 'javascript'].includes(resource.type)){       
+                                const elementType =  resource.type == 'css' ? 'link' : 'script'                                    
+                                const remoteResource = document.createElement(elementType); 
+                                const head = document.getElementsByTagName('HEAD')[0];
+
+                                remoteResource.type = `text/${resource.type}`; 
+
+                                if(resource.type == 'javascript'){
+                                    remoteResource.async = true;
+                                    remoteResource.src = resource.src;
+                                }
+                                else{
+                                    remoteResource.rel = 'stylesheet';
+                                    remoteResource.href = resource.src
+                                }
+
+                                head.appendChild(remoteResource);
+                            }
+                        }
+                    });                                    
+                }
+            }
             $scope.cssEscape = cssEscape
         }
     ]
