@@ -4,13 +4,13 @@ FROM node:22.0
 #     apk add --no-cache bash git
 
 ARG BRANCH='master'
-ENV BRANCH $BRANCH
+ENV BRANCH=$BRANCH
 
 ARG COMMIT
-ENV COMMIT $COMMIT
+ENV COMMIT=$COMMIT
 
 ARG TAG
-ENV TAG $TAG
+ENV TAG=$TAG
 
 RUN echo 'running on branch ' $BRANCH 'tag:' $TAG 'commit:' $COMMIT
 
@@ -30,7 +30,7 @@ RUN yarn install --ignore-scripts --prefer-offline && \
 # run rollup build script 
 RUN yarn run build
 
-ENV PORT 8000
+ENV PORT=8000
 
 EXPOSE 8000
 
