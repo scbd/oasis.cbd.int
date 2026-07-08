@@ -209,6 +209,7 @@ import '~/components/scbd-angularjs-services/main';
 									/youtube\.com\/embed\/videoseries.*/,
 									/app\.tango\.us\/app\/workflow\/.*/,
 									/docs\.google\.com\/document\/d\/.*/,
+									/www\.linkedin\.com\/embed\/feed\/.*/,
 									/(.*\.)?cbd\.int\/.*/,
 									/(.*\.)?cbddev\.xyz\/.*/,
 									
