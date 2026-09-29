@@ -2,7 +2,7 @@
 
 // window.name = 'NG_DEFER_BOOTSTRAP!';
 
-var ckeditorVersion = '48.1.1'
+var ckeditorVersion = '48.5.2'
 
 export const cdnHost = 'https://cdn.jsdelivr.net/'
 
