@@ -74,7 +74,7 @@ import '~/components/scbd-angularjs-services/main';
 							'highlight', 'insertTable', '|', 
 							'imageUpload', 'mediaEmbed', '|', 
 							'horizontalLine', '|',
-							'removeFormat', 'undo', 'redo', '|', 'pageBreak', 'brBreak', 'alert'
+							'removeFormat', 'undo', 'redo', '|', 'pageBreak', 'brBreak', 'alert', 'bookmark'
 						],
 						alignment: {
 							options: [ 'left', 'right', 'center', 'justify']
