@@ -38,19 +38,39 @@ export { default as template } from './view.html';
                             return query;
                         }
 
+                        var PLAIN_NUMBER = /^\d+(\.\d+)?$/;
+
                         document.querySelectorAll( 'oembed[url]' ).forEach( element => {
                             var url = element.attributes.url.value;
-                            // var urlDetails = getLocation(url);
-                            // var qs = parseQuery(urlDetails.search);
                             var params = {
                                 url : encodeURI(url),
-                                // maxheight:qs.height||qs.maxheight||'450',
-                                // maxwidth:qs.width||qs.maxwidth||'100%'
+                                maxWidth: 1280
                             }
                             $http.get('/api/v2020/oembed', {params:params})
                             .then(function(response){
-                                var embedHtml = '<div class="ck-media__wrapper" style="width:100%">' + response.data.html +'</div>'
-                                element.insertAdjacentHTML("afterend", embedHtml);
+                                // Different whitelisted providers aren't all 16:9 video (e.g. KnightLab
+                                // StoryMaps, ORT/ABSCH/BCH/CHM tools), so size the box from the provider's
+                                // own reported width/height instead of assuming video's aspect ratio.
+                                var w = response.data.width;
+                                var h = response.data.height;
+                                var ratio = 56.25;
+                                if ( PLAIN_NUMBER.test( w ) && PLAIN_NUMBER.test( h ) && w > 0 ) {
+                                    ratio = ( h / w ) * 100;
+                                }
+
+                                var wrapper = document.createElement('div');
+                                wrapper.className = 'ck-media__wrapper';
+                                wrapper.style.cssText = 'position:relative;width:100%;height:0;padding-bottom:' + ratio + '%';
+                                wrapper.innerHTML = response.data.html;
+
+                                var iframe = wrapper.querySelector('iframe');
+                                if (iframe) {
+                                    iframe.removeAttribute('width');
+                                    iframe.removeAttribute('height');
+                                    iframe.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%';
+                                }
+
+                                element.insertAdjacentElement("afterend", wrapper);
                                 if(data?.resources?.length){
                                     loadResources(data.resources)
                                 }
