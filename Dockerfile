@@ -1,4 +1,4 @@
-FROM node:22
+FROM node:26
 # -alpine
 # RUN apk update && apk upgrade && \
 #     apk add --no-cache bash git
@@ -11,6 +11,9 @@ ENV COMMIT=$COMMIT
 
 ARG TAG
 ENV TAG=$TAG
+
+# node:26 images no longer ship yarn/corepack
+RUN npm install -g --ignore-scripts yarn@1.22.22
 
 RUN echo 'running on branch ' $BRANCH 'tag:' $TAG 'commit:' $COMMIT
 
