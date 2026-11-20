@@ -19,7 +19,7 @@ RUN echo 'running on branch ' $BRANCH 'tag:' $TAG 'commit:' $COMMIT
 
 WORKDIR /usr/src/app
 
-COPY package.json .npmrc ./
+COPY package.json ./
 
 COPY . ./
 
